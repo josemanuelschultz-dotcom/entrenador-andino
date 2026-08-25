@@ -788,25 +788,31 @@ function irA(t, forzar){
     if(forzar || Math.abs(c.el.currentTime - destino) > 0.06) c.el.currentTime = destino;
   }
 }
+/* un solo sitio que pinta el ícono de play, para el transporte normal y el flotante */
+function pintarPlay(){
+  const icono = estado.reproduciendo ? "❚❚" : "▶";
+  $("play").textContent = icono; $("mPlay").textContent = icono;
+}
 function reproducir(){
   const act = activos();
   if(!act.length){ avisar("Carga un video para empezar."); return; }
   const L = limites();
   if(estado.t >= L.max - 0.05) irA(estado.bucle && estado.entrada!==null ? estado.entrada : L.min, true);
-  estado.reproduciendo = true; $("play").textContent = "❚❚";
+  estado.reproduciendo = true; pintarPlay();
   for(const k of ["a","b"]) if(clips[k].listo && !act.includes(k)) clips[k].el.pause();
   for(const k of act){
     const c = clips[k];
     c.el.playbackRate = Math.min(Math.max(estado.vel * c.esc, 0.0625), 16);
-    c.el.play().catch(()=>{ estado.reproduciendo = false; $("play").textContent = "▶";
+    c.el.play().catch(()=>{ estado.reproduciendo = false; pintarPlay();
       avisar("El navegador bloqueó la reproducción. Toca la pantalla y vuelve a intentar."); });
   }
 }
 function pausar(){
-  estado.reproduciendo = false; $("play").textContent = "▶";
+  estado.reproduciendo = false; pintarPlay();
   for(const k of ["a","b"]) if(clips[k].listo) clips[k].el.pause();
 }
-al("play", "click", ()=> estado.reproduciendo ? pausar() : reproducir());
+function alternarPlay(){ estado.reproduciendo ? pausar() : reproducir(); }
+al("play", "click", alternarPlay);
 /* el paso de cuadro de estos dos botones lo registra repetible(), más abajo */
 al("vel", "change", e=>{
   estado.vel = parseFloat(e.target.value);
@@ -1296,10 +1302,10 @@ document.addEventListener("fullscreenchange", ()=>{
 });
 document.addEventListener("keydown", (e)=>{
   if(e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
-  const paso = e.shiftKey ? 10/estado.fps : 1/estado.fps;
-  if(e.code === "Space"){ e.preventDefault(); estado.reproduciendo ? pausar() : reproducir(); }
-  else if(e.code === "ArrowLeft"){ e.preventDefault(); pausar(); irA(estado.t - paso, true); dibujar(); }
-  else if(e.code === "ArrowRight"){ e.preventDefault(); pausar(); irA(estado.t + paso, true); dibujar(); }
+  const cuadros = e.shiftKey ? 10 : 1;
+  if(e.code === "Space"){ e.preventDefault(); alternarPlay(); }
+  else if(e.code === "ArrowLeft"){ e.preventDefault(); pasoCuadro(-cuadros); }
+  else if(e.code === "ArrowRight"){ e.preventDefault(); pasoCuadro(cuadros); }
   else if(e.key === "a" || e.key === "A") seleccionar("a");
   else if(e.key === "b" || e.key === "B") seleccionar("b");
 });
@@ -2024,7 +2030,7 @@ al("igualarPartida", "click", igualarPartida);
 
 
 /* ---------- mandos flotantes en pantalla completa ---------- */
-al("mPlay", "click", ()=> estado.reproduciendo ? pausar() : reproducir());
+al("mPlay", "click", ()=> $("play").click());
 /* el paso de cuadro de estos dos botones lo registra repetible(), más abajo */
 al("mVel", "change", (e)=>{ $("vel").value = e.target.value; $("vel").dispatchEvent(new Event("change")); });
 al("mGuias", "click", ()=> $("verGuias").click());
@@ -2089,10 +2095,12 @@ function repetible(el, accion){
      activar el botón con teclado (Enter/Espacio), que no dispara pointerdown */
   el.addEventListener("click", (ev)=>{ if(ev.detail === 0) accion(); });
 }
-repetible($("atras"), ()=>{ pausar(); irA(estado.t - 1/estado.fps, true); pintarTransporte(); });
-repetible($("adelante"), ()=>{ pausar(); irA(estado.t + 1/estado.fps, true); pintarTransporte(); });
-repetible($("mAtras"), ()=>{ pausar(); irA(estado.t - 1/estado.fps, true); pintarTransporte(); });
-repetible($("mAdelante"), ()=>{ pausar(); irA(estado.t + 1/estado.fps, true); pintarTransporte(); });
+/* un solo cálculo del paso de cuadro, para el transporte normal y el flotante */
+function pasoCuadro(dir){ pausar(); irA(estado.t + dir/estado.fps, true); pintarTransporte(); }
+repetible($("atras"), ()=> pasoCuadro(-1));
+repetible($("adelante"), ()=> pasoCuadro(1));
+repetible($("mAtras"), ()=> pasoCuadro(-1));
+repetible($("mAdelante"), ()=> pasoCuadro(1));
 repetible($("mAmenos"), ()=> moverSolo("a", -1));
 repetible($("mAmas"), ()=> moverSolo("a", 1));
 repetible($("mBmenos"), ()=> moverSolo("b", -1));
@@ -2175,7 +2183,6 @@ montarJog($("jog2"), $("jogPuno2"), $("jogTxt2"));
 
 function refrescarMandos(){
   const dos = clips.a.listo && clips.b.listo;
-  $("mPlay").textContent = estado.reproduciendo ? "❚❚" : "▶";
   $("mTc").textContent = estado.t.toFixed(2);
   $("mAguja").style.left = pct(estado.t)+"%";
   $("mVel").value = String(estado.vel);
