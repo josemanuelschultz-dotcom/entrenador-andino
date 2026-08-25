@@ -1,0 +1,2177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Comparador — Entrenador Andino</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sombra:#0E141B;
+  --panel:#17202B;
+  --panel-alto:#1E2A38;
+  --linea:#283648;
+  --texto:#E6EDF5;
+  --tenue:#8A9AAD;
+  --azul:#3B82F6;
+  --rojo:#EF4444;
+  --ambar:#F5B841;
+  --display:"Barlow Condensed","Oswald","Arial Narrow",system-ui,sans-serif;
+  --cuerpo:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:ui-monospace,"SF Mono","Roboto Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;background:var(--sombra);color:var(--texto);
+  font-family:var(--cuerpo);font-size:15px;
+  display:flex;flex-direction:column;overflow:hidden;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* ---------- cabecera ---------- */
+.barra{
+  display:flex;align-items:center;gap:14px;
+  padding:10px 14px;border-bottom:1px solid var(--linea);background:var(--panel);
+  flex-shrink:0;
+}
+.marca{font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:.08em;text-transform:uppercase;line-height:1}
+.marca span{color:var(--tenue);font-weight:500}
+.modos{display:flex;gap:2px;margin-left:auto;background:var(--sombra);padding:3px;border-radius:8px}
+.modos button{
+  font-family:var(--display);font-size:14px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  background:none;border:0;color:var(--tenue);padding:8px 14px;border-radius:6px;cursor:pointer;
+}
+.modos button[aria-pressed="true"]{background:var(--panel-alto);color:var(--texto)}
+#cambiaAtleta{margin-left:0;padding:2px}
+#cambiaAtleta button{padding:8px 13px;min-width:40px}
+#cambiaAtleta #verA[aria-pressed="true"]{background:color-mix(in srgb,var(--azul) 26%,transparent);color:#BFD8FF}
+#cambiaAtleta #verB[aria-pressed="true"]{background:color-mix(in srgb,var(--rojo) 26%,transparent);color:#FFCFCF}
+#cambiaAtleta.oculto{display:none}
+.carril.oculto{display:none}
+
+/* ---------- escenario ---------- */
+.escena{flex:1;position:relative;min-height:0;background:#070B0F;overflow:hidden}
+.lienzo{position:absolute;inset:0;display:flex}
+.lienzo.vertical{flex-direction:row}
+.lienzo.horizontal{flex-direction:column}
+.marco{position:relative;overflow:hidden;background:#070B0F;flex:1 1 50%;min-width:0;min-height:0}
+.marco video{
+  position:absolute;top:50%;left:50%;width:100%;height:100%;object-fit:contain;
+  transform:translate(-50%,-50%);transform-origin:center;will-change:transform;
+}
+.marco::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  border:2px solid transparent;
+}
+.marco[data-clip="a"]::after{border-color:color-mix(in srgb,var(--azul) 55%,transparent)}
+.marco[data-clip="b"]::after{border-color:color-mix(in srgb,var(--rojo) 55%,transparent)}
+.marco[data-sel="1"]::after{border-width:3px}
+.marco[data-sel="1"][data-clip="a"]::after{border-color:var(--azul)}
+.marco[data-sel="1"][data-clip="b"]::after{border-color:var(--rojo)}
+.dorsal{
+  position:absolute;top:10px;left:10px;z-index:4;
+  font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+  padding:4px 9px;border-radius:4px;background:rgba(7,11,15,.72);
+}
+.marco[data-clip="a"] .dorsal{color:var(--azul);box-shadow:inset 0 0 0 1px var(--azul)}
+.marco[data-clip="b"] .dorsal{color:var(--rojo);box-shadow:inset 0 0 0 1px var(--rojo)}
+
+/* superpuesta */
+.lienzo.superpuesta{display:block}
+.lienzo.superpuesta .marco{position:absolute;inset:0;flex:none}
+.lienzo.superpuesta .marco[data-clip="b"]{mix-blend-mode:var(--mezcla,normal)}
+
+/* guías */
+.marco{cursor:grab}
+.marco.arrastrando{cursor:grabbing}
+.calibrando .marco{cursor:crosshair}
+.punto{
+  position:absolute;z-index:6;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;
+  border:2px solid #0E141B;pointer-events:none;
+  font-family:var(--mono);font-size:10px;color:#0E141B;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+.punto.p1{background:var(--ambar)}
+.punto.p2{background:#7DE2A8}
+.pizarra{position:absolute;inset:0;z-index:6;pointer-events:none;touch-action:none}
+.pizarra.activa{pointer-events:auto;cursor:crosshair}
+.mandos{
+  position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:9;
+  display:none;flex-direction:column;gap:7px;padding:8px 10px;border-radius:12px;
+  background:rgba(7,11,15,.84);border:1px solid var(--linea);
+  max-width:calc(100% - 20px);transition:opacity .25s;
+}
+body.completa .mandos,body.inmersivo .mandos{display:flex}
+.mandos.esfuma{opacity:0;pointer-events:none}
+.mFila{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.mFila::-webkit-scrollbar{display:none}
+.mandos button{
+  border:1px solid var(--linea);background:var(--panel-alto);color:var(--texto);
+  border-radius:7px;min-height:38px;padding:8px 11px;cursor:pointer;flex-shrink:0;
+  font-family:var(--display);font-size:13px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+}
+.mandos button.grande{font-size:17px;min-width:54px;padding:8px}
+.mandos button.on{background:var(--ambar);color:#0E141B;border-color:var(--ambar)}
+.mandos .modos{margin:0;padding:2px;flex-shrink:0}
+.mandos .modos button{min-height:32px;padding:6px 11px;border:0;background:none}
+.mandos #mA[aria-pressed="true"]{background:color-mix(in srgb,var(--azul) 30%,transparent);color:#BFD8FF}
+.mandos #mB[aria-pressed="true"]{background:color-mix(in srgb,var(--rojo) 30%,transparent);color:#FFCFCF}
+.mandos #mAtleta.oculto{display:none}
+.mandos select{
+  background:var(--panel-alto);color:var(--texto);border:1px solid var(--linea);
+  border-radius:7px;min-height:38px;padding:7px;flex-shrink:0;font-family:var(--cuerpo);font-size:14px;
+}
+.mSolo{display:flex;align-items:center;gap:3px;padding:2px 5px;border-radius:8px;
+  background:var(--sombra);flex-shrink:0}
+.mSolo.oculto{display:none}
+.mSolo button{min-height:30px;padding:5px 8px;font-size:11px;border:0;background:var(--panel-alto)}
+.mSolo .etq{font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.06em;
+  padding:0 3px}
+.mSolo .etq.a{color:#7FB0FF}
+.mSolo .etq.b{color:#FF9A9A}
+.mTc{font-family:var(--mono);font-size:15px;color:var(--ambar);font-variant-numeric:tabular-nums;
+  min-width:56px;text-align:center;flex-shrink:0}
+.jogFila{display:flex;align-items:center;gap:8px;margin-top:6px}
+.jogFila .mJog{flex:1}
+.objetivo{display:flex;gap:2px;background:var(--sombra);padding:2px;border-radius:7px;flex-shrink:0}
+.objetivo button{
+  font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  background:none;border:0;color:var(--tenue);padding:7px 10px;border-radius:5px;cursor:pointer;min-height:30px;
+}
+.objetivo button[aria-pressed="true"]{background:var(--panel-alto);color:var(--texto)}
+.objetivo button[data-obj="a"][aria-pressed="true"]{background:color-mix(in srgb,var(--azul) 30%,transparent);color:#BFD8FF}
+.objetivo button[data-obj="b"][aria-pressed="true"]{background:color-mix(in srgb,var(--rojo) 30%,transparent);color:#FFCFCF}
+.mJog{
+  position:relative;height:34px;border-radius:8px;background:#0B1119;
+  border:1px solid var(--linea);cursor:ew-resize;touch-action:none;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.mJogEje{position:absolute;left:50%;top:5px;bottom:5px;width:1px;background:var(--linea)}
+.mJogTxt{
+  font-family:var(--display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--tenue);pointer-events:none;font-variant-numeric:tabular-nums;
+}
+.mJogPuno{
+  position:absolute;left:50%;top:3px;bottom:3px;width:44px;margin-left:-22px;border-radius:7px;
+  background:color-mix(in srgb,var(--ambar) 30%,transparent);border:1px solid var(--ambar);
+  pointer-events:none;transition:margin-left .18s ease;
+}
+.mJog.activo .mJogPuno{transition:none}
+.mBarra{position:relative;height:10px;background:#0B1119;border-radius:5px;cursor:pointer;touch-action:none}
+.mAguja{position:absolute;top:0;bottom:0;width:3px;background:var(--ambar);border-radius:2px;left:0}
+.herramientas{
+  position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:8;
+  display:flex;flex-direction:column;gap:3px;padding:5px;border-radius:10px;
+  background:rgba(7,11,15,.82);border:1px solid var(--linea);
+  max-height:calc(100% - 20px);overflow:auto;scrollbar-width:none;
+}
+.herramientas::-webkit-scrollbar{display:none}
+.herramientas.oculta{display:none}
+.herramientas button{
+  width:38px;height:38px;border:0;border-radius:7px;background:none;color:var(--tenue);
+  font-size:16px;line-height:1;cursor:pointer;padding:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.herramientas button:hover{color:var(--texto);background:var(--panel-alto)}
+.herramientas button.on{background:var(--ambar);color:#0E141B}
+.herramientas #colorAnot{font-size:20px}
+.guias{position:absolute;inset:0;z-index:3;pointer-events:none;display:none}
+.guias.on{display:block}
+.guias i{position:absolute;background:rgba(245,184,65,.4)}
+.guias i.v{top:0;bottom:0;width:1px;left:50%}
+.guias i.h{left:0;right:0;height:1px;top:50%}
+.guias i.t{left:0;right:0;height:1px;top:33.33%;background:rgba(245,184,65,.18)}
+.guias i.b{left:0;right:0;height:1px;top:66.66%;background:rgba(245,184,65,.18)}
+
+/* vacío */
+.vacio{
+  position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:18px;text-align:center;padding:24px;
+}
+.vacio h2{font-family:var(--display);font-size:26px;font-weight:600;letter-spacing:.04em;margin:0;text-transform:uppercase}
+.vacio p{margin:0;color:var(--tenue);max-width:34ch;line-height:1.5}
+.cargas{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.vacio.parcial{
+  inset:auto 0 14px 0;flex-direction:row;gap:12px;padding:0;pointer-events:none;
+}
+.vacio.parcial h2{font-size:14px;letter-spacing:.09em;background:rgba(7,11,15,.8);
+  padding:9px 13px;border-radius:7px;color:var(--tenue);font-weight:600}
+.vacio.parcial p{display:none}
+.vacio.parcial .cargas{pointer-events:auto}
+.vacio.parcial .cargas .btn{background:rgba(7,11,15,.86)}
+.vacio.parcial .cargas .btn.hecho{display:none}
+
+/* ---------- botones ---------- */
+.btn{
+  font-family:var(--display);font-size:14px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--panel-alto);color:var(--texto);border:1px solid var(--linea);
+  padding:10px 14px;border-radius:7px;cursor:pointer;min-height:42px;display:inline-flex;
+  align-items:center;justify-content:center;gap:7px;
+}
+.btn:hover{border-color:#3A4C63}
+.btn:active{transform:translateY(1px)}
+.btn.a{border-color:var(--azul);color:var(--azul)}
+.btn.b{border-color:var(--rojo);color:var(--rojo)}
+.btn.on{background:var(--ambar);color:#0E141B;border-color:var(--ambar)}
+.btn.icono{padding:10px;min-width:44px;font-size:16px}
+.btn.play{min-width:62px;font-size:19px}
+:focus-visible{outline:2px solid var(--ambar);outline-offset:2px}
+
+/* ---------- transporte ---------- */
+.transporte{background:var(--panel);border-top:1px solid var(--linea);flex-shrink:0}
+.fila{display:flex;align-items:center;gap:10px;padding:10px 14px}
+.fila.principal{flex-wrap:nowrap;padding-bottom:8px}
+.fila.util{
+  gap:16px;padding-top:0;padding-bottom:10px;overflow-x:auto;flex-wrap:nowrap;
+  scrollbar-width:none;border-top:1px solid var(--linea);padding-top:9px;margin-top:2px;
+}
+.fila.util::-webkit-scrollbar{display:none}
+.fila.util .btn{min-height:38px;padding:8px 12px;font-size:13px}
+.grupo{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.grupo .et{
+  font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--tenue);margin-right:3px;
+}
+.fila .campo{flex-shrink:0}
+.fila .crono{margin-right:auto}
+.crono{
+  font-family:var(--mono);font-size:22px;font-weight:500;color:var(--ambar);
+  letter-spacing:-.01em;font-variant-numeric:tabular-nums;min-width:112px;
+}
+.crono small{font-size:12px;color:var(--tenue);letter-spacing:.06em}
+.sep{width:1px;height:26px;background:var(--linea)}
+.campo{display:flex;align-items:center;gap:7px;font-family:var(--display);font-size:13px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--tenue)}
+.campo select,.campo input[type=range]{accent-color:var(--ambar)}
+.campo select{
+  background:var(--panel-alto);color:var(--texto);border:1px solid var(--linea);
+  border-radius:6px;padding:8px 9px;font-family:var(--cuerpo);font-size:14px;min-height:40px;
+}
+input[type=range]{-webkit-appearance:none;appearance:none;height:26px;background:none;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--linea);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+  background:var(--texto);margin-top:-8px;box-shadow:0 1px 3px rgba(0,0,0,.5)}
+input[type=range]::-moz-range-track{height:4px;background:var(--linea);border-radius:2px}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radius:50%;background:var(--texto)}
+
+/* ---------- línea de tiempo doble ---------- */
+.tiempo{padding:4px 14px 12px}
+.regla{
+  position:relative;height:22px;cursor:pointer;touch-action:none;
+  border-bottom:1px solid var(--linea);margin-bottom:6px;
+}
+.regla b{
+  position:absolute;bottom:0;width:1px;height:7px;background:var(--linea);
+}
+.regla b em{position:absolute;bottom:9px;left:0;transform:translateX(-50%);font-style:normal;
+  font-family:var(--mono);font-size:10px;color:var(--tenue)}
+.carril{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.carril .nudge{display:flex;gap:3px}
+.nudge button{
+  background:var(--panel-alto);border:1px solid var(--linea);color:var(--tenue);
+  width:30px;height:30px;border-radius:5px;cursor:pointer;font-size:13px;line-height:1;padding:0;
+}
+.nudge button:hover{color:var(--texto)}
+.candado{font-size:12px}
+.candado.on{background:var(--ambar);border-color:var(--ambar)}
+.reloj-carril{
+  font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;
+  width:52px;text-align:right;flex-shrink:0;
+}
+.reloj-carril[data-clip="a"]{color:#BFD8FF}
+.reloj-carril[data-clip="b"]{color:#FFCFCF}
+.pista{cursor:ew-resize;position:relative;flex:1;height:30px;background:#0B1119;border-radius:5px;overflow:hidden;touch-action:none}
+.clip{
+  position:absolute;top:0;bottom:0;border-radius:4px;cursor:grab;
+  display:flex;align-items:center;padding:0 9px;overflow:hidden;
+  font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.07em;
+  text-transform:uppercase;white-space:nowrap;
+}
+.clip:active{cursor:grabbing}
+.clip[data-clip="a"]{background:color-mix(in srgb,var(--azul) 26%,#0B1119);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--azul) 70%,transparent);color:#BFD8FF}
+.clip[data-clip="b"]{background:color-mix(in srgb,var(--rojo) 26%,#0B1119);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--rojo) 70%,transparent);color:#FFCFCF}
+.clip.vacia{background:none;box-shadow:inset 0 0 0 1px var(--linea);color:var(--tenue);
+  left:0;right:0;justify-content:center;cursor:default}
+.aguja{position:absolute;top:0;bottom:0;width:2px;background:var(--ambar);pointer-events:none;z-index:3}
+.aguja.regla{height:100%;border:0;margin:0}
+.bucle{position:absolute;top:0;bottom:0;background:rgba(245,184,65,.13);
+  border-left:1px solid var(--ambar);border-right:1px solid var(--ambar);pointer-events:none;z-index:2}
+
+/* ---------- ajustes ---------- */
+.ajustes{
+  background:var(--panel);border-top:1px solid var(--linea);flex-shrink:0;
+  max-height:0;overflow:hidden;transition:max-height .25s ease;
+}
+.ajustes.abierto{max-height:min(62vh,430px);overflow-y:auto}
+.pestanas{
+  display:flex;gap:2px;padding:8px 14px 0;position:sticky;top:0;background:var(--panel);z-index:2;
+  border-bottom:1px solid var(--linea);
+}
+.pestanas button{
+  font-family:var(--display);font-size:14px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  background:none;border:0;border-bottom:2px solid transparent;color:var(--tenue);
+  padding:9px 14px;cursor:pointer;
+}
+.pestanas button[aria-pressed="true"]{color:var(--texto);border-bottom-color:var(--ambar)}
+.pestanas #cerrarPanel{margin-left:auto;border:1px solid var(--linea);border-radius:7px;
+  align-self:center;margin-bottom:6px}
+.seccion[hidden]{display:none}
+.sel{flex:1;background:var(--panel-alto);color:var(--texto);border:1px solid var(--linea);
+  border-radius:6px;padding:8px;min-height:40px;font-family:var(--cuerpo);font-size:14px}
+.rejilla{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px 22px;padding:14px}
+.control{display:flex;align-items:center;gap:11px}
+.control label{font-family:var(--display);font-size:13px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--tenue);width:74px;flex-shrink:0}
+.control input[type=range]{flex:1;min-width:0}
+.control output{font-family:var(--mono);font-size:12px;color:var(--texto);width:46px;text-align:right;
+  font-variant-numeric:tabular-nums}
+.titulo{
+  grid-column:1/-1;font-family:var(--display);font-size:13px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--tenue);display:flex;align-items:center;gap:10px;
+}
+.titulo::after{content:"";flex:1;height:1px;background:var(--linea)}
+
+.capa{
+  position:fixed;inset:0;z-index:60;background:rgba(7,11,15,.86);
+  display:flex;align-items:center;justify-content:center;padding:16px;
+}
+.capa[hidden]{display:none}
+.ficha{
+  background:var(--panel);border:1px solid var(--linea);border-radius:12px;
+  width:min(940px,100%);max-height:92vh;display:flex;flex-direction:column;overflow:hidden;
+}
+.ficha header{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--linea)}
+.ficha h3{margin:0;font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;flex:1}
+.ficha .opciones{padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 20px}
+.ficha .salida{
+  flex:1;min-height:180px;background:#070B0F;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:auto;padding:8px;
+}
+.ficha canvas{max-width:100%;max-height:56vh;display:block}
+.progreso{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(7,11,15,.9);font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--ambar);
+}
+.progreso[hidden]{display:none}
+.ficha footer{display:flex;gap:10px;padding:12px 14px;border-top:1px solid var(--linea)}
+.nota{grid-column:1/-1;margin:0;color:var(--tenue);font-size:13px;line-height:1.5;max-width:70ch}
+.nota b{color:var(--ambar);font-weight:600;font-family:var(--mono);font-size:12px}
+.aviso{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(14px);
+  background:var(--panel-alto);border:1px solid var(--linea);border-left:3px solid var(--ambar);
+  padding:11px 16px;border-radius:7px;font-size:14px;z-index:50;
+  opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:88vw;
+}
+.aviso.ver{opacity:1;transform:translateX(-50%) translateY(0)}
+input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0 0 0 0);pointer-events:none}
+.cargadores{display:flex;gap:6px}
+.cargadores .btn{min-height:36px;padding:7px 12px;font-size:13px}
+.cargadores .btn.cargado{background:currentColor}
+.cargadores .btn.cargado::before{content:"✓ "}
+.cargadores .btn.a.cargado{color:var(--azul);background:color-mix(in srgb,var(--azul) 22%,transparent)}
+.cargadores .btn.b.cargado{color:var(--rojo);background:color-mix(in srgb,var(--rojo) 22%,transparent)}
+
+@media (max-width:720px){
+  .marca span{display:none}
+  .fila{gap:8px;padding:9px 10px}
+  .fila.util{gap:12px;padding-top:8px}
+  .grupo .et{display:none}
+  .grupo{gap:4px}
+  .fila.util .btn{padding:8px 10px;font-size:12px}
+  .barra{padding:8px 10px;gap:8px}
+  .cargadores .btn{padding:7px 9px;font-size:12px}
+  .modos button{padding:7px 10px;font-size:13px}
+  .crono{font-size:18px;min-width:92px}
+  .campo.oculta-movil{display:none}
+  .tiempo{padding:4px 10px 10px}
+}
+/* pantalla completa: solo la imagen, con los mandos flotando encima */
+body.inmersivo .barra,body.inmersivo .transporte,body.inmersivo .ajustes{display:none}
+body.inmersivo .escena{position:fixed;inset:0;z-index:100}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="barra">
+  <div class="marca">Comparador <span>· Entrenador Andino</span></div>
+  <div class="cargadores">
+    <button class="btn a" id="barraA">Video A</button>
+    <button class="btn b" id="barraB">Video B</button>
+  </div>
+  <div class="modos" role="group" aria-label="Modo de análisis">
+    <button id="mUno" aria-pressed="true">Individual</button>
+    <button id="mDiv" aria-pressed="false">Dividida</button>
+    <button id="mSup" aria-pressed="false">Superpuesta</button>
+  </div>
+</header>
+
+<main class="escena" id="escena">
+  <div class="lienzo vertical" id="lienzo">
+    <div class="marco" data-clip="a" data-sel="1">
+      <video id="vA" playsinline muted preload="auto"></video>
+      <div class="dorsal" id="nomA">A · sin video</div>
+    </div>
+    <div class="marco" data-clip="b" data-sel="0">
+      <video id="vB" playsinline muted preload="auto"></video>
+      <div class="dorsal" id="nomB">B · sin video</div>
+    </div>
+  </div>
+  <div class="guias" id="guias"><i class="v"></i><i class="h"></i><i class="t"></i><i class="b"></i></div>
+  <canvas class="pizarra" id="pizarra"></canvas>
+  <div class="mandos" id="mandos">
+    <div class="mFila">
+      <div class="modos" id="mAtleta">
+        <button id="mA" aria-pressed="true">A</button>
+        <button id="mB" aria-pressed="false">B</button>
+      </div>
+      <div class="mSolo" id="mSolo">
+        <span class="etq a">A</span>
+        <button id="mAmenos" title="Atrasar solo A">◀</button>
+        <button id="mAmas" title="Adelantar solo A">▶</button>
+        <span class="etq b">B</span>
+        <button id="mBmenos" title="Atrasar solo B">◀</button>
+        <button id="mBmas" title="Adelantar solo B">▶</button>
+      </div>
+      <button id="mAtras" title="Cuadro anterior, los dos">◀|</button>
+      <button id="mPlay" class="grande" title="Reproducir">▶</button>
+      <button id="mAdelante" title="Cuadro siguiente">|▶</button>
+      <span class="mTc" id="mTc">0.00</span>
+      <select id="mVel" title="Velocidad">
+        <option value="1">1×</option>
+        <option value="0.5">1/2</option>
+        <option value="0.25">1/4</option>
+        <option value="0.1">1/10</option>
+      </select>
+      <button id="mModo" title="Modo de comparación">Individual</button>
+      <button id="mGuias" title="Guías">Guías</button>
+      <button id="mFormas" title="Formas y ángulos">Formas</button>
+      <button id="mSalir" title="Salir de pantalla completa">⛶</button>
+    </div>
+    <div class="mBarra" id="mBarra"><div class="mAguja" id="mAguja"></div></div>
+    <div class="jogFila">
+      <div class="objetivo">
+        <button data-obj="ambos" aria-pressed="true">Ambos</button>
+        <button data-obj="a">A</button>
+        <button data-obj="b">B</button>
+      </div>
+    <div class="mJog" id="mJog" title="Lanzadera: arrastra y suelta para volver al centro">
+      <span class="mJogEje"></span>
+      <span class="mJogTxt" id="mJogTxt">Lanzadera</span>
+      <span class="mJogPuno" id="mJogPuno"></span>
+    </div>
+    </div>
+  </div>
+  <div class="herramientas" id="herramientas">
+    <button data-tool="mano" class="on" title="Navegar (Esc)">✋</button>
+    <button data-tool="linea" title="Línea con ángulo">╱</button>
+    <button data-tool="angulo" title="Ángulo de 3 puntos">∠</button>
+    <button data-tool="plomada" title="Vertical de referencia">⊥</button>
+    <button data-tool="rect" title="Rectángulo">▭</button>
+    <button data-tool="circulo" title="Círculo">◯</button>
+    <button data-tool="libre" title="Mano alzada">✎</button>
+    <button id="colorAnot" title="Color del trazo">●</button>
+    <button id="deshacer" title="Deshacer">↶</button>
+    <button id="borrarTodo" title="Borrar todo">⌫</button>
+  </div>
+
+  <div class="vacio" id="vacio">
+    <h2 id="faltante">Compara dos bajadas</h2>
+    <p id="pista-vacio">Carga el video de cada esquiador. Después ajusta la sincronía para que ambos entren a la puerta en el mismo instante.</p>
+    <div class="cargas">
+      <button class="btn a" id="cargaA">Video atleta A</button>
+      <button class="btn b" id="cargaB">Video atleta B</button>
+    </div>
+  </div>
+</main>
+
+<section class="transporte">
+  <div class="fila principal">
+    <div class="modos" id="cambiaAtleta" role="group" aria-label="Atleta en pantalla">
+      <button id="verA" aria-pressed="true">A</button>
+      <button id="verB" aria-pressed="false">B</button>
+    </div>
+    <button class="btn icono" id="atras" title="Cuadro anterior (←)">◀|</button>
+    <button class="btn play" id="play" title="Espacio">▶</button>
+    <button class="btn icono" id="adelante" title="Cuadro siguiente (→)">|▶</button>
+    <div class="crono"><span id="tc">0.00</span><small> s</small></div>
+    <div class="campo">Vel
+      <select id="vel">
+        <option value="1">1×</option>
+        <option value="0.5">1/2</option>
+        <option value="0.25">1/4</option>
+        <option value="0.1">1/10</option>
+      </select>
+    </div>
+    <div class="campo oculta-movil">Cuadros
+      <select id="fps">
+        <option value="30">30</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="60">60</option>
+      </select>
+    </div>
+    <button class="btn icono" id="pantalla" title="Pantalla completa">⛶</button>
+  </div>
+
+  <div class="fila util">
+    <div class="grupo">
+      <span class="et">Bucle</span>
+      <button class="btn" id="marcaIn"  title="Marcar el inicio del tramo">Entrada</button>
+      <button class="btn" id="marcaOut" title="Marcar el fin del tramo">Salida</button>
+      <button class="btn" id="bucle" title="Repetir el tramo marcado">Repetir</button>
+    </div>
+    <div class="grupo">
+      <span class="et">Análisis</span>
+      <button class="btn" id="verGuias" title="Guías sobre la imagen">Guías</button>
+      <button class="btn" id="verFormas" title="Formas y ángulos">Formas</button>
+    </div>
+    <div class="grupo">
+      <span class="et">Ajustes</span>
+      <button class="btn icono" id="resetBarra" title="Reiniciar sincronía">↺</button>
+      <button class="btn" id="verEncuadre" title="Igualar los encuadres">Encuadre</button>
+      <button class="btn" id="panel" title="Todos los ajustes">Ajuste</button>
+    </div>
+  </div>
+
+  <div class="tiempo">
+    <div class="regla" id="regla"><div class="aguja" id="agujaR" style="left:0"></div></div>
+    <div class="carril" id="carrilA">
+      <div class="nudge">
+        <button data-nudge="a" data-dir="-1" title="Atrasar A un cuadro">◀</button>
+        <button data-nudge="a" data-dir="1" title="Adelantar A un cuadro">▶</button>
+        <button class="candado" data-lock="a" title="Fijar A para no moverlo sin querer">🔓</button>
+      </div>
+      <div class="pista" id="pistaA">
+        <div class="bucle" id="bucleA" hidden></div>
+        <div class="clip vacia" data-clip="a" id="clipA">Atleta A</div>
+        <div class="aguja" id="agujaA" style="left:0"></div>
+      </div>
+      <span class="reloj-carril" data-clip="a" id="relojA">—</span>
+    </div>
+    <div class="carril" id="carrilB">
+      <div class="nudge">
+        <button data-nudge="b" data-dir="-1" title="Atrasar B un cuadro">◀</button>
+        <button data-nudge="b" data-dir="1" title="Adelantar B un cuadro">▶</button>
+        <button class="candado" data-lock="b" title="Fijar B para no moverlo sin querer">🔓</button>
+      </div>
+      <div class="pista" id="pistaB">
+        <div class="bucle" id="bucleB" hidden></div>
+        <div class="clip vacia" data-clip="b" id="clipB">Atleta B</div>
+        <div class="aguja" id="agujaB" style="left:0"></div>
+      </div>
+      <span class="reloj-carril" data-clip="b" id="relojB">—</span>
+    </div>
+    <div class="jogFila">
+      <div class="objetivo">
+        <button data-obj="ambos" aria-pressed="true">Ambos</button>
+        <button data-obj="a">A</button>
+        <button data-obj="b">B</button>
+      </div>
+      <div class="mJog" id="jog2" title="Lanzadera: arrastra sin soltar">
+        <span class="mJogEje"></span>
+        <span class="mJogTxt" id="jogTxt2">Lanzadera</span>
+        <span class="mJogPuno" id="jogPuno2"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ajustes" id="ajustes">
+  <div class="pestanas" role="tablist">
+    <button data-sec="encuadre" aria-pressed="true">Encuadre</button>
+    <button data-sec="sincronia" aria-pressed="false">Sincronía</button>
+    <button data-sec="composicion" aria-pressed="false">Composición</button>
+    <button class="btn icono" id="cerrarPanel" title="Cerrar el panel">✕</button>
+  </div>
+
+  <div class="rejilla seccion" data-sec="encuadre">
+    <div class="titulo">
+      Ajustando
+      <button class="btn a" id="selA" style="min-height:34px;padding:6px 12px">A</button>
+      <button class="btn b" id="selB" style="min-height:34px;padding:6px 12px">B</button>
+    </div>
+    <div class="control">
+      <label>Igualar</label>
+      <button class="btn" id="autoEnc" style="flex:1">Encuadre automático</button>
+    </div>
+    <div class="control">
+      <label>A mano</label>
+      <button class="btn" id="calibrar" style="flex:1">Igualar por 2 puntos</button>
+      <button class="btn" id="copiarEnc" style="flex:1">Copiar encuadre</button>
+    </div>
+    <p class="nota" id="notaEnc">Rueda del mouse: adelanta o retrocede. Ctrl + rueda: acerca donde apuntas. Arrastra sobre la imagen para reencuadrar. Doble clic: reinicia ese video.</p>
+    <div class="control"><label for="zoom">Zoom</label>
+      <input type="range" id="zoom" min="25" max="500" value="100"><output id="zoomV">100%</output></div>
+    <div class="control"><label for="posX">Horizontal</label>
+      <input type="range" id="posX" min="-50" max="50" value="0"><output id="posXV">0</output></div>
+    <div class="control"><label for="posY">Vertical</label>
+      <input type="range" id="posY" min="-50" max="50" value="0"><output id="posYV">0</output></div>
+    <div class="control"><label for="giro">Giro</label>
+      <input type="range" id="giro" min="-30" max="30" value="0" step="0.5"><output id="giroV">0°</output></div>
+    <div class="control">
+      <label>Cambiar</label>
+      <button class="btn" id="espejo" style="flex:1">Espejo</button>
+      <button class="btn" id="reset" style="flex:1">Reiniciar</button>
+    </div>
+  </div>
+
+  <div class="rejilla seccion" data-sec="sincronia" hidden>
+    <div class="control">
+      <label>Referencia</label>
+      <button class="btn a" id="refA" style="flex:1">Marcar A</button>
+      <button class="btn b" id="refB" style="flex:1">Marcar B</button>
+    </div>
+    <div class="control">
+      <label>Fin tramo</label>
+      <button class="btn a" id="finA" style="flex:1">Marcar A</button>
+      <button class="btn b" id="finB" style="flex:1">Marcar B</button>
+    </div>
+    <div class="control">
+      <label>Automático</label>
+      <button class="btn" id="igualarPartida" style="flex:1">Igualar partida</button>
+      <button class="btn" id="autoSync" style="flex:1">Alinear por ritmo</button>
+    </div>
+    <div class="control">
+      <label>Volver</label>
+      <button class="btn" id="resetSync" style="flex:1">Reiniciar sincronía</button>
+    </div>
+    <p class="nota" id="notaSync">Pausa cada video en el mismo instante y marca la referencia de los dos. Con un segundo punto por atleta, la app iguala también el ritmo.</p>
+  </div>
+
+  <div class="rejilla seccion" data-sec="composicion" hidden>
+    <div class="control" id="ctrOpacidad">
+      <label for="opac">Mezcla</label>
+      <input type="range" id="opac" min="0" max="100" value="50">
+      <output id="opacV">50%</output>
+    </div>
+    <div class="control" id="ctrFusion">
+      <label for="fusion">Fusión</label>
+      <select id="fusion" class="sel">
+        <option value="normal">Normal</option>
+        <option value="difference">Diferencia</option>
+        <option value="screen">Aclarar</option>
+      </select>
+    </div>
+    <div class="control" id="ctrReparto">
+      <label for="reparto">Reparto</label>
+      <input type="range" id="reparto" min="20" max="80" value="50">
+      <output id="repartoV">50%</output>
+    </div>
+    <div class="control">
+      <label for="encaje">Encaje</label>
+      <select id="encaje" class="sel">
+        <option value="contain">Imagen completa</option>
+        <option value="cover">Llenar el marco</option>
+      </select>
+    </div>
+    <div class="control" id="ctrCorte">
+      <label for="corte">Corte</label>
+      <select id="corte" class="sel">
+        <option value="vertical">Lado a lado</option>
+        <option value="horizontal">Uno sobre otro</option>
+      </select>
+    </div>
+    <div class="control">
+      <label>Videos</label>
+      <button class="btn a" id="cargaA2" style="flex:1">Cargar A</button>
+      <button class="btn b" id="cargaB2" style="flex:1">Cargar B</button>
+    </div>
+  </div>
+</section>
+
+<input type="file" id="fileA" accept="video/*,.mp4,.mov,.m4v,.webm">
+<input type="file" id="fileB" accept="video/*,.mp4,.mov,.m4v,.webm">
+<div class="aviso" id="aviso"></div>
+
+<script>
+"use strict";
+const $ = (id) => {
+  const el = document.getElementById(id);
+  if(!el) console.warn(`[comparador] no existe #${id}`);
+  return el;
+};
+function al(id, evento, fn, opciones){
+  const el = $(id);
+  if(el) el.addEventListener(evento, fn, opciones);
+}
+
+const clips = {
+  a: { el:$("vA"), off:0, esc:1, bloq:false, ref:null, fin:null, dur:0, listo:false, nombre:"", zoom:100, x:0, y:0, giro:0, espejo:false },
+  b: { el:$("vB"), off:0, esc:1, bloq:false, ref:null, fin:null, dur:0, listo:false, nombre:"", zoom:100, x:0, y:0, giro:0, espejo:false }
+};
+const estado = {
+  modo:"individual", corte:"vertical", sel:"a", fps:30, vel:1,
+  reproduciendo:false, t:0, entrada:null, salida:null, bucle:false, guias:false
+};
+
+/* ---------- avisos ---------- */
+let avisoT;
+function avisar(txt){
+  const a = $("aviso"); a.textContent = txt; a.classList.add("ver");
+  clearTimeout(avisoT); avisoT = setTimeout(()=>a.classList.remove("ver"), 2600);
+}
+
+/* ---------- carga de archivos ---------- */
+function conectar(inputId, botones, id){
+  const input = $(inputId);
+  botones.forEach(b => al(b, "click", ()=>input.click()));
+  input.addEventListener("change", (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f){ avisar("No llegó ningún archivo."); return; }
+    const c = clips[id];
+    if(c.el.src) URL.revokeObjectURL(c.el.src);
+    c.bloq = false;
+    c.listo = false; c.nombre = f.name;
+    c.el.onerror = () => avisar(`No se pudo leer ${f.name}. Si es .MOV del iPad, expórtalo como MP4 (H.264).`);
+    c.el.onloadedmetadata = () => {
+      c.dur = c.el.duration || 0; c.listo = true;
+      c.ancho = c.el.videoWidth || 16; c.alto = c.el.videoHeight || 9;
+      $("nom"+id.toUpperCase()).textContent = id.toUpperCase()+" · "+f.name.replace(/\.[^.]+$/,"").slice(0,26);
+      $("barra"+id.toUpperCase()).classList.add("cargado");
+      if(!clips[id === "a" ? "b" : "a"].listo) seleccionar(id);
+      transformar(id); autoCorte(); aplicarModo();
+      irA(0); dibujar();
+      avisar(`${f.name} · ${c.dur.toFixed(1)} s · ${(f.size/1048576).toFixed(0)} MB`);
+    };
+    c.el.src = URL.createObjectURL(f);
+    c.el.load();
+    input.value = "";
+  });
+}
+conectar("fileA", ["cargaA","cargaA2","barraA"], "a");
+conectar("fileB", ["cargaB","cargaB2","barraB"], "b");
+
+/* ---------- dominio temporal ---------- */
+/* tiempo del clip para un instante maestro, y sus extremos en la línea maestra */
+const aClip = (c, t) => c.off + t*c.esc;
+const iniClip = (c) => -c.off/c.esc;
+const finClip = (c) => (c.dur - c.off)/c.esc;
+
+/* clips que participan según el modo: individual usa uno solo */
+function activos(){
+  if(estado.modo === "individual"){
+    if(clips[estado.sel].listo) return [estado.sel];
+    const otro = estado.sel === "a" ? "b" : "a";
+    return clips[otro].listo ? [otro] : [];
+  }
+  return ["a","b"].filter(k => clips[k].listo);
+}
+function dominio(){
+  const ini = [], fin = [];
+  for(const k of activos()){ const c = clips[k]; ini.push(iniClip(c)); fin.push(finClip(c)); }
+  if(!ini.length) return {ini:0, fin:10};
+  return { ini: Math.min(...ini), fin: Math.max(...fin) };
+}
+function limites(){
+  const ini = [], fin = [];
+  for(const k of activos()){ const c = clips[k]; ini.push(iniClip(c)); fin.push(finClip(c)); }
+  if(!ini.length) return {min:0, max:0};
+  return { min: Math.max(...ini), max: Math.min(...fin) };
+}
+
+/* ---------- transporte ---------- */
+function irA(t, forzar){
+  const L = limites();
+  estado.t = Math.min(Math.max(t, L.min), Math.max(L.min, L.max));
+  for(const k of activos()){
+    const c = clips[k];
+    const destino = Math.min(Math.max(aClip(c, estado.t), 0), c.dur - 0.001);
+    if(forzar || Math.abs(c.el.currentTime - destino) > 0.06) c.el.currentTime = destino;
+  }
+}
+function reproducir(){
+  const act = activos();
+  if(!act.length){ avisar("Carga un video para empezar."); return; }
+  const L = limites();
+  if(estado.t >= L.max - 0.05) irA(estado.bucle && estado.entrada!==null ? estado.entrada : L.min, true);
+  estado.reproduciendo = true; $("play").textContent = "❚❚";
+  for(const k of ["a","b"]) if(clips[k].listo && !act.includes(k)) clips[k].el.pause();
+  for(const k of act){
+    const c = clips[k];
+    c.el.playbackRate = Math.min(Math.max(estado.vel * c.esc, 0.0625), 16);
+    c.el.play().catch(()=>{ estado.reproduciendo = false; $("play").textContent = "▶";
+      avisar("El navegador bloqueó la reproducción. Toca la pantalla y vuelve a intentar."); });
+  }
+}
+function pausar(){
+  estado.reproduciendo = false; $("play").textContent = "▶";
+  for(const k of ["a","b"]) if(clips[k].listo) clips[k].el.pause();
+}
+al("play", "click", ()=> estado.reproduciendo ? pausar() : reproducir());
+al("atras", "click", ()=>{ pausar(); irA(estado.t - 1/estado.fps, true); dibujar(); });
+al("adelante", "click", ()=>{ pausar(); irA(estado.t + 1/estado.fps, true); dibujar(); });
+al("vel", "change", e=>{
+  estado.vel = parseFloat(e.target.value);
+  for(const k of ["a","b"]) if(clips[k].listo) clips[k].el.playbackRate = Math.min(Math.max(estado.vel * clips[k].esc, 0.0625), 16);
+});
+al("fps", "change", e=> estado.fps = parseInt(e.target.value,10));
+
+/* ---------- bucle ---------- */
+al("marcaIn", "click", ()=>{ estado.entrada = estado.t; avisar("Entrada del bucle marcada."); dibujar(); });
+al("marcaOut", "click", ()=>{ estado.salida = estado.t; avisar("Salida del bucle marcada."); dibujar(); });
+al("bucle", "click", ()=>{
+  if(estado.entrada===null || estado.salida===null){ avisar("Marca entrada y salida antes de activar el bucle."); return; }
+  estado.bucle = !estado.bucle; $("bucle").classList.toggle("on", estado.bucle);
+});
+
+/* ---------- reloj ---------- */
+function reloj(){
+  if(estado.reproduciendo){
+    const act = activos();
+    const lider = act.length ? clips[act[0]] : null;
+    if(lider){
+      estado.t = (lider.el.currentTime - lider.off)/lider.esc;
+      const otro = act.length > 1 ? clips[act[1]] : null;
+      if(otro){
+        const destino = aClip(otro, estado.t);
+        if(destino < 0 || destino > otro.dur){ otro.el.pause(); }
+        else{
+          if(otro.el.paused) otro.el.play().catch(()=>{});
+          if(Math.abs(otro.el.currentTime - destino) > 0.09) otro.el.currentTime = destino;
+        }
+      }
+    }
+    const L = limites();
+    if(estado.bucle && estado.salida!==null && estado.t >= estado.salida){ irA(estado.entrada, true); }
+    else if(estado.t >= L.max - 0.03){ pausar(); irA(L.max, true); }
+  }
+  dibujar();
+  requestAnimationFrame(reloj);
+}
+requestAnimationFrame(reloj);
+
+/* ---------- dibujo ---------- */
+function pct(t){ const d = dominio(); const span = Math.max(d.fin - d.ini, .001); return ((t - d.ini)/span)*100; }
+function dibujar(){
+  $("tc").textContent = estado.t.toFixed(2);
+  const p = pct(estado.t)+"%";
+  $("agujaR").style.left = p; $("agujaA").style.left = p; $("agujaB").style.left = p;
+
+  for(const k of ["a","b"]){
+    const c = clips[k], barra = $("clip"+k.toUpperCase());
+    if(c.listo){
+      barra.classList.remove("vacia");
+      barra.style.left = pct(iniClip(c))+"%";
+      barra.style.right = (100 - pct(finClip(c)))+"%";
+      const etq = [];
+      if(Math.abs(c.off) > 0.004) etq.push((c.off>0?"+":"")+c.off.toFixed(2)+" s");
+      if(Math.abs(c.esc-1) > 0.01) etq.push("×"+c.esc.toFixed(2));
+      etq.push(c.nombre.replace(/\.[^.]+$/,"").slice(0,20) || k.toUpperCase());
+      barra.textContent = etq.join(" · ");
+    }
+    const z = $("bucle"+k.toUpperCase());
+    if(estado.entrada!==null && estado.salida!==null && estado.salida>estado.entrada){
+      z.hidden = false; z.style.left = pct(estado.entrada)+"%"; z.style.right = (100-pct(estado.salida))+"%";
+    } else z.hidden = true;
+  }
+  for(const k of ["a","b"]){
+    const c = clips[k], r = $("reloj"+k.toUpperCase());
+    r.textContent = c.listo ? c.el.currentTime.toFixed(2) : "—";
+  }
+  marcasRegla();
+  if(typeof pintarAnotaciones === "function") pintarAnotaciones();
+  if(typeof refrescarMandos === "function") refrescarMandos();
+}
+let ultimoDominio = "";
+function marcasRegla(){
+  const d = dominio(), clave = d.ini.toFixed(2)+"/"+d.fin.toFixed(2);
+  if(clave === ultimoDominio) return;
+  ultimoDominio = clave;
+  const regla = $("regla");
+  [...regla.querySelectorAll("b")].forEach(n=>n.remove());
+  const span = d.fin - d.ini; if(span <= 0) return;
+  const paso = span > 60 ? 10 : span > 20 ? 5 : span > 8 ? 2 : 1;
+  for(let t = Math.ceil(d.ini/paso)*paso; t <= d.fin; t += paso){
+    const b = document.createElement("b");
+    b.style.left = pct(t)+"%";
+    b.innerHTML = "<em>"+t.toFixed(0)+"</em>";
+    regla.appendChild(b);
+  }
+}
+
+/* ---------- arrastre: regla y clips ---------- */
+function tDesdeX(clientX, elemento){
+  const r = elemento.getBoundingClientRect(), d = dominio();
+  const f = Math.min(Math.max((clientX - r.left)/r.width, 0), 1);
+  return d.ini + f*(d.fin - d.ini);
+}
+function arrastrable(elemento, alMover, alSoltar){
+  let activo = false;
+  const mover = (ev)=>{ if(!activo) return; ev.preventDefault();
+    alMover(ev.touches ? ev.touches[0].clientX : ev.clientX); };
+  const soltar = ()=>{ if(!activo) return; activo = false; alSoltar && alSoltar();
+    window.removeEventListener("pointermove", mover); window.removeEventListener("pointerup", soltar); };
+  elemento.addEventListener("pointerdown", (ev)=>{
+    activo = true; ev.preventDefault();
+    alMover(ev.clientX);
+    window.addEventListener("pointermove", mover); window.addEventListener("pointerup", soltar);
+  });
+}
+arrastrable($("regla"), (x)=>{ pausar(); irA(tDesdeX(x, $("regla")), true); dibujar(); });
+
+/* cada carril mueve su propio video bajo la aguja; el otro no se entera */
+for(const k of ["a","b"]){
+  const pista = $("pista"+k.toUpperCase());
+  let inicioX = 0, offInicial = 0, tomado = false;
+  pista.addEventListener("pointerdown", (ev)=>{
+    if(!clips[k].listo){ avisar("Carga primero el video "+k.toUpperCase()+"."); return; }
+    if(clips[k].bloq){ avisar("El video "+k.toUpperCase()+" está fijado. Toca el candado para soltarlo."); return; }
+    tomado = true; inicioX = ev.clientX; offInicial = clips[k].off;
+    pista.setPointerCapture(ev.pointerId); pausar(); ev.stopPropagation();
+  });
+  pista.addEventListener("pointermove", (ev)=>{
+    if(!tomado) return;
+    const d = dominio(), r = pista.getBoundingClientRect();
+    const delta = ((ev.clientX - inicioX)/r.width)*(d.fin - d.ini);
+    clips[k].off = offInicial - delta*clips[k].esc;
+    irA(estado.t, true); dibujar();
+  });
+  const soltar = ()=>{ tomado = false; };
+  pista.addEventListener("pointerup", soltar);
+  pista.addEventListener("pointercancel", soltar);
+}
+document.querySelectorAll("[data-lock]").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    const k = b.dataset.lock;
+    clips[k].bloq = !clips[k].bloq;
+    b.textContent = clips[k].bloq ? "🔒" : "🔓";
+    b.classList.toggle("on", clips[k].bloq);
+    avisar("Video "+k.toUpperCase()+(clips[k].bloq ? " fijado." : " libre."));
+  });
+});
+document.querySelectorAll("[data-nudge]").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    const k = b.dataset.nudge, dir = parseInt(b.dataset.dir,10);
+    if(!clips[k].listo){ avisar("Carga primero el video "+k.toUpperCase()+"."); return; }
+    pausar();
+    clips[k].off += (dir/estado.fps)*clips[k].esc;
+    irA(estado.t, true); dibujar();
+    avisar("Desfase "+k.toUpperCase()+": "+(clips[k].off>0?"+":"")+clips[k].off.toFixed(2)+" s");
+  });
+});
+
+/* ---------- sincronía ---------- */
+function aplicarMarcas(){
+  const A = clips.a, B = clips.b;
+  if(A.ref !== null) A.off = A.ref;
+  if(B.ref !== null) B.off = B.ref;
+  A.esc = 1; B.esc = 1;
+  if(A.ref !== null && A.fin !== null && B.ref !== null && B.fin !== null){
+    const tramoA = A.fin - A.ref, tramoB = B.fin - B.ref;
+    if(tramoA > 0.2 && tramoB > 0.2) B.esc = Math.min(Math.max(tramoB/tramoA, 0.25), 4);
+  }
+  irA(0, true); dibujar(); notaSync();
+}
+function notaSync(){
+  const n = $("notaSync"), A = clips.a, B = clips.b, partes = [];
+  for(const [k,c] of [["A",A],["B",B]])
+    if(c.ref !== null) partes.push(k+" ref "+c.ref.toFixed(2)+" s"+(c.fin!==null ? " → "+c.fin.toFixed(2)+" s" : ""));
+  if(Math.abs(B.esc-1) > 0.01) partes.push("ritmo B ×"+B.esc.toFixed(2));
+  n.innerHTML = partes.length ? "<b>"+partes.join(" · ")+"</b>"
+    : "Pausa cada video en el mismo instante y marca la referencia de los dos. Con un segundo punto por atleta, la app iguala también el ritmo.";
+}
+function marcar(k, cual){
+  const c = clips[k];
+  if(!c.listo){ avisar("Carga primero el video "+k.toUpperCase()+"."); return; }
+  pausar();
+  c[cual] = c.el.currentTime;
+  if(cual === "ref" && c.fin !== null && c.fin <= c.ref) c.fin = null;
+  aplicarMarcas();
+  avisar((cual === "ref" ? "Referencia " : "Fin de tramo ")+k.toUpperCase()+": "+c[cual].toFixed(2)+" s");
+}
+al("refA", "click", ()=>marcar("a","ref"));
+al("refB", "click", ()=>marcar("b","ref"));
+al("finA", "click", ()=>marcar("a","fin"));
+al("finB", "click", ()=>marcar("b","fin"));
+
+function reiniciarSync(){
+  pausar();
+  for(const k of ["a","b"]){ const c = clips[k];
+    c.off = 0; c.esc = 1; c.ref = null; c.fin = null;
+    if(c.listo) c.el.playbackRate = estado.vel; }
+  estado.entrada = null; estado.salida = null; estado.bucle = false;
+  $("bucle").classList.remove("on");
+  irA(0, true); dibujar(); notaSync();
+  avisar("Sincronía reiniciada. Los dos videos parten de cero.");
+}
+al("resetSync", "click", reiniciarSync);
+al("resetBarra", "click", reiniciarSync);
+
+function esperarSeek(v, t){
+  return new Promise(res=>{
+    let hecho = false;
+    const fin = ()=>{ if(hecho) return; hecho = true; v.removeEventListener("seeked", fin); res(); };
+    v.addEventListener("seeked", fin);
+    try{ v.currentTime = t; }catch(e){ fin(); }
+    setTimeout(fin, 500);
+  });
+}
+async function señal(c, paso, avance){
+  const cv = document.createElement("canvas"); cv.width = 48; cv.height = 27;
+  const cx = cv.getContext("2d", { willReadFrequently:true });
+  const n = Math.min(Math.floor(c.dur/paso), 170);
+  const s = []; let previo = null;
+  for(let i=0; i<n; i++){
+    await esperarSeek(c.el, i*paso);
+    let d;
+    try{ cx.drawImage(c.el, 0, 0, cv.width, cv.height); d = cx.getImageData(0,0,cv.width,cv.height).data; }
+    catch(e){ return null; }
+    const g = new Float32Array(cv.width*cv.height);
+    for(let q=0, j=0; j<d.length; j+=4, q++) g[q] = d[j]*0.299 + d[j+1]*0.587 + d[j+2]*0.114;
+    if(previo){ let acc = 0; for(let q=0; q<g.length; q++) acc += Math.abs(g[q]-previo[q]); s.push(acc/g.length); }
+    else s.push(0);
+    previo = g;
+    if(i % 6 === 0) avance(i/n);
+  }
+  return s;
+}
+function normalizar(s){
+  const m = s.reduce((a,b)=>a+b,0)/s.length;
+  const sd = Math.sqrt(s.reduce((a,b)=>a+(b-m)*(b-m),0)/s.length) || 1;
+  return s.map(v => (v-m)/sd);
+}
+function mejorDesfase(sa, sb){
+  const A = normalizar(sa), B = normalizar(sb);
+  const rango = Math.max(A.length, B.length) - 3;
+  let mejor = 0, tope = -Infinity;
+  for(let d = -rango; d <= rango; d++){
+    let acc = 0, n = 0;
+    for(let j=0; j<B.length; j++){ const i = j+d;
+      if(i < 0 || i >= A.length) continue;
+      acc += A[i]*B[j]; n++; }
+    if(n < 10) continue;
+    const r = acc/n;
+    if(r > tope){ tope = r; mejor = d; }
+  }
+  return { d: mejor, r: tope };
+}
+let analizando = false;
+async function alinearSolo(){
+  if(analizando) return;
+  if(!(clips.a.listo && clips.b.listo)){ avisar("Necesito los dos videos para alinearlos."); return; }
+  analizando = true; pausar();
+  $("autoSync").classList.add("on"); $("autoSync").textContent = "Analizando…";
+  const paso = 0.1;
+  const sa = await señal(clips.a, paso, p => avisar("Leyendo el video A… "+Math.round(p*100)+"%"));
+  const sb = sa ? await señal(clips.b, paso, p => avisar("Leyendo el video B… "+Math.round(p*100)+"%")) : null;
+  $("autoSync").classList.remove("on"); $("autoSync").textContent = "Alinear solo";
+  analizando = false;
+  if(!sa || !sb){ avisar("No pude leer los fotogramas. Usa las marcas de referencia."); return; }
+  const { d, r } = mejorDesfase(sa, sb);
+  clips.a.esc = 1; clips.b.esc = 1;
+  clips.b.off = clips.a.off - d*paso;
+  clips.a.ref = clips.a.off; clips.b.ref = clips.b.off;
+  clips.a.fin = null; clips.b.fin = null;
+  irA(0, true); dibujar(); notaSync();
+  avisar(r > 0.3 ? "Alineado: "+(d*paso).toFixed(2)+" s de diferencia. Afina con las flechas."
+                 : "Coincidencia débil. Revisa el resultado y ajusta con las marcas.");
+}
+al("autoSync", "click", alinearSolo);
+
+/* ---------- modos ---------- */
+function aplicarModo(){
+  const l = $("lienzo"), uno = estado.modo === "individual", sup = estado.modo === "superpuesta";
+  l.classList.toggle("superpuesta", sup);
+  l.classList.toggle("vertical", !sup && estado.corte === "vertical");
+  l.classList.toggle("horizontal", !sup && estado.corte === "horizontal");
+  $("mUno").setAttribute("aria-pressed", uno);
+  $("mDiv").setAttribute("aria-pressed", estado.modo === "dividida");
+  $("mSup").setAttribute("aria-pressed", sup);
+  $("ctrOpacidad").style.display = sup ? "flex" : "none";
+  $("ctrFusion").style.display = sup ? "flex" : "none";
+  $("ctrReparto").style.display = (estado.modo === "dividida") ? "flex" : "none";
+  $("ctrCorte").style.display = (estado.modo === "dividida") ? "flex" : "none";
+  disponer();
+  aplicarMezcla();
+}
+function aplicarReparto(){
+  const v = $("reparto").value;
+  const A = document.querySelector('.marco[data-clip="a"]'), B = document.querySelector('.marco[data-clip="b"]');
+  const dos = activos().length > 1;
+  if(estado.modo === "dividida" && dos){ A.style.flex = "0 0 "+v+"%"; B.style.flex = "0 0 "+(100-v)+"%"; }
+  else { A.style.flex = "1 1 100%"; B.style.flex = "1 1 100%"; }
+}
+/* muestra solo los marcos y carriles que participan en el modo actual */
+function disponer(){
+  const act = activos(), uno = estado.modo === "individual";
+  const A = document.querySelector('.marco[data-clip="a"]'), B = document.querySelector('.marco[data-clip="b"]');
+  A.style.display = act.includes("a") ? "" : "none";
+  B.style.display = act.includes("b") ? "" : "none";
+  $("carrilA").classList.toggle("oculto", !act.includes("a"));
+  $("carrilB").classList.toggle("oculto", !act.includes("b"));
+  $("cambiaAtleta").classList.toggle("oculto", !uno || !(clips.a.listo && clips.b.listo));
+  $("verA").setAttribute("aria-pressed", estado.sel === "a");
+  $("verB").setAttribute("aria-pressed", estado.sel === "b");
+  /* la sincronía solo tiene sentido comparando */
+  ["marcaIn","marcaOut","bucle"].forEach(id => $(id).style.display = "");
+  document.querySelectorAll("[data-nudge]").forEach(b =>
+    b.parentElement.style.visibility = uno ? "hidden" : "visible");
+
+  const vac = $("vacio");
+  const faltaSegundo = !uno && act.length < 2;
+  const sinNada = act.length === 0;
+  vac.style.display = (sinNada || faltaSegundo) ? "flex" : "none";
+  vac.classList.toggle("parcial", !sinNada);
+  $("faltante").textContent = sinNada
+    ? "Analiza una bajada"
+    : (clips.a.listo ? "Falta el video del atleta B" : "Falta el video del atleta A");
+  $("cargaA").classList.toggle("hecho", clips.a.listo);
+  $("cargaB").classList.toggle("hecho", clips.b.listo);
+  aplicarReparto();
+  ultimoDominio = "";
+}
+/* video apaisado → uno sobre otro; vertical → lado a lado */
+let corteFijado = false;
+function autoCorte(){
+  if(corteFijado) return;
+  const c = clips.a.listo ? clips.a : clips.b;
+  if(!c || !c.ancho) return;
+  estado.corte = (c.ancho >= c.alto) ? "horizontal" : "vertical";
+  $("corte").value = estado.corte;
+  aplicarModo();
+}
+function aplicarMezcla(){
+  const B = document.querySelector('.marco[data-clip="b"]');
+  if(estado.modo === "superpuesta"){
+    B.style.opacity = $("opac").value/100;
+    $("lienzo").style.setProperty("--mezcla", $("fusion").value);
+  } else { B.style.opacity = 1; $("lienzo").style.setProperty("--mezcla","normal"); }
+}
+function cambiarModo(m){
+  estado.modo = m; pausar(); aplicarModo();
+  const L = limites(); irA(Math.min(Math.max(estado.t, L.min), L.max), true); dibujar();
+}
+al("mUno", "click", ()=> cambiarModo("individual"));
+al("mDiv", "click", ()=> cambiarModo("dividida"));
+al("mSup", "click", ()=> cambiarModo("superpuesta"));
+al("verA", "click", ()=>{ seleccionar("a"); pausar(); aplicarModo(); irA(estado.t, true); dibujar(); });
+al("verB", "click", ()=>{ seleccionar("b"); pausar(); aplicarModo(); irA(estado.t, true); dibujar(); });
+al("corte", "change", e=>{ corteFijado = true; estado.corte = e.target.value; aplicarModo(); });
+al("encaje", "change", e=>{
+  clips.a.el.style.objectFit = e.target.value;
+  clips.b.el.style.objectFit = e.target.value;
+});
+al("reparto", "input", e=>{ $("repartoV").textContent = e.target.value+"%"; aplicarReparto(); });
+al("opac", "input", e=>{ $("opacV").textContent = e.target.value+"%"; aplicarMezcla(); });
+al("fusion", "change", aplicarMezcla);
+
+/* ---------- encuadre ---------- */
+function transformar(k){
+  const c = clips[k];
+  c.el.style.transform = `translate(-50%,-50%) translate(${c.x}%, ${c.y}%) rotate(${c.giro}deg) scale(${c.zoom/100}) scaleX(${c.espejo?-1:1})`;
+}
+function seleccionar(k){
+  estado.sel = k;
+  document.querySelectorAll(".marco").forEach(m=> m.dataset.sel = (m.dataset.clip === k) ? "1" : "0");
+  $("selA").classList.toggle("on", k === "a");
+  $("selB").classList.toggle("on", k === "b");
+  const c = clips[k];
+  $("zoom").value = c.zoom; $("zoomV").textContent = c.zoom+"%";
+  $("posX").value = c.x; $("posXV").textContent = c.x;
+  $("posY").value = c.y; $("posYV").textContent = c.y;
+  $("giro").value = c.giro; $("giroV").textContent = c.giro+"°";
+  $("espejo").classList.toggle("on", c.espejo);
+}
+al("selA", "click", ()=>seleccionar("a"));
+al("selB", "click", ()=>seleccionar("b"));
+al("zoom", "input", e=>{ clips[estado.sel].zoom = +e.target.value; $("zoomV").textContent = e.target.value+"%"; transformar(estado.sel); });
+al("posX", "input", e=>{ clips[estado.sel].x = +e.target.value; $("posXV").textContent = e.target.value; transformar(estado.sel); });
+al("posY", "input", e=>{ clips[estado.sel].y = +e.target.value; $("posYV").textContent = e.target.value; transformar(estado.sel); });
+al("giro", "input", e=>{ clips[estado.sel].giro = +e.target.value; $("giroV").textContent = e.target.value+"°"; transformar(estado.sel); });
+al("espejo", "click", ()=>{
+  const c = clips[estado.sel]; c.espejo = !c.espejo;
+  $("espejo").classList.toggle("on", c.espejo); transformar(estado.sel);
+});
+al("reset", "click", ()=>{
+  const c = clips[estado.sel];
+  c.zoom = 100; c.x = 0; c.y = 0; c.giro = 0; c.espejo = false;
+  transformar(estado.sel); seleccionar(estado.sel);
+});
+
+/* ---------- extras ---------- */
+function verSeccion(sec){
+  document.querySelectorAll(".pestanas button[data-sec]").forEach(b=>
+    b.setAttribute("aria-pressed", b.dataset.sec === sec));
+  document.querySelectorAll(".seccion").forEach(d=> d.hidden = d.dataset.sec !== sec);
+}
+document.querySelectorAll(".pestanas button[data-sec]").forEach(b=>
+  b.addEventListener("click", ()=> verSeccion(b.dataset.sec)));
+function abrirPanel(sec){
+  $("ajustes").classList.add("abierto");
+  $("panel").classList.add("on");
+  if(sec) verSeccion(sec);
+  $("ajustes").scrollTop = 0;
+}
+al("cerrarPanel", "click", ()=>{
+  $("ajustes").classList.remove("abierto"); $("panel").classList.remove("on");
+});
+al("panel", "click", ()=>{
+  const abierto = $("ajustes").classList.toggle("abierto");
+  $("panel").classList.toggle("on", abierto);
+});
+al("verGuias", "click", ()=>{
+  estado.guias = !estado.guias;
+  $("guias").classList.toggle("on", estado.guias);
+  $("verGuias").classList.toggle("on", estado.guias);
+});
+/* pantalla completa de toda la app, para no perder mandos ni herramientas */
+function modoInmersivo(){
+  const on = document.body.classList.toggle("inmersivo");
+  avisar(on ? "Pantalla completa. El ⛶ de los mandos te devuelve." : "Modo normal.");
+  setTimeout(dimPizarra, 60);
+}
+function pantallaCompleta(){
+  const raiz = document.documentElement;
+  if(document.body.classList.contains("inmersivo")){ modoInmersivo(); return; }
+  if(document.fullscreenElement || document.webkitFullscreenElement){
+    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    return;
+  }
+  const esc = $("escena");
+  const pedir = esc.requestFullscreen || esc.webkitRequestFullscreen;
+  if(pedir){
+    pedir.call(esc).catch(()=> modoInmersivo());
+  }else modoInmersivo();
+}
+al("pantalla", "click", pantallaCompleta);
+document.addEventListener("fullscreenchange", ()=>{
+  const on = !!document.fullscreenElement;
+  document.body.classList.toggle("completa", on);
+  $("pantalla").classList.toggle("on", on);
+  setTimeout(dimPizarra, 80);
+});
+document.addEventListener("keydown", (e)=>{
+  if(e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
+  const paso = e.shiftKey ? 10/estado.fps : 1/estado.fps;
+  if(e.code === "Space"){ e.preventDefault(); estado.reproduciendo ? pausar() : reproducir(); }
+  else if(e.code === "ArrowLeft"){ e.preventDefault(); pausar(); irA(estado.t - paso, true); dibujar(); }
+  else if(e.code === "ArrowRight"){ e.preventDefault(); pausar(); irA(estado.t + paso, true); dibujar(); }
+  else if(e.key === "a" || e.key === "A") seleccionar("a");
+  else if(e.key === "b" || e.key === "B") seleccionar("b");
+});
+
+
+
+
+
+
+/* ---------- manipulación directa sobre la imagen ---------- */
+const marcoDe = (k) => document.querySelector('.marco[data-clip="'+k+'"]');
+const cajaDe = (k) => { const m = marcoDe(k); return { m, W:m.clientWidth || 1, H:m.clientHeight || 1 }; };
+
+/* punto del cursor en píxeles, respecto al centro del marco */
+function puntoLocal(k, ev){
+  const { m, W, H } = cajaDe(k);
+  const r = m.getBoundingClientRect();
+  return { x: ev.clientX - r.left - W/2, y: ev.clientY - r.top - H/2, W, H };
+}
+/* deshace la transformación: de la pantalla al fotograma, normalizado por la altura */
+function aFotograma(k, ev){
+  const c = clips[k], p = puntoLocal(k, ev);
+  const s = c.zoom/100, th = -c.giro*Math.PI/180;
+  const tx = c.x/100*p.W, ty = c.y/100*p.H;
+  const dx = (p.x - tx)/s, dy = (p.y - ty)/s;
+  const rx = dx*Math.cos(th) - dy*Math.sin(th);
+  const ry = dx*Math.sin(th) + dy*Math.cos(th);
+  return { u: (c.espejo ? -rx : rx)/p.H, v: ry/p.H };
+}
+/* y al revés: del fotograma a la pantalla, normalizado por la altura */
+function aPantalla(k, q){
+  const c = clips[k], { W, H } = cajaDe(k);
+  const s = c.zoom/100, th = c.giro*Math.PI/180;
+  const mx = (c.espejo ? -q.u : q.u), my = q.v;
+  return {
+    x: c.x/100*W/H + s*(mx*Math.cos(th) - my*Math.sin(th)),
+    y: c.y/100     + s*(mx*Math.sin(th) + my*Math.cos(th))
+  };
+}
+/* zoom anclado al cursor: el punto que apuntas no se mueve */
+function zoomEnCursor(k, factor, ev){
+  const c = clips[k], p = puntoLocal(k, ev);
+  const s = c.zoom/100;
+  const s2 = Math.min(Math.max(s*factor, 0.25), 5);
+  if(Math.abs(s2 - s) < 0.0005) return;
+  const tx = c.x/100*p.W, ty = c.y/100*p.H;
+  const r = s2/s;
+  c.x = (p.x - r*(p.x - tx))/p.W*100;
+  c.y = (p.y - r*(p.y - ty))/p.H*100;
+  c.zoom = s2*100;
+  transformar(k); if(estado.sel === k) refrescarEncuadre();
+}
+function refrescarEncuadre(){
+  const c = clips[estado.sel];
+  $("zoom").value = Math.round(c.zoom); $("zoomV").textContent = Math.round(c.zoom)+"%";
+  $("posX").value = Math.round(c.x); $("posXV").textContent = Math.round(c.x);
+  $("posY").value = Math.round(c.y); $("posYV").textContent = Math.round(c.y);
+  $("giro").value = c.giro.toFixed(1); $("giroV").textContent = c.giro.toFixed(1)+"°";
+}
+
+/* ---------- calibración por dos puntos ---------- */
+const cal = { activo:false, paso:0, puntos:{ a:[], b:[] }, modoPrevio:null };
+function pintarPuntos(){
+  document.querySelectorAll(".punto").forEach(n=>n.remove());
+  for(const k of ["a","b"]){
+    const { m, W, H } = cajaDe(k);
+    cal.puntos[k].forEach((q, i)=>{
+      const d = aPantalla(k, q);
+      const el = document.createElement("div");
+      el.className = "punto p"+(i+1);
+      el.textContent = i+1;
+      el.style.left = (W/2 + d.x*H)+"px";
+      el.style.top = (H/2 + d.y*H)+"px";
+      m.appendChild(el);
+    });
+  }
+}
+function pedirPunto(){
+  const guion = [
+    "Marca el punto 1 en el video A: algo fijo y reconocible, una puerta o un poste.",
+    "Marca ese mismo punto 1 en el video B.",
+    "Ahora el punto 2 en el video A: otro elemento fijo, lo más lejos posible del primero.",
+    "Marca ese mismo punto 2 en el video B."
+  ];
+  $("notaEnc").innerHTML = "<b>"+guion[cal.paso]+"</b>";
+}
+function iniciarCalibrado(){
+  if(!(clips.a.listo && clips.b.listo)){ avisar("Necesito los dos videos para calibrar."); return; }
+  cal.activo = true; cal.paso = 0; cal.puntos = { a:[], b:[] };
+  cal.modoPrevio = estado.modo;
+  if(estado.modo !== "dividida") cambiarModo("dividida");
+  document.body.classList.add("calibrando");
+  $("calibrar").classList.add("on"); $("calibrar").textContent = "Cancelar";
+  pintarPuntos(); pedirPunto();
+}
+function terminarCalibrado(aplicar){
+  cal.activo = false;
+  document.body.classList.remove("calibrando");
+  $("calibrar").classList.remove("on"); $("calibrar").textContent = "Igualar por 2 puntos";
+  if(aplicar) aplicarCalibrado();
+  else { document.querySelectorAll(".punto").forEach(n=>n.remove());
+         $("notaEnc").textContent = "Rueda del mouse: adelanta o retrocede. Ctrl + rueda: acerca donde apuntas. Arrastra sobre la imagen para reencuadrar. Doble clic: reinicia ese video."; }
+  if(cal.modoPrevio && cal.modoPrevio !== estado.modo) cambiarModo(cal.modoPrevio);
+}
+/* dos pares de puntos definen escala, giro y desplazamiento de forma exacta */
+function aplicarCalibrado(){
+  const A = cal.puntos.a, B = cal.puntos.b;
+  if(A.length < 2 || B.length < 2){ terminarCalibrado(false); return; }
+  const c = clips.b, { W, H } = cajaDe("b");
+  const a1 = aPantalla("a", A[0]), a2 = aPantalla("a", A[1]);
+  const m = (q)=>({ x: c.espejo ? -q.u : q.u, y: q.v });
+  const b1 = m(B[0]), b2 = m(B[1]);
+  const dbx = b2.x - b1.x, dby = b2.y - b1.y;
+  const den = dbx*dbx + dby*dby;
+  if(den < 1e-6){ avisar("Los dos puntos están muy juntos. Sepáralos más."); terminarCalibrado(false); return; }
+  const dax = a2.x - a1.x, day = a2.y - a1.y;
+  const zr = (dax*dbx + day*dby)/den;
+  const zi = (day*dbx - dax*dby)/den;
+  const escala = Math.sqrt(zr*zr + zi*zi);
+  if(escala < 0.2 || escala > 5){ avisar("La diferencia de tamaño es excesiva. Revisa los puntos."); terminarCalibrado(false); return; }
+  const tx = a1.x - (zr*b1.x - zi*b1.y);
+  const ty = a1.y - (zi*b1.x + zr*b1.y);
+  c.zoom = escala*100;
+  c.giro = Math.atan2(zi, zr)*180/Math.PI;
+  c.x = tx*H/W*100;
+  c.y = ty*100;
+  transformar("b");
+  seleccionar("b"); refrescarEncuadre(); pintarPuntos();
+  avisar("Encuadre igualado: ×"+escala.toFixed(2)+" y "+c.giro.toFixed(1)+"° de giro.");
+  $("notaEnc").innerHTML = "<b>Listo. Pasa a Superpuesta con mezcla Diferencia para revisar el calce.</b>";
+}
+al("calibrar", "click", ()=> cal.activo ? terminarCalibrado(false) : iniciarCalibrado());
+al("verEncuadre", "click", ()=> abrirPanel("encuadre"));
+al("copiarEnc", "click", ()=>{
+  const o = estado.sel, d = o === "a" ? "b" : "a";
+  if(!clips[d].listo){ avisar("Carga el video "+d.toUpperCase()+" primero."); return; }
+  for(const campo of ["zoom","x","y","giro"]) clips[d][campo] = clips[o][campo];
+  transformar(d);
+  avisar("Encuadre de "+o.toUpperCase()+" copiado a "+d.toUpperCase()+".");
+});
+
+/* ---------- gestos sobre cada marco ---------- */
+let acumRueda = 0;
+for(const k of ["a","b"]){
+  const m = marcoDe(k);
+
+  m.addEventListener("wheel", (ev)=>{
+    if(!clips[k].listo) return;
+    ev.preventDefault();
+    if(ev.ctrlKey || ev.metaKey || ev.altKey){
+      zoomEnCursor(k, Math.pow(0.9985, ev.deltaY), ev);
+      return;
+    }
+    acumRueda += ev.deltaY;
+    const cuadros = Math.trunc(acumRueda/40);
+    if(!cuadros) return;
+    acumRueda -= cuadros*40;
+    pausar();
+    if(ev.shiftKey){
+      if(clips[k].bloq){ avisar("El video "+k.toUpperCase()+" está fijado."); return; }
+      clips[k].off += (cuadros/estado.fps)*clips[k].esc;
+    }else{
+      irA(estado.t + cuadros/estado.fps, true);
+    }
+    irA(estado.t, true); dibujar();
+  }, { passive:false });
+
+  let px = 0, py = 0, movido = 0, arrastrando = false, base = null;
+  m.addEventListener("pointerdown", (ev)=>{
+    if(cal.activo || !clips[k].listo) return;
+    arrastrando = true; movido = 0; px = ev.clientX; py = ev.clientY;
+    base = { x:clips[k].x, y:clips[k].y };
+    m.setPointerCapture(ev.pointerId); m.classList.add("arrastrando");
+  });
+  m.addEventListener("pointermove", (ev)=>{
+    if(!arrastrando) return;
+    const { W, H } = cajaDe(k);
+    const dx = ev.clientX - px, dy = ev.clientY - py;
+    movido = Math.max(movido, Math.abs(dx) + Math.abs(dy));
+    clips[k].x = base.x + dx/W*100;
+    clips[k].y = base.y + dy/H*100;
+    transformar(k);
+    if(estado.sel === k) refrescarEncuadre();
+    if(cal.puntos.a.length || cal.puntos.b.length) pintarPuntos();
+  });
+  const fin = (ev)=>{
+    if(!arrastrando) return;
+    arrastrando = false; m.classList.remove("arrastrando");
+    if(movido < 5){ clips[k].x = base.x; clips[k].y = base.y; transformar(k); seleccionar(k); }
+  };
+  m.addEventListener("pointerup", fin);
+  m.addEventListener("pointercancel", fin);
+
+  /* clic durante la calibración: registra el punto que toca */
+  m.addEventListener("click", (ev)=>{
+    if(!cal.activo) return;
+    const esperado = ["a","b","a","b"][cal.paso];
+    if(k !== esperado){ avisar("Toca el video "+esperado.toUpperCase()+"."); return; }
+    cal.puntos[k].push(aFotograma(k, ev));
+    cal.paso++;
+    pintarPuntos();
+    if(cal.paso >= 4) terminarCalibrado(true);
+    else pedirPunto();
+  });
+
+  m.addEventListener("dblclick", ()=>{
+    if(cal.activo) return;
+    const c = clips[k];
+    c.zoom = 100; c.x = 0; c.y = 0; c.giro = 0;
+    transformar(k); if(estado.sel === k) refrescarEncuadre();
+    avisar("Encuadre de "+k.toUpperCase()+" reiniciado.");
+  });
+}
+
+/* pellizco con dos dedos sobre un marco */
+for(const k of ["a","b"]){
+  const m = marcoDe(k);
+  const dedos = new Map();
+  let distPrev = 0;
+  m.addEventListener("pointerdown", (ev)=>{ if(ev.pointerType === "touch") dedos.set(ev.pointerId, ev); });
+  m.addEventListener("pointermove", (ev)=>{
+    if(ev.pointerType !== "touch" || !dedos.has(ev.pointerId)) return;
+    dedos.set(ev.pointerId, ev);
+    if(dedos.size !== 2) return;
+    const [p1, p2] = [...dedos.values()];
+    const d = Math.hypot(p2.clientX - p1.clientX, p2.clientY - p1.clientY);
+    const centro = { clientX:(p1.clientX + p2.clientX)/2, clientY:(p1.clientY + p2.clientY)/2 };
+    if(distPrev) zoomEnCursor(k, d/distPrev, centro);
+    distPrev = d;
+  });
+  const suelta = (ev)=>{ dedos.delete(ev.pointerId); if(dedos.size < 2) distPrev = 0; };
+  m.addEventListener("pointerup", suelta);
+  m.addEventListener("pointercancel", suelta);
+}
+window.addEventListener("resize", ()=>{ if(cal.puntos.a.length || cal.puntos.b.length) pintarPuntos(); });
+
+
+/* ---------- encuadre automático ---------- */
+/* magnitud de gradiente: la nieve no da señal, pero puertas, árboles y sombras sí */
+function sobel(g, W, H){
+  const o = new Float32Array(W*H);
+  for(let y=1; y<H-1; y++) for(let x=1; x<W-1; x++){
+    const i = y*W+x;
+    const gx = -g[i-W-1] - 2*g[i-1] - g[i+W-1] + g[i-W+1] + 2*g[i+1] + g[i+W+1];
+    const gy = -g[i-W-1] - 2*g[i-W] - g[i-W+1] + g[i+W-1] + 2*g[i+W] + g[i+W+1];
+    o[i] = Math.sqrt(gx*gx + gy*gy);
+  }
+  return o;
+}
+/* difumina el mapa de bordes: la correlación se vuelve mucho más estable */
+function suavizar(g, W, H, veces){
+  let a = g;
+  for(let v=0; v<veces; v++){
+    const o = new Float32Array(W*H);
+    for(let y=1; y<H-1; y++) for(let x=1; x<W-1; x++){
+      const i = y*W+x;
+      o[i] = (a[i-W-1]+a[i-W]+a[i-W+1]+a[i-1]+a[i]+a[i+1]+a[i+W-1]+a[i+W]+a[i+W+1])/9;
+    }
+    a = o;
+  }
+  return a;
+}
+/* correlación normalizada de B llevado a A por (escala, giro, traslación) */
+function puntaje(gA, WA, gB, WB, H, s, th, dx, dy, salto){
+  const cx = WA/2, cxB = WB/2, cy = H/2, co = Math.cos(-th), si = Math.sin(-th);
+  let sa = 0, sb = 0, saa = 0, sbb = 0, sab = 0, n = 0;
+  for(let y=1; y<H-1; y+=salto) for(let x=1; x<WA-1; x+=salto){
+    const px = x - cx - dx, py = y - cy - dy;
+    const ux = (px*co - py*si)/s + cxB, uy = (px*si + py*co)/s + cy;
+    if(ux < 1 || uy < 1 || ux >= WB-1 || uy >= H-1) continue;
+    const x0 = ux|0, y0 = uy|0, fx = ux-x0, fy = uy-y0, q = y0*WB+x0;
+    const b = gB[q]*(1-fx)*(1-fy) + gB[q+1]*fx*(1-fy) + gB[q+WB]*(1-fx)*fy + gB[q+WB+1]*fx*fy;
+    const a = gA[y*WA+x];
+    sa += a; sb += b; saa += a*a; sbb += b*b; sab += a*b; n++;
+  }
+  if(n < 60) return -1;
+  const va = saa/n - (sa/n)*(sa/n), vb = sbb/n - (sb/n)*(sb/n);
+  if(va <= 1e-6 || vb <= 1e-6) return -1;
+  const cob = sab/n - (sa/n)*(sb/n);
+  return (cob/Math.sqrt(va*vb)) * Math.min(1, n/(WA*H/(salto*salto)/3));
+}
+/* barrido grueso y luego afinado sobre escala, giro y desplazamiento */
+function registrar(gA, WA, gB, WB, H, avance){
+  let mejor = { s:1, th:0, dx:0, dy:0, r:-1 };
+  const escGruesa = [], lim = Math.round(WA*0.30);
+  for(let i=0; i<=16; i++) escGruesa.push(0.62*Math.pow(1.55/0.62, i/16));
+  const girGrueso = [-6,-3,0,3,6].map(g => g*Math.PI/180);
+  for(const s of escGruesa){
+    for(const th of girGrueso){
+      for(let dy=-lim; dy<=lim; dy+=4) for(let dx=-lim; dx<=lim; dx+=4){
+        const r = puntaje(gA, WA, gB, WB, H, s, th, dx, dy, 2);
+        if(r > mejor.r) mejor = { s, th, dx, dy, r };
+      }
+    }
+    if(avance) avance((escGruesa.indexOf(s)+1)/escGruesa.length);
+  }
+  /* afinado alrededor del mejor candidato */
+  const base = { ...mejor };
+  for(let is=-3; is<=3; is++) for(let ig=-2; ig<=2; ig++){
+    const s = base.s*(1 + is*0.02), th = base.th + ig*0.8*Math.PI/180;
+    for(let dy=base.dy-4; dy<=base.dy+4; dy++) for(let dx=base.dx-4; dx<=base.dx+4; dx++){
+      const r = puntaje(gA, WA, gB, WB, H, s, th, dx, dy, 1);
+      if(r > mejor.r) mejor = { s, th, dx, dy, r };
+    }
+  }
+  return mejor;
+}
+
+/* dibuja el video como lo hace el navegador (contain) y devuelve la mediana de varios cuadros */
+async function rejillaFondo(k, Wg, Hg, avance){
+  const c = clips[k];
+  const cv = document.createElement("canvas"); cv.width = Wg; cv.height = Hg;
+  const cx = cv.getContext("2d", { willReadFrequently:true });
+  const vw = c.ancho || 16, vh = c.alto || 9;
+  const escala = Math.min(Wg/vw, Hg/vh);
+  const dw = vw*escala, dh = vh*escala;
+  const dx = (Wg-dw)/2, dy = (Hg-dh)/2;
+
+  let t0 = 0, t1 = c.dur;
+  if(estado.entrada !== null && estado.salida !== null && estado.salida > estado.entrada){
+    t0 = Math.max(0, aClip(c, estado.entrada));
+    t1 = Math.min(c.dur, aClip(c, estado.salida));
+  }
+  if(t1 - t0 < 0.3){ t0 = 0; t1 = c.dur; }
+
+  const N = 5, pilas = [];
+  for(let i=0; i<N; i++){
+    avance(i/N);
+    await esperarSeek(c.el, t0 + (t1-t0)*(i+0.5)/N);
+    cx.fillStyle = "#000"; cx.fillRect(0, 0, Wg, Hg);
+    cx.save();
+    if(c.espejo){ cx.translate(Wg, 0); cx.scale(-1, 1); }
+    try{ cx.drawImage(c.el, dx, dy, dw, dh); }catch(e){ cx.restore(); return null; }
+    cx.restore();
+    let d;
+    try{ d = cx.getImageData(0, 0, Wg, Hg).data; }catch(e){ return null; }
+    const g = new Float32Array(Wg*Hg);
+    for(let q=0, j=0; j<d.length; j+=4, q++) g[q] = d[j]*0.299 + d[j+1]*0.587 + d[j+2]*0.114;
+    pilas.push(g);
+  }
+  /* mediana temporal: quita al esquiador y deja el terreno */
+  const med = new Float32Array(Wg*Hg), buf = new Float32Array(N);
+  for(let q=0; q<med.length; q++){
+    for(let i=0; i<N; i++) buf[i] = pilas[i][q];
+    const s = Array.prototype.slice.call(buf).sort((a,b)=>a-b);
+    med[q] = s[N>>1];
+  }
+  let g = suavizar(sobel(med, Wg, Hg), Wg, Hg, 1);
+  /* borra el borde del recuadro de la imagen: es un canto artificial */
+  const x0 = Math.floor(dx), x1 = Math.ceil(dx+dw), y0 = Math.floor(dy), y1 = Math.ceil(dy+dh);
+  for(let y=0; y<Hg; y++) for(let x=0; x<Wg; x++)
+    if(x < x0+3 || x > x1-3 || y < y0+3 || y > y1-3) g[y*Wg+x] = 0;
+  return g;
+}
+
+let auto = false;
+async function encuadreAuto(){
+  if(auto) return;
+  if(!(clips.a.listo && clips.b.listo)){ avisar("Necesito los dos videos."); return; }
+  auto = true; pausar();
+  $("autoEnc").classList.add("on"); $("autoEnc").textContent = "Analizando…";
+  const Hg = 72;
+  const cA = cajaDe("a"), cB = cajaDe("b");
+  const WgA = Math.min(Math.max(Math.round(Hg*cA.W/cA.H), 64), 256);
+  const WgB = Math.min(Math.max(Math.round(Hg*cB.W/cB.H), 64), 256);
+  $("notaEnc").innerHTML = "<b>Leyendo el terreno de los dos videos…</b>";
+  const gA = await rejillaFondo("a", WgA, Hg, p => avisar("Leyendo el video A… "+Math.round(p*100)+"%"));
+  const gB = gA ? await rejillaFondo("b", WgB, Hg, p => avisar("Leyendo el video B… "+Math.round(p*100)+"%")) : null;
+  if(!gA || !gB){
+    auto = false; $("autoEnc").classList.remove("on"); $("autoEnc").textContent = "Encuadre automático";
+    avisar("No pude leer los fotogramas. Usa la calibración por 2 puntos.");
+    return;
+  }
+  $("notaEnc").innerHTML = "<b>Buscando el calce…</b>";
+  await new Promise(r => setTimeout(r, 30));
+  const m = registrar(gA, WgA, gB, WgB, Hg, null);
+
+  /* componer: B debe quedar como A, más la transformación hallada */
+  const A = clips.a, B = clips.b;
+  const sA = A.zoom/100, thA = A.giro*Math.PI/180;
+  const tAx = A.x/100*cA.W/cA.H, tAy = A.y/100;
+  const tx = m.dx/Hg, ty = m.dy/Hg;
+  const co = Math.cos(thA), si = Math.sin(thA);
+  const zoom = A.zoom*m.s;
+  if(zoom < 20 || zoom > 600){
+    auto = false; $("autoEnc").classList.remove("on"); $("autoEnc").textContent = "Encuadre automático";
+    avisar("El resultado es disparatado. Prueba la calibración por 2 puntos.");
+    return;
+  }
+  B.zoom = zoom;
+  B.giro = A.giro + m.th*180/Math.PI;
+  B.x = (sA*(co*tx - si*ty) + tAx)*100*cB.H/cB.W;
+  B.y = (sA*(si*tx + co*ty) + tAy)*100;
+  transformar("b"); seleccionar("b"); refrescarEncuadre();
+
+  auto = false;
+  $("autoEnc").classList.remove("on"); $("autoEnc").textContent = "Encuadre automático";
+  const fiable = m.r > 0.3 ? "Calce firme" : (m.r > 0.12 ? "Calce dudoso, revísalo" : "Calce pobre");
+  $("notaEnc").innerHTML = "<b>"+fiable+": ×"+m.s.toFixed(2)+" · "+(m.th*180/Math.PI).toFixed(1)+"° · confianza "+m.r.toFixed(2)+"</b>";
+  avisar(fiable+". Compruébalo en Superpuesta con mezcla Diferencia.");
+}
+al("autoEnc", "click", encuadreAuto);
+
+
+/* ---------- formas y medición de ángulos ---------- */
+const anot = {
+  tool:"mano", color:0, formas:{ a:[], b:[] }, temp:null, clicks:[], clipActual:null
+};
+const COLORES = ["#F5B841", "#7DE2A8", "#FF6FD8", "#FFFFFF"];
+const piz = $("pizarra"), pz = piz.getContext("2d");
+
+function dimPizarra(){
+  const r = $("escena").getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  piz.width = Math.round(r.width*dpr); piz.height = Math.round(r.height*dpr);
+  piz.style.width = r.width+"px"; piz.style.height = r.height+"px";
+  pz.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+window.addEventListener("resize", dimPizarra);
+document.addEventListener("fullscreenchange", ()=> setTimeout(dimPizarra, 60));
+
+/* de coordenadas de fotograma a píxeles del escenario */
+function aEscenario(k, q){
+  const { m, W, H } = cajaDe(k);
+  const re = $("escena").getBoundingClientRect(), rm = m.getBoundingClientRect();
+  const d = aPantalla(k, q);
+  return { x: (rm.left - re.left) + W/2 + d.x*H, y: (rm.top - re.top) + H/2 + d.y*H };
+}
+/* qué video hay bajo el dedo */
+function clipEn(clientX, clientY){
+  const vis = activos();
+  if(estado.modo === "superpuesta") return vis.includes(estado.sel) ? estado.sel : vis[0];
+  for(const k of vis){
+    const r = marcoDe(k).getBoundingClientRect();
+    if(clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom) return k;
+  }
+  return null;
+}
+
+function trazo(ctx, color, grosor){
+  ctx.lineCap = "round"; ctx.lineJoin = "round";
+  ctx.strokeStyle = "rgba(7,11,15,.7)"; ctx.lineWidth = grosor + 3;
+  ctx.stroke();
+  ctx.strokeStyle = color; ctx.lineWidth = grosor;
+  ctx.stroke();
+}
+function rotulo(ctx, txt, x, y, color){
+  ctx.font = "600 15px ui-monospace, Menlo, monospace";
+  const an = ctx.measureText(txt).width + 12;
+  ctx.fillStyle = "rgba(7,11,15,.82)";
+  ctx.beginPath(); ctx.roundRect(x, y - 20, an, 24, 6); ctx.fill();
+  ctx.fillStyle = color; ctx.fillText(txt, x + 6, y - 3);
+}
+function anguloEntre(v, p1, p2){
+  const a1 = Math.atan2(p1.y - v.y, p1.x - v.x), a2 = Math.atan2(p2.y - v.y, p2.x - v.x);
+  let d = Math.abs(a1 - a2)*180/Math.PI;
+  if(d > 180) d = 360 - d;
+  return d;
+}
+
+function pintarForma(f, pts){
+  const c = f.color;
+  pz.beginPath();
+  if(f.tipo === "linea" || f.tipo === "libre"){
+    pz.moveTo(pts[0].x, pts[0].y);
+    for(let i=1; i<pts.length; i++) pz.lineTo(pts[i].x, pts[i].y);
+    trazo(pz, c, 2.5);
+    if(f.tipo === "linea" && pts.length > 1){
+      const dx = pts[1].x - pts[0].x, dy = pts[1].y - pts[0].y;
+      let g = Math.abs(Math.atan2(dy, dx)*180/Math.PI);
+      if(g > 90) g = 180 - g;
+      rotulo(pz, g.toFixed(1)+"° horiz", (pts[0].x+pts[1].x)/2 + 8, (pts[0].y+pts[1].y)/2, c);
+    }
+  }else if(f.tipo === "rect"){
+    pz.rect(pts[0].x, pts[0].y, pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+    trazo(pz, c, 2.5);
+  }else if(f.tipo === "circulo"){
+    const r = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+    pz.arc(pts[0].x, pts[0].y, r, 0, Math.PI*2);
+    trazo(pz, c, 2.5);
+  }else if(f.tipo === "plomada"){
+    pz.moveTo(pts[0].x, 0); pz.lineTo(pts[0].x, piz.clientHeight);
+    trazo(pz, c, 2);
+    pz.beginPath(); pz.arc(pts[0].x, pts[0].y, 4, 0, Math.PI*2);
+    pz.fillStyle = c; pz.fill();
+  }else if(f.tipo === "angulo" && pts.length >= 2){
+    const [p1, v, p2] = pts;
+    pz.moveTo(p1.x, p1.y); pz.lineTo(v.x, v.y);
+    if(p2) pz.lineTo(p2.x, p2.y);
+    trazo(pz, c, 2.5);
+    if(p2){
+      const g = anguloEntre(v, p1, p2);
+      const a1 = Math.atan2(p1.y - v.y, p1.x - v.x), a2 = Math.atan2(p2.y - v.y, p2.x - v.x);
+      let ini = a1, fin = a2;
+      if(((fin - ini + Math.PI*2) % (Math.PI*2)) > Math.PI){ ini = a2; fin = a1; }
+      pz.beginPath(); pz.arc(v.x, v.y, 30, ini, fin);
+      trazo(pz, c, 2);
+      const med = ini + ((fin - ini + Math.PI*2) % (Math.PI*2))/2;
+      rotulo(pz, g.toFixed(1)+"°", v.x + Math.cos(med)*46 - 16, v.y + Math.sin(med)*46 + 8, c);
+    }
+    for(const p of pts){
+      pz.beginPath(); pz.arc(p.x, p.y, 4, 0, Math.PI*2);
+      pz.fillStyle = c; pz.fill();
+      pz.strokeStyle = "rgba(7,11,15,.8)"; pz.lineWidth = 1.5; pz.stroke();
+    }
+  }
+}
+function pintarAnotaciones(){
+  if(!piz.clientWidth) return;
+  pz.clearRect(0, 0, piz.clientWidth, piz.clientHeight);
+  const vis = activos();
+  for(const k of vis)
+    for(const f of anot.formas[k]) pintarForma(f, f.pts.map(q => aEscenario(k, q)));
+  if(anot.temp && vis.includes(anot.temp.clip))
+    pintarForma(anot.temp, anot.temp.pts.map(q => aEscenario(anot.temp.clip, q)));
+  if(anot.clicks.length && anot.clipActual)
+    pintarForma({ tipo:"angulo", color:COLORES[anot.color] },
+                anot.clicks.map(q => aEscenario(anot.clipActual, q)));
+}
+
+/* ---- interacción ---- */
+function elegirTool(t){
+  anot.tool = t; anot.clicks = []; anot.temp = null;
+  document.querySelectorAll("#herramientas [data-tool]").forEach(b=>
+    b.classList.toggle("on", b.dataset.tool === t));
+  piz.classList.toggle("activa", t !== "mano");
+}
+document.querySelectorAll("#herramientas [data-tool]").forEach(b=>
+  b.addEventListener("click", ()=> elegirTool(b.dataset.tool)));
+al("colorAnot", "click", ()=>{
+  anot.color = (anot.color + 1) % COLORES.length;
+  $("colorAnot").style.color = COLORES[anot.color];
+});
+$("colorAnot").style.color = COLORES[0];
+al("deshacer", "click", ()=>{
+  if(anot.clicks.length){ anot.clicks.pop(); return; }
+  for(const k of activos().slice().reverse())
+    if(anot.formas[k].length){ anot.formas[k].pop(); return; }
+});
+al("borrarTodo", "click", ()=>{
+  anot.formas = { a:[], b:[] }; anot.clicks = []; anot.temp = null;
+  avisar("Anotaciones borradas.");
+});
+
+let pintando = false;
+piz.addEventListener("pointerdown", (ev)=>{
+  if(anot.tool === "mano") return;
+  const k = clipEn(ev.clientX, ev.clientY);
+  if(!k || !clips[k].listo) return;
+  ev.preventDefault(); piz.setPointerCapture(ev.pointerId);
+  anot.clipActual = k;
+  const q = aFotograma(k, ev);
+  if(anot.tool === "plomada"){
+    anot.formas[k].push({ tipo:"plomada", color:COLORES[anot.color], pts:[q] });
+    return;
+  }
+  if(anot.tool === "angulo"){
+    anot.clicks.push(q);
+    if(anot.clicks.length === 3){
+      anot.formas[k].push({ tipo:"angulo", color:COLORES[anot.color], pts:anot.clicks });
+      anot.clicks = [];
+    }
+    return;
+  }
+  pintando = true;
+  anot.temp = { tipo:anot.tool, color:COLORES[anot.color], clip:k, pts:[q, q] };
+});
+piz.addEventListener("pointermove", (ev)=>{
+  if(!pintando || !anot.temp) return;
+  const q = aFotograma(anot.temp.clip, ev);
+  if(anot.temp.tipo === "libre") anot.temp.pts.push(q);
+  else anot.temp.pts[1] = q;
+});
+const finPintar = ()=>{
+  if(!pintando || !anot.temp){ pintando = false; return; }
+  pintando = false;
+  const p = anot.temp.pts;
+  const largo = Math.hypot(p[p.length-1].u - p[0].u, p[p.length-1].v - p[0].v);
+  if(largo > 0.01 || anot.temp.tipo === "libre") anot.formas[anot.temp.clip].push(anot.temp);
+  anot.temp = null;
+};
+piz.addEventListener("pointerup", finPintar);
+piz.addEventListener("pointercancel", finPintar);
+document.addEventListener("keydown", (ev)=>{
+  if(ev.key === "Escape" && anot.tool !== "mano"){ elegirTool("mano"); }
+});
+al("verFormas", "click", ()=>{
+  const oculta = $("herramientas").classList.toggle("oculta");
+  $("verFormas").classList.toggle("on", !oculta);
+  if(oculta) elegirTool("mano");
+});
+$("verFormas").classList.add("on");
+dimPizarra();
+
+
+/* ---------- igualar la partida por trayectoria ---------- */
+/* centroide del esquiador en cada instante, en coordenadas de pantalla */
+async function trayectoria(k, N, avance){
+  const c = clips[k];
+  const Hg = 54, caja = cajaDe(k);
+  const Wg = Math.min(Math.max(Math.round(Hg*caja.W/caja.H), 48), 200);
+  const cv = document.createElement("canvas"); cv.width = Wg; cv.height = Hg;
+  const cx = cv.getContext("2d", { willReadFrequently:true });
+  const vw = c.ancho || 16, vh = c.alto || 9;
+  const esc = Math.min(Wg/vw, Hg/vh), dw = vw*esc, dh = vh*esc;
+  const dx = (Wg-dw)/2, dy = (Hg-dh)/2;
+
+  let t0 = 0, t1 = c.dur;
+  if(estado.entrada !== null && estado.salida !== null && estado.salida > estado.entrada){
+    t0 = Math.max(0, aClip(c, estado.entrada));
+    t1 = Math.min(c.dur, aClip(c, estado.salida));
+  }
+  if(t1 - t0 < 0.3){ t0 = 0; t1 = c.dur; }
+
+  const cuadros = [], tiempos = [];
+  for(let i=0; i<N; i++){
+    avance(i/N);
+    const t = t0 + (t1-t0)*i/(N-1);
+    await esperarSeek(c.el, t);
+    cx.fillStyle = "#000"; cx.fillRect(0, 0, Wg, Hg);
+    cx.save();
+    if(c.espejo){ cx.translate(Wg, 0); cx.scale(-1, 1); }
+    try{ cx.drawImage(c.el, dx, dy, dw, dh); }catch(e){ cx.restore(); return null; }
+    cx.restore();
+    let d;
+    try{ d = cx.getImageData(0, 0, Wg, Hg).data; }catch(e){ return null; }
+    const g = new Float32Array(Wg*Hg);
+    for(let q=0, j=0; j<d.length; j+=4, q++) g[q] = d[j]*0.299 + d[j+1]*0.587 + d[j+2]*0.114;
+    cuadros.push(g); tiempos.push(t);
+  }
+  /* fondo por mediana de una muestra repartida */
+  const idx = [];
+  for(let i=0; i<9; i++) idx.push(Math.round(i*(N-1)/8));
+  const fondo = new Float32Array(Wg*Hg), buf = new Float32Array(idx.length);
+  for(let q=0; q<fondo.length; q++){
+    idx.forEach((i, j)=> buf[j] = cuadros[i][q]);
+    const s = Array.prototype.slice.call(buf).sort((a,b)=>a-b);
+    fondo[q] = s[idx.length>>1];
+  }
+  /* umbral adaptado al ruido de la toma */
+  const difs = [];
+  for(let q=0; q<fondo.length; q+=7) difs.push(Math.abs(cuadros[0][q] - fondo[q]));
+  difs.sort((a,b)=>a-b);
+  const umbral = Math.max(14, difs[Math.floor(difs.length*0.9)]*1.6);
+
+  const pts = [];
+  for(let i=0; i<N; i++){
+    const g = cuadros[i], masc = new Uint8Array(Wg*Hg);
+    for(let q=0; q<g.length; q++) masc[q] = Math.abs(g[q] - fondo[q]) > umbral ? 1 : 0;
+    const etiq = new Int32Array(Wg*Hg).fill(-1);
+    let mejor = 0, cxs = 0, cys = 0, et = 0;
+    for(let q=0; q<masc.length; q++){
+      if(!masc[q] || etiq[q] >= 0) continue;
+      const pila = [q]; etiq[q] = et; let tam = 0, sx = 0, sy = 0;
+      while(pila.length){
+        const r = pila.pop(); tam++;
+        const rx = r%Wg, ry = (r/Wg)|0; sx += rx; sy += ry;
+        const v = [[1,0],[-1,0],[0,1],[0,-1]];
+        for(let w=0; w<4; w++){
+          const nx = rx+v[w][0], ny = ry+v[w][1];
+          if(nx<0||ny<0||nx>=Wg||ny>=Hg) continue;
+          const nq = ny*Wg+nx;
+          if(masc[nq] && etiq[nq] < 0){ etiq[nq] = et; pila.push(nq); }
+        }
+      }
+      if(tam > mejor){ mejor = tam; cxs = sx/tam; cys = sy/tam; }
+      et++;
+    }
+    if(mejor < 6 || mejor > Wg*Hg*0.5) continue;   /* nada, o la toma entera cambió */
+    const q = { u:(cxs - Wg/2)/Hg, v:(cys - Hg/2)/Hg };
+    const p = aPantalla(k, q);
+    pts.push({ t:tiempos[i], m:(tiempos[i] - c.off)/c.esc, x:p.x, y:p.y });
+  }
+  return pts;
+}
+/* desfase que hace que las dos trayectorias se solapen mejor */
+function calzarTrayectorias(pa, pb){
+  if(pa.length < 6 || pb.length < 6) return null;
+  const paso = (pa[pa.length-1].m - pa[0].m)/Math.max(pa.length-1, 1);
+  const lim = Math.max(pa[pa.length-1].m - pa[0].m, pb[pb.length-1].m - pb[0].m);
+  const enB = (m)=>{
+    if(m <= pb[0].m || m >= pb[pb.length-1].m) return null;
+    for(let i=1; i<pb.length; i++){
+      if(pb[i].m >= m){
+        const f = (m - pb[i-1].m)/((pb[i].m - pb[i-1].m) || 1);
+        return { x: pb[i-1].x + (pb[i].x - pb[i-1].x)*f, y: pb[i-1].y + (pb[i].y - pb[i-1].y)*f };
+      }
+    }
+    return null;
+  };
+  let mejor = null;
+  for(let d = -lim; d <= lim; d += paso/2){
+    let acc = 0, n = 0;
+    for(const p of pa){
+      const q = enB(p.m + d);
+      if(!q) continue;
+      acc += Math.hypot(p.x - q.x, p.y - q.y); n++;
+    }
+    if(n < Math.max(5, pa.length*0.35)) continue;
+    const err = acc/n;
+    if(!mejor || err < mejor.err) mejor = { d, err, n };
+  }
+  return mejor;
+}
+let calzando = false;
+async function igualarPartida(){
+  if(calzando) return;
+  if(!(clips.a.listo && clips.b.listo)){ avisar("Necesito los dos videos."); return; }
+  calzando = true; pausar();
+  $("igualarPartida").classList.add("on"); $("igualarPartida").textContent = "Analizando…";
+  $("notaSync").innerHTML = "<b>Siguiendo al esquiador en los dos videos…</b>";
+  const N = 28;
+  const pa = await trayectoria("a", N, p => avisar("Siguiendo al atleta A… "+Math.round(p*100)+"%"));
+  const pb = pa ? await trayectoria("b", N, p => avisar("Siguiendo al atleta B… "+Math.round(p*100)+"%")) : null;
+  $("igualarPartida").classList.remove("on"); $("igualarPartida").textContent = "Igualar partida";
+  calzando = false;
+  if(!pa || !pb){ avisar("No pude leer los fotogramas."); notaSync(); return; }
+  if(pa.length < 6 || pb.length < 6){
+    avisar("No distingo al esquiador del fondo. Acota el tramo con entrada y salida, o sincroniza a mano.");
+    notaSync(); return;
+  }
+  const m = calzarTrayectorias(pa, pb);
+  if(!m){ avisar("Las trayectorias no se solapan lo suficiente."); notaSync(); return; }
+  const B = clips.b;
+  B.off += m.d*B.esc;
+  B.ref = B.off; clips.a.ref = clips.a.off;
+  irA(0, true); dibujar();
+  const fino = m.err < 0.06 ? "Calce firme" : (m.err < 0.14 ? "Calce aceptable" : "Calce flojo, revísalo");
+  $("notaSync").innerHTML = "<b>"+fino+": B movido "+(m.d>0?"+":"")+m.d.toFixed(2)+" s · separación media "+(m.err*100).toFixed(1)+"% de la altura</b>";
+  avisar(fino+". Ahora los dos pasan por el mismo punto a la vez.");
+}
+al("igualarPartida", "click", igualarPartida);
+
+
+/* ---------- mandos flotantes en pantalla completa ---------- */
+al("mPlay", "click", ()=> estado.reproduciendo ? pausar() : reproducir());
+al("mAtras", "click", ()=>{ pausar(); irA(estado.t - 1/estado.fps, true); dibujar(); });
+al("mAdelante", "click", ()=>{ pausar(); irA(estado.t + 1/estado.fps, true); dibujar(); });
+al("mVel", "change", (e)=>{ $("vel").value = e.target.value; $("vel").dispatchEvent(new Event("change")); });
+al("mGuias", "click", ()=> $("verGuias").click());
+al("mFormas", "click", ()=> $("verFormas").click());
+al("mSalir", "click", pantallaCompleta);
+al("mA", "click", ()=> $("verA").click());
+al("mB", "click", ()=> $("verB").click());
+al("mModo", "click", ()=>{
+  const orden = ["individual", "dividida", "superpuesta"];
+  cambiarModo(orden[(orden.indexOf(estado.modo) + 1) % 3]);
+});
+arrastrable($("mBarra"), (x)=>{ pausar(); irA(tDesdeX(x, $("mBarra")), true); dibujar(); });
+
+/* aparecen al tocar y se apagan solas para no tapar la imagen */
+let ocioso;
+function despertarMandos(){
+  $("mandos").classList.remove("esfuma");
+  clearTimeout(ocioso);
+  ocioso = setTimeout(()=>{
+    if(anot.tool === "mano") $("mandos").classList.add("esfuma");
+  }, 3500);
+}
+["pointermove","pointerdown","wheel"].forEach(ev=>
+  al("escena", ev, despertarMandos, { passive:true }));
+al("mandos", "pointerenter", ()=>{ clearTimeout(ocioso); $("mandos").classList.remove("esfuma"); });
+al("mandos", "pointerleave", despertarMandos);
+
+/* mover un solo video, disponible también a pantalla completa */
+function moverSolo(k, dir){
+  const c = clips[k];
+  if(!c.listo){ avisar("Carga primero el video "+k.toUpperCase()+"."); return; }
+  if(c.bloq){ avisar("El video "+k.toUpperCase()+" está fijado. Abre su candado."); return; }
+  pausar();
+  c.off += (dir/estado.fps)*c.esc;
+  irA(estado.t, true); dibujar();
+  avisar("Desfase "+k.toUpperCase()+": "+(c.off>0?"+":"")+c.off.toFixed(2)+" s");
+}
+al("mAmenos", "click", ()=> moverSolo("a", -1));
+al("mAmas", "click", ()=> moverSolo("a", 1));
+al("mBmenos", "click", ()=> moverSolo("b", -1));
+al("mBmas", "click", ()=> moverSolo("b", 1));
+
+/* ---------- mantener pulsado para avanzar, y lanzadera ---------- */
+function repetible(el, accion){
+  let temporizador, intervalo, veces = 0;
+  const parar = ()=>{ clearTimeout(temporizador); clearInterval(intervalo); veces = 0; };
+  el.addEventListener("pointerdown", (ev)=>{
+    ev.preventDefault();
+    el.setPointerCapture && el.setPointerCapture(ev.pointerId);
+    accion();
+    temporizador = setTimeout(()=>{
+      intervalo = setInterval(()=>{
+        veces++;
+        accion();
+        /* acelera si sigues apretando */
+        if(veces === 8 || veces === 20){
+          clearInterval(intervalo);
+          intervalo = setInterval(accion, veces === 8 ? 70 : 40);
+        }
+      }, 110);
+    }, 380);
+  });
+  ["pointerup","pointercancel","pointerleave"].forEach(e => el.addEventListener(e, parar));
+}
+repetible($("atras"), ()=>{ pausar(); irA(estado.t - 1/estado.fps, true); dibujar(); });
+repetible($("adelante"), ()=>{ pausar(); irA(estado.t + 1/estado.fps, true); dibujar(); });
+repetible($("mAtras"), ()=>{ pausar(); irA(estado.t - 1/estado.fps, true); dibujar(); });
+repetible($("mAdelante"), ()=>{ pausar(); irA(estado.t + 1/estado.fps, true); dibujar(); });
+repetible($("mAmenos"), ()=> moverSolo("a", -1));
+repetible($("mAmas"), ()=> moverSolo("a", 1));
+repetible($("mBmenos"), ()=> moverSolo("b", -1));
+repetible($("mBmas"), ()=> moverSolo("b", 1));
+document.querySelectorAll("[data-nudge]").forEach(b=>
+  repetible(b, ()=> moverSolo(b.dataset.nudge, parseInt(b.dataset.dir, 10))));
+
+/* lanzadera: cuanto más lejos del centro, más rápido; al soltar, vuelve y se detiene.
+   Con objetivo A o B mueve solo ese video, que es como se sincroniza a mano. */
+let objJog = "ambos";
+function fijarObjetivo(o){
+  objJog = o;
+  document.querySelectorAll("[data-obj]").forEach(b=>
+    b.setAttribute("aria-pressed", b.dataset.obj === o));
+}
+document.querySelectorAll("[data-obj]").forEach(b=>
+  b.addEventListener("click", ()=>{
+    fijarObjetivo(b.dataset.obj);
+    avisar(b.dataset.obj === "ambos"
+      ? "La lanzadera mueve los dos videos."
+      : "La lanzadera mueve solo el video "+b.dataset.obj.toUpperCase()+".");
+  }));
+
+function montarJog(jog, puno, txt){
+  let activo = false, r = 0, ultimo = 0, lazo = 0;
+  const RECORRIDO = 0.42;
+  const vel = (x)=> Math.sign(x)*x*x*4;
+  function marcha(ahora){
+    if(!activo) return;
+    const dt = Math.min((ahora - ultimo)/1000, 0.1);
+    ultimo = ahora;
+    if(Math.abs(r) > 0.02){
+      const v = vel(r);
+      if(objJog === "ambos") irA(estado.t + v*dt, true);
+      else{
+        const c = clips[objJog];
+        if(c.listo && !c.bloq){ c.off += v*dt*c.esc; irA(estado.t, true); }
+      }
+      dibujar();
+    }
+    lazo = requestAnimationFrame(marcha);
+  }
+  function fijar(clientX){
+    const caja = jog.getBoundingClientRect();
+    const d = (clientX - (caja.left + caja.width/2))/(caja.width*RECORRIDO);
+    r = Math.min(Math.max(d, -1), 1);
+    puno.style.marginLeft = (-22 + r*caja.width*RECORRIDO/2) + "px";
+    const v = vel(r);
+    const quien = objJog === "ambos" ? "" : " " + objJog.toUpperCase();
+    txt.textContent = Math.abs(r) < 0.02
+      ? "Lanzadera" + (quien ? " ·" + quien : "")
+      : (v > 0 ? "▶" : "◀") + quien + " " + Math.abs(v).toFixed(1) + "×";
+  }
+  jog.addEventListener("pointerdown", (ev)=>{
+    if(!activos().length) return;
+    if(objJog !== "ambos"){
+      const c = clips[objJog];
+      if(!c.listo){ avisar("Carga primero el video "+objJog.toUpperCase()+"."); return; }
+      if(c.bloq){ avisar("El video "+objJog.toUpperCase()+" está fijado. Abre su candado."); return; }
+    }
+    ev.preventDefault(); jog.setPointerCapture(ev.pointerId);
+    activo = true; jog.classList.add("activo");
+    pausar(); fijar(ev.clientX);
+    ultimo = performance.now(); lazo = requestAnimationFrame(marcha);
+  });
+  jog.addEventListener("pointermove", (ev)=>{ if(activo) fijar(ev.clientX); });
+  const soltar = ()=>{
+    if(!activo) return;
+    activo = false; r = 0; cancelAnimationFrame(lazo);
+    jog.classList.remove("activo");
+    puno.style.marginLeft = "-22px";
+    txt.textContent = "Lanzadera";
+    if(objJog !== "ambos") avisar("Desfase "+objJog.toUpperCase()+": "+
+      (clips[objJog].off>0?"+":"")+clips[objJog].off.toFixed(2)+" s");
+  };
+  ["pointerup","pointercancel"].forEach(e => jog.addEventListener(e, soltar));
+}
+montarJog($("mJog"), $("mJogPuno"), $("mJogTxt"));
+montarJog($("jog2"), $("jogPuno2"), $("jogTxt2"));
+
+function refrescarMandos(){
+  const dos = clips.a.listo && clips.b.listo;
+  $("mPlay").textContent = estado.reproduciendo ? "❚❚" : "▶";
+  $("mTc").textContent = estado.t.toFixed(2);
+  $("mAguja").style.left = pct(estado.t)+"%";
+  $("mVel").value = String(estado.vel);
+  $("mModo").textContent = { individual:"Individual", dividida:"Dividida", superpuesta:"Superpuesta" }[estado.modo];
+  $("mAtleta").classList.toggle("oculto", !(estado.modo === "individual" && dos));
+  $("mSolo").classList.toggle("oculto", !(estado.modo !== "individual" && dos));
+  $("mA").setAttribute("aria-pressed", estado.sel === "a");
+  $("mB").setAttribute("aria-pressed", estado.sel === "b");
+  $("mGuias").classList.toggle("on", estado.guias);
+  $("mFormas").classList.toggle("on", !$("herramientas").classList.contains("oculta"));
+}
+
+/* repaso de arranque: qué ids espera el script, para verlo de un vistazo si algo falta */
+[
+  "vA","vB","aviso","fileA","fileB","cargaA","cargaA2","cargaB","cargaB2","barraA","barraB",
+  "nomA","nomB","cambiaAtleta","carrilA","carrilB","regla","agujaR",
+  "play","atras","adelante","vel","fps","tc","marcaIn","marcaOut","bucle",
+  "verGuias","guias","verFormas","herramientas","pantalla","escena","lienzo",
+  "mUno","mDiv","mSup","verA","verB","corte","encaje","ctrOpacidad","opac","opacV",
+  "ctrFusion","fusion","ctrReparto","reparto","repartoV","ctrCorte","vacio","faltante",
+  "selA","selB","zoom","zoomV","posX","posXV","posY","posYV","giro","giroV","espejo","reset",
+  "ajustes","panel","cerrarPanel","autoEnc","calibrar","copiarEnc","notaEnc",
+  "colorAnot","deshacer","borrarTodo",
+  "refA","refB","finA","finB","resetSync","resetBarra","autoSync","igualarPartida","notaSync",
+  "mandos","mPlay","mTc","mAguja","mVel","mModo","mAtleta","mSolo","mA","mB",
+  "mGuias","mFormas","mSalir","mBarra","mAmenos","mAmas","mBmenos","mBmas",
+  "mJog","mJogPuno","mJogTxt","jog2","jogPuno2","jogTxt2"
+].forEach(id => { if(!document.getElementById(id)) console.warn(`[comparador] falta #${id} en el HTML`); });
+
+transformar("a"); transformar("b"); notaSync();
+seleccionar("a"); aplicarModo(); dibujar();
+</script>
+</body>
+</html>
