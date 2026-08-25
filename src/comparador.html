@@ -1163,9 +1163,35 @@ al("opac", "input", e=>{ $("opacV").textContent = e.target.value+"%"; aplicarMez
 al("fusion", "change", aplicarMezcla);
 
 /* ---------- encuadre ---------- */
+/* fuente única del orden de operaciones: centrar → trasladar → girar → escalar → espejar.
+   cssDe, pantallaDesdeFotograma y fotogramaDesdePantalla derivan las tres de aquí,
+   así que un cambio de orden no puede desincronizar la calibración ni las anotaciones. */
+const geometria = {
+  cssDe(clip){
+    return `translate(-50%,-50%) translate(${clip.x}%, ${clip.y}%) rotate(${clip.giro}deg) scale(${clip.zoom/100}) scaleX(${clip.espejo?-1:1})`;
+  },
+  /* del fotograma (u,v normalizados por H) a la pantalla (x,y normalizados por H); clip trae también W,H del recuadro */
+  pantallaDesdeFotograma(clip, punto){
+    const s = clip.zoom/100, th = clip.giro*Math.PI/180;
+    const mx = clip.espejo ? -punto.u : punto.u, my = punto.v;
+    return {
+      x: clip.x/100*clip.W/clip.H + s*(mx*Math.cos(th) - my*Math.sin(th)),
+      y: clip.y/100                + s*(mx*Math.sin(th) + my*Math.cos(th))
+    };
+  },
+  /* de la pantalla (punto en píxeles locales, con su W,H) al fotograma (u,v normalizados por H) */
+  fotogramaDesdePantalla(clip, punto){
+    const s = clip.zoom/100, th = -clip.giro*Math.PI/180;
+    const tx = clip.x/100*punto.W, ty = clip.y/100*punto.H;
+    const dx = (punto.x - tx)/s, dy = (punto.y - ty)/s;
+    const rx = dx*Math.cos(th) - dy*Math.sin(th);
+    const ry = dx*Math.sin(th) + dy*Math.cos(th);
+    return { u: (clip.espejo ? -rx : rx)/punto.H, v: ry/punto.H };
+  }
+};
 function transformar(k){
   const c = clips[k];
-  c.el.style.transform = `translate(-50%,-50%) translate(${c.x}%, ${c.y}%) rotate(${c.giro}deg) scale(${c.zoom/100}) scaleX(${c.espejo?-1:1})`;
+  c.el.style.transform = geometria.cssDe(c);
 }
 function seleccionar(k){
   estado.sel = k;
@@ -1274,23 +1300,12 @@ function puntoLocal(k, ev){
 }
 /* deshace la transformación: de la pantalla al fotograma, normalizado por la altura */
 function aFotograma(k, ev){
-  const c = clips[k], p = puntoLocal(k, ev);
-  const s = c.zoom/100, th = -c.giro*Math.PI/180;
-  const tx = c.x/100*p.W, ty = c.y/100*p.H;
-  const dx = (p.x - tx)/s, dy = (p.y - ty)/s;
-  const rx = dx*Math.cos(th) - dy*Math.sin(th);
-  const ry = dx*Math.sin(th) + dy*Math.cos(th);
-  return { u: (c.espejo ? -rx : rx)/p.H, v: ry/p.H };
+  return geometria.fotogramaDesdePantalla(clips[k], puntoLocal(k, ev));
 }
 /* y al revés: del fotograma a la pantalla, normalizado por la altura */
 function aPantalla(k, q){
   const c = clips[k], { W, H } = cajaDe(k);
-  const s = c.zoom/100, th = c.giro*Math.PI/180;
-  const mx = (c.espejo ? -q.u : q.u), my = q.v;
-  return {
-    x: c.x/100*W/H + s*(mx*Math.cos(th) - my*Math.sin(th)),
-    y: c.y/100     + s*(mx*Math.sin(th) + my*Math.cos(th))
-  };
+  return geometria.pantallaDesdeFotograma({ ...c, W, H }, q);
 }
 /* zoom anclado al cursor: el punto que apuntas no se mueve */
 function zoomEnCursor(k, factor, ev){
@@ -1633,7 +1648,7 @@ async function encuadreAuto(){
   /* componer: B debe quedar como A, más la transformación hallada */
   const A = clips.a, B = clips.b;
   const sA = A.zoom/100, thA = A.giro*Math.PI/180;
-  const tAx = A.x/100*cA.W/cA.H, tAy = A.y/100;
+  const { x:tAx, y:tAy } = geometria.pantallaDesdeFotograma({ ...A, W:cA.W, H:cA.H }, { u:0, v:0 });
   const tx = m.dx/Hg, ty = m.dy/Hg;
   const co = Math.cos(thA), si = Math.sin(thA);
   const zoom = A.zoom*m.s;
