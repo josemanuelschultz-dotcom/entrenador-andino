@@ -805,8 +805,8 @@ function pausar(){
   for(const k of ["a","b"]) if(clips[k].listo) clips[k].el.pause();
 }
 al("play", "click", ()=> estado.reproduciendo ? pausar() : reproducir());
-al("atras", "click", ()=>{ pausar(); irA(estado.t - 1/estado.fps, true); dibujar(); });
-al("adelante", "click", ()=>{ pausar(); irA(estado.t + 1/estado.fps, true); dibujar(); });
+al("atras", "click", ()=>{ pausar(); irA(estado.t - 1/estado.fps, true); pintarTransporte(); });
+al("adelante", "click", ()=>{ pausar(); irA(estado.t + 1/estado.fps, true); pintarTransporte(); });
 al("vel", "change", e=>{
   estado.vel = parseFloat(e.target.value);
   for(const k of ["a","b"]) if(clips[k].listo) clips[k].el.playbackRate = Math.min(Math.max(estado.vel * clips[k].esc, 0.0625), 16);
@@ -822,6 +822,9 @@ al("bucle", "click", ()=>{
 });
 
 /* ---------- reloj ---------- */
+/* marcas de "esto quedó desactualizado": el bucle de abajo las consume y las apaga,
+   así no repinta nada mientras el video está en pausa y quieto */
+const hayQueRepintar = { carriles:false };
 function reloj(){
   if(estado.reproduciendo){
     const act = activos();
@@ -841,19 +844,35 @@ function reloj(){
     const L = limites();
     if(estado.bucle && estado.salida!==null && estado.t >= estado.salida){ irA(estado.entrada, true); }
     else if(estado.t >= L.max - 0.03){ pausar(); irA(L.max, true); }
+    pintarTransporte();
+    if(typeof refrescarMandos === "function") refrescarMandos();
   }
-  dibujar();
+  if(hayQueRepintar.carriles){
+    /* un desfase pudo correr el rango visible de la regla, así que el transporte también se recalcula */
+    pintarCarriles();
+    pintarTransporte();
+    if(typeof pintarAnotaciones === "function") pintarAnotaciones();
+    if(typeof refrescarMandos === "function") refrescarMandos();
+    hayQueRepintar.carriles = false;
+  }
   requestAnimationFrame(reloj);
 }
 requestAnimationFrame(reloj);
 
 /* ---------- dibujo ---------- */
 function pct(t){ const d = dominio(); const span = Math.max(d.fin - d.ini, .001); return ((t - d.ini)/span)*100; }
-function dibujar(){
+/* lo que depende del instante actual: cronómetro, agujas y relojes por video */
+function pintarTransporte(){
   $("tc").textContent = estado.t.toFixed(2);
   const p = pct(estado.t)+"%";
   $("agujaR").style.left = p; $("agujaA").style.left = p; $("agujaB").style.left = p;
-
+  for(const k of ["a","b"]){
+    const c = clips[k], r = $("reloj"+k.toUpperCase());
+    r.textContent = c.listo ? c.el.currentTime.toFixed(2) : "—";
+  }
+}
+/* lo que depende del desfase y la duración de cada video, no del instante */
+function pintarCarriles(){
   for(const k of ["a","b"]){
     const c = clips[k], barra = $("clip"+k.toUpperCase());
     if(c.listo){
@@ -871,11 +890,12 @@ function dibujar(){
       z.hidden = false; z.style.left = pct(estado.entrada)+"%"; z.style.right = (100-pct(estado.salida))+"%";
     } else z.hidden = true;
   }
-  for(const k of ["a","b"]){
-    const c = clips[k], r = $("reloj"+k.toUpperCase());
-    r.textContent = c.listo ? c.el.currentTime.toFixed(2) : "—";
-  }
   marcasRegla();
+}
+/* repinta todo de una vez: la usan los clics sueltos que cambian varias cosas a la vez */
+function dibujar(){
+  pintarTransporte();
+  pintarCarriles();
   if(typeof pintarAnotaciones === "function") pintarAnotaciones();
   if(typeof refrescarMandos === "function") refrescarMandos();
 }
@@ -931,7 +951,7 @@ for(const k of ["a","b"]){
     const d = dominio(), r = pista.getBoundingClientRect();
     const delta = ((ev.clientX - inicioX)/r.width)*(d.fin - d.ini);
     clips[k].off = offInicial - delta*clips[k].esc;
-    irA(estado.t, true); dibujar();
+    irA(estado.t, true); hayQueRepintar.carriles = true;
   });
   const soltar = ()=>{ tomado = false; };
   pista.addEventListener("pointerup", soltar);
@@ -2004,8 +2024,8 @@ al("igualarPartida", "click", igualarPartida);
 
 /* ---------- mandos flotantes en pantalla completa ---------- */
 al("mPlay", "click", ()=> estado.reproduciendo ? pausar() : reproducir());
-al("mAtras", "click", ()=>{ pausar(); irA(estado.t - 1/estado.fps, true); dibujar(); });
-al("mAdelante", "click", ()=>{ pausar(); irA(estado.t + 1/estado.fps, true); dibujar(); });
+al("mAtras", "click", ()=>{ pausar(); irA(estado.t - 1/estado.fps, true); pintarTransporte(); });
+al("mAdelante", "click", ()=>{ pausar(); irA(estado.t + 1/estado.fps, true); pintarTransporte(); });
 al("mVel", "change", (e)=>{ $("vel").value = e.target.value; $("vel").dispatchEvent(new Event("change")); });
 al("mGuias", "click", ()=> $("verGuias").click());
 al("mFormas", "click", ()=> $("verFormas").click());
@@ -2069,10 +2089,10 @@ function repetible(el, accion){
   });
   ["pointerup","pointercancel","pointerleave"].forEach(e => el.addEventListener(e, parar));
 }
-repetible($("atras"), ()=>{ pausar(); irA(estado.t - 1/estado.fps, true); dibujar(); });
-repetible($("adelante"), ()=>{ pausar(); irA(estado.t + 1/estado.fps, true); dibujar(); });
-repetible($("mAtras"), ()=>{ pausar(); irA(estado.t - 1/estado.fps, true); dibujar(); });
-repetible($("mAdelante"), ()=>{ pausar(); irA(estado.t + 1/estado.fps, true); dibujar(); });
+repetible($("atras"), ()=>{ pausar(); irA(estado.t - 1/estado.fps, true); pintarTransporte(); });
+repetible($("adelante"), ()=>{ pausar(); irA(estado.t + 1/estado.fps, true); pintarTransporte(); });
+repetible($("mAtras"), ()=>{ pausar(); irA(estado.t - 1/estado.fps, true); pintarTransporte(); });
+repetible($("mAdelante"), ()=>{ pausar(); irA(estado.t + 1/estado.fps, true); pintarTransporte(); });
 repetible($("mAmenos"), ()=> moverSolo("a", -1));
 repetible($("mAmas"), ()=> moverSolo("a", 1));
 repetible($("mBmenos"), ()=> moverSolo("b", -1));
