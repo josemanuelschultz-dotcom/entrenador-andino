@@ -99,15 +99,16 @@ body{
 .pizarra{position:absolute;inset:0;z-index:6;pointer-events:none;touch-action:none}
 .pizarra.activa{pointer-events:auto;cursor:crosshair}
 .mandos{
-  position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:9;
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);z-index:9;
   display:none;flex-direction:column;gap:7px;padding:8px 10px;border-radius:12px;
   background:rgba(7,11,15,.84);border:1px solid var(--linea);
-  max-width:calc(100% - 20px);transition:opacity .25s;
+  width:260px;max-height:calc(100% - 20px);overflow-y:auto;scrollbar-width:none;
+  transition:opacity .25s;
 }
+.mandos::-webkit-scrollbar{display:none}
 body.completa .mandos,body.inmersivo .mandos{display:flex}
 .mandos.esfuma{opacity:0;pointer-events:none}
-.mFila{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
-.mFila::-webkit-scrollbar{display:none}
+.mFila{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .mandos button{
   border:1px solid var(--linea);background:var(--panel-alto);color:var(--texto);
   border-radius:7px;min-height:38px;padding:8px 11px;cursor:pointer;flex-shrink:0;
