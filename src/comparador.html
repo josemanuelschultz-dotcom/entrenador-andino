@@ -753,6 +753,8 @@ conectar("fileB", ["cargaB","cargaB2","barraB"], "b");
 const aClip = (c, t) => c.off + t*c.esc;
 const iniClip = (c) => -c.off/c.esc;
 const finClip = (c) => (c.dur - c.off)/c.esc;
+/* la inversa: instante maestro que corresponde a un instante propio del clip */
+const deClip = (c, tClip) => (tClip - c.off)/c.esc;
 
 /* clips que participan según el modo: individual usa uno solo */
 function activos(){
@@ -829,7 +831,7 @@ function reloj(){
     const act = activos();
     const lider = act.length ? clips[act[0]] : null;
     if(lider){
-      estado.t = (lider.el.currentTime - lider.off)/lider.esc;
+      estado.t = deClip(lider, lider.el.currentTime);
       const otro = act.length > 1 ? clips[act[1]] : null;
       if(otro){
         const destino = aClip(otro, estado.t);
@@ -1958,7 +1960,7 @@ async function trayectoria(k, N, avance){
     if(mejor < 6 || mejor > Wg*Hg*0.5) continue;   /* nada, o la toma entera cambió */
     const q = { u:(cxs - Wg/2)/Hg, v:(cys - Hg/2)/Hg };
     const p = aPantalla(k, q);
-    pts.push({ t:tiempos[i], m:(tiempos[i] - c.off)/c.esc, x:p.x, y:p.y });
+    pts.push({ t:tiempos[i], m:deClip(c, tiempos[i]), x:p.x, y:p.y });
   }
   return pts;
 }
