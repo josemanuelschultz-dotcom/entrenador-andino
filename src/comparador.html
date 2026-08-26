@@ -224,7 +224,10 @@ body.completa .mandos,body.inmersivo .mandos{display:flex}
 /* ---------- transporte ---------- */
 .transporte{background:var(--panel);border-top:1px solid var(--linea);flex-shrink:0}
 .fila{display:flex;align-items:center;gap:10px;padding:10px 14px}
-.fila.principal{flex-wrap:nowrap;padding-bottom:8px}
+.fila.principal{
+  flex-wrap:nowrap;padding-bottom:8px;overflow-x:auto;scrollbar-width:none;
+}
+.fila.principal::-webkit-scrollbar{display:none}
 .fila.util{
   gap:16px;padding-top:0;padding-bottom:10px;overflow-x:auto;flex-wrap:nowrap;
   scrollbar-width:none;border-top:1px solid var(--linea);padding-top:9px;margin-top:2px;
@@ -396,6 +399,16 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidde
 body.inmersivo .barra,body.inmersivo .transporte,body.inmersivo .ajustes{display:none}
 body.inmersivo .escena{position:fixed;inset:0;z-index:100}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---------- auto-ocultamiento en pantalla completa ---------- */
+body.completa .barra,body.completa .transporte,body.completa .herramientas,body.completa .mandos{
+  transition:opacity .3s ease,transform .3s ease;
+}
+body.completa .barra.oculta,body.completa .transporte.oculta,body.completa .herramientas.oculta,body.completa .mandos.oculta{
+  opacity:0;pointer-events:none;transform:translateY(-10px);
+}
+body.completa .barra.oculta{transform:translateY(-10px)}
+body.completa .transporte.oculta{transform:translateY(10px)}
 </style>
 </head>
 <body>
@@ -477,6 +490,7 @@ body.inmersivo .escena{position:fixed;inset:0;z-index:100}
     <button data-tool="rect" title="Rectángulo">▭</button>
     <button data-tool="circulo" title="Círculo">◯</button>
     <button data-tool="libre" title="Mano alzada">✎</button>
+    <button data-tool="borrador" title="Borrador selectivo">🧹</button>
     <button id="colorAnot" title="Color del trazo">●</button>
     <button id="deshacer" title="Deshacer">↶</button>
     <button id="borrarTodo" title="Borrar todo">⌫</button>
@@ -730,8 +744,18 @@ function conectar(inputId, botones, id){
     if(c.el.src) URL.revokeObjectURL(c.el.src);
     c.bloq = false;
     c.listo = false; c.nombre = f.name;
-    c.el.onerror = () => avisar(`No se pudo leer ${f.name}. Si es .MOV del iPad, expórtalo como MP4 (H.264).`);
+    /* en algunos Android el picker entrega un archivo que ni carga ni dispara error:
+       este aviso es el único rastro que queda para saber qué pasó */
+    let watchdog = setTimeout(()=> avisar(
+      `${f.name} no cargó en 10 s (tipo: ${f.type || "desconocido"}, ${(f.size/1048576).toFixed(0)} MB). `+
+      `Prueba con otro video o revisa la consola remota del navegador.`
+    ), 10000);
+    c.el.onerror = () => {
+      clearTimeout(watchdog);
+      avisar(`No se pudo leer ${f.name}. Si es .MOV del iPad, expórtalo como MP4 (H.264).`);
+    };
     c.el.onloadedmetadata = () => {
+      clearTimeout(watchdog);
       c.dur = c.el.duration || 0; c.listo = true;
       c.ancho = c.el.videoWidth || 16; c.alto = c.el.videoHeight || 9;
       $("nom"+id.toUpperCase()).textContent = id.toUpperCase()+" · "+f.name.replace(/\.[^.]+$/,"").slice(0,26);
@@ -859,10 +883,12 @@ function reloj(){
     /* un desfase pudo correr el rango visible de la regla, así que el transporte también se recalcula */
     pintarCarriles();
     pintarTransporte();
-    if(typeof pintarAnotaciones === "function") pintarAnotaciones();
     if(typeof refrescarMandos === "function") refrescarMandos();
     hayQueRepintar.carriles = false;
   }
+  /* las formas solo se ven en su propio cuadro, así que hay que revisar en cada tick
+     (reproduciendo, avanzando cuadro a cuadro o arrastrando la regla) cuáles tocan mostrar */
+  if(typeof pintarAnotaciones === "function") pintarAnotaciones();
   requestAnimationFrame(reloj);
 }
 requestAnimationFrame(reloj);
@@ -1803,12 +1829,21 @@ function pintarForma(f, pts){
     }
   }
 }
+/* una forma solo se ve en el cuadro en que se dibujó: compara contra el currentTime
+   propio del clip, con media duración de cuadro de margen (según los fps elegidos) */
+function mismoCuadro(f, k){
+  const c = clips[k];
+  if(!c || !c.listo || f.t == null) return false;
+  const tol = Math.max(0.5*c.esc/estado.fps, 0.005);
+  return Math.abs(f.t - c.el.currentTime) <= tol;
+}
 function pintarAnotaciones(){
   if(!piz.clientWidth) return;
   pz.clearRect(0, 0, piz.clientWidth, piz.clientHeight);
   const vis = activos();
   for(const k of vis)
-    for(const f of anot.formas[k]) pintarForma(f, f.pts.map(q => aEscenario(k, q)));
+    for(const f of anot.formas[k])
+      if(mismoCuadro(f, k)) pintarForma(f, f.pts.map(q => aEscenario(k, q)));
   if(anot.temp && vis.includes(anot.temp.clip))
     pintarForma(anot.temp, anot.temp.pts.map(q => aEscenario(anot.temp.clip, q)));
   if(anot.clicks.length && anot.clipActual)
@@ -1849,24 +1884,24 @@ piz.addEventListener("pointerdown", (ev)=>{
   anot.clipActual = k;
   const q = aFotograma(k, ev);
   if(anot.tool === "plomada"){
-    anot.formas[k].push({ tipo:"plomada", color:COLORES[anot.color], pts:[q] });
+    anot.formas[k].push({ tipo:"plomada", color:COLORES[anot.color], pts:[q], t:clips[k].el.currentTime });
     return;
   }
   if(anot.tool === "angulo"){
     anot.clicks.push(q);
     if(anot.clicks.length === 3){
-      anot.formas[k].push({ tipo:"angulo", color:COLORES[anot.color], pts:anot.clicks });
+      anot.formas[k].push({ tipo:"angulo", color:COLORES[anot.color], pts:anot.clicks, t:clips[k].el.currentTime });
       anot.clicks = [];
     }
     return;
   }
   pintando = true;
-  anot.temp = { tipo:anot.tool, color:COLORES[anot.color], clip:k, pts:[q, q] };
+  anot.temp = { tipo:anot.tool, color:COLORES[anot.color], clip:k, pts:[q, q], t:clips[k].el.currentTime };
 });
 piz.addEventListener("pointermove", (ev)=>{
   if(!pintando || !anot.temp) return;
   const q = aFotograma(anot.temp.clip, ev);
-  if(anot.temp.tipo === "libre") anot.temp.pts.push(q);
+  if(anot.temp.tipo === "libre" || anot.temp.tipo === "borrador") anot.temp.pts.push(q);
   else anot.temp.pts[1] = q;
 });
 const finPintar = ()=>{
@@ -1874,7 +1909,45 @@ const finPintar = ()=>{
   pintando = false;
   const p = anot.temp.pts;
   const largo = Math.hypot(p[p.length-1].u - p[0].u, p[p.length-1].v - p[0].v);
-  if(largo > 0.01 || anot.temp.tipo === "libre") anot.formas[anot.temp.clip].push(anot.temp);
+  const k = anot.temp.clip;
+
+  if(anot.temp.tipo === "borrador"){
+    // El borrador elimina formas cercanas
+    const radio = 0.05; // Radio de influencia del borrador en unidades normalizadas
+    const formasABorrar = [];
+
+    for(let i = 0; i < anot.formas[k].length; i++){
+      const forma = anot.formas[k][i];
+      if(!mismoCuadro(forma, k)) continue; // solo se borra lo que se ve en este cuadro
+      let estaEnArea = false;
+
+      // Verificar si la forma está dentro del área del borrador
+      for(const ptBorrador of p){
+        for(const ptForma of forma.pts){
+          const dist = Math.hypot(ptForma.u - ptBorrador.u, ptForma.v - ptBorrador.v);
+          if(dist < radio){
+            estaEnArea = true;
+            break;
+          }
+        }
+        if(estaEnArea) break;
+      }
+
+      if(estaEnArea) formasABorrar.push(i);
+    }
+
+    // Eliminar las formas en orden inverso para no perder índices
+    for(let i = formasABorrar.length - 1; i >= 0; i--){
+      anot.formas[k].splice(formasABorrar[i], 1);
+    }
+
+    if(formasABorrar.length > 0){
+      avisar("Borrado: "+formasABorrar.length+" forma(s)");
+      dibujar();
+    }
+  } else if(largo > 0.01 || anot.temp.tipo === "libre"){
+    anot.formas[anot.temp.clip].push(anot.temp);
+  }
   anot.temp = null;
 };
 piz.addEventListener("pointerup", finPintar);
@@ -2215,6 +2288,59 @@ function refrescarMandos(){
 
 transformar("a"); transformar("b"); notaSync();
 seleccionar("a"); aplicarModo(); dibujar();
+</script>
+
+<!-- Auto-ocultamiento de UI en pantalla completa -->
+<script>
+(function() {
+  const elementosUI = [
+    document.querySelector('.barra'),
+    document.querySelector('.transporte'),
+    document.querySelector('.herramientas'),
+    document.querySelector('.mandos')
+  ].filter(el => el !== null);
+
+  const pizarra = document.querySelector('.pizarra');
+
+  let timeoutOcultar;
+  const TIEMPO_INACTIVIDAD = 2000; // 2 segundos
+
+  function mostrar() {
+    elementosUI.forEach(el => el.classList.remove('oculta'));
+    // Asegurar que la pizarra siempre sea visible
+    if (pizarra) pizarra.style.opacity = '1';
+    clearTimeout(timeoutOcultar);
+  }
+
+  function ocultarUI() {
+    const body = document.body;
+    if (body.classList.contains('completa') || body.classList.contains('inmersivo')) {
+      elementosUI.forEach(el => el.classList.add('oculta'));
+      // Los dibujos siempre permanecen visibles
+      if (pizarra) pizarra.style.opacity = '1';
+    }
+  }
+
+  function programarOcultamiento() {
+    clearTimeout(timeoutOcultar);
+    mostrar();
+    timeoutOcultar = setTimeout(ocultarUI, TIEMPO_INACTIVIDAD);
+  }
+
+  // Escuchar interacciones del usuario
+  const eventos = ['mousemove', 'touchstart', 'click', 'keydown'];
+  eventos.forEach(evento => {
+    document.addEventListener(evento, programarOcultamiento, { passive: true });
+  });
+
+  // Asegurarse de que se oculte cuando se entre a pantalla completa
+  const botones = document.querySelectorAll('[data-fullscreen], [id*="Salir"], [title*="completa"]');
+  botones.forEach(btn => {
+    btn.addEventListener('click', () => {
+      setTimeout(programarOcultamiento, 100);
+    });
+  });
+})();
 </script>
 </body>
 </html>
