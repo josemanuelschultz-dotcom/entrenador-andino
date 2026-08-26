@@ -1,0 +1,28 @@
+# sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# editores
+.vscode/
+.idea/
+*.swp
+
+# material de prueba: los videos no van al repositorio
+*.mp4
+*.mov
+*.m4v
+*.webm
+*.avi
+videos/
+videos-prueba/
+
+# claves y configuración local
+.env
+.env.*
+config.local.js
+
+# empaquetado
+*.zip
+dist/
+node_modules/

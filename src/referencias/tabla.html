@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07101e">
+<title>Tabla de Desarrollo · U6-U16</title>
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<script src="./react.production.min.js"></script>
+<script src="./react-dom.production.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const {
+  useState
+} = React;
+const FONTS = `@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap');`;
+const DATA = [{
+  cat: "U6",
+  ages: "4–5 años",
+  usst_level: "Skill Quest · Discovery",
+  nsf_stage: "Snølek",
+  nsf_concept: "Lek og trygghet",
+  nsf_concept_es: "Juego y seguridad",
+  color: "#f078b4",
+  ratio: {
+    libre: 100,
+    puertas: 0
+  },
+  profile: ["Primer contacto con la nieve y el equipo: el único objetivo real es que asocien esquiar con diversión", "Etapa 'Active Start' (LTAD, coach.ca): se desarrollan patrones motores básicos, no técnica de esquí", "Atención sostenida de 3–5 minutos: absolutamente todo debe ser un juego", "El frío, el miedo y el cansancio son los enemigos #1: sesiones muy cortas con pausas frecuentes", "Aprenden por imitación y juego libre, con cero instrucción verbal técnica"],
+  usst_focus: [{
+    f: "Balance",
+    text: "Estar de pie sobre los skis, deslizar unos metros en pendiente muy suave y recuperar el equilibrio. La base de todo: sentirse seguro sobre el equipo."
+  }, {
+    f: "Rotary",
+    text: "Cambiar de dirección caminando con los skis (paso de pato / abanico). Aún no hay giro deslizado: se gira caminando."
+  }, {
+    f: "Edge",
+    text: "Subir una cuesta muy pequeña en 'escalera' o 'espina de pescado' sintiendo que el canto agarra. Primer contacto con la idea de canto."
+  }, {
+    f: "Pressure",
+    text: "Sentir los skis como parte de los pies: caminar, arrastrar, dar pasos. Familiarización total con el material antes que cualquier técnica."
+  }],
+  nsf_pillars: [{
+    title: "Lek",
+    es: "Juego",
+    text: "NSF: a esta edad el esquí ES juego. No hay 'clase de esquí', hay juegos que casualmente se hacen con skis puestos."
+  }, {
+    title: "Trygghet",
+    es: "Seguridad y confianza",
+    text: "El niño debe sentirse seguro: terreno plano, cerca de un adulto, sin pendientes que asusten. La confianza es el único prerrequisito."
+  }, {
+    title: "Allsidig bevegelse",
+    es: "Movimiento variado",
+    text: "Correr, saltar, rodar, trepar — con y sin skis. Los patrones motores generales importan más que cualquier gesto de esquí."
+  }],
+  tech_objectives: ["Ponerse de pie sobre los esquís y mantenerse en equilibrio en terreno plano", "Deslizar en línea recta unos metros en una pendiente mínima", "Levantarse solo después de una caída (habilidad clave de autonomía)", "Caminar sobre los esquís en plano y subir una cuestita pequeña", "Detenerse a voluntad con una cuña muy básica ('pizza')"],
+  tech_tools: [{
+    name: "Deslizamiento (Gliding)",
+    desc: "Deslizar unos metros en pendiente casi plana con los skis paralelos. El niño descubre la sensación de resbalar y que no da miedo. Base de todo."
+  }, {
+    name: "Primera cuña ('Pizza')",
+    desc: "Juntar las puntas de los skis formando una porción de pizza para frenar. Se introduce como juego ('haz la pizza para parar'), nunca como técnica."
+  }, {
+    name: "Paso de pato / Espina de pescado",
+    desc: "Subir una cuestita pequeña abriendo las puntas y apoyando el canto interno. Enseña de forma natural que el canto agarra la nieve."
+  }, {
+    name: "Levantarse tras la caída",
+    desc: "Colocar los skis perpendiculares a la pendiente, juntar las manos sobre las rodillas y empujar. Autonomía básica: caerse es normal y divertido."
+  }],
+  ped_tools: [{
+    name: "Todo es un juego",
+    desc: "Nada se llama 'ejercicio'. Se llama 'el juego del tren', 'atrapar el tesoro'. La palabra 'técnica' no existe en U6."
+  }, {
+    name: "Modelado / imitación",
+    desc: "El instructor hace el movimiento de forma exagerada y divertida; los niños lo copian. Ver → imitar → reír → repetir."
+  }, {
+    name: "Grupos de 3–5 máximo",
+    desc: "A esta edad un adulto no puede atender con seguridad a más de 4–5 niños. La supervisión es prioridad absoluta."
+  }, {
+    name: "Refuerzo positivo constante",
+    desc: "Celebrar cada intento, cada caída superada. Cero corrección negativa. El niño debe salir queriendo volver mañana."
+  }, {
+    name: "Sesiones cortas con pausas",
+    desc: "Bloques de 5–10 min con pausas para chocolate caliente, jugar en la nieve o descansar. Frío y cansancio arruinan el aprendizaje."
+  }],
+  drills: [{
+    n: "01",
+    name: "El Tren de Animales",
+    desc: "Fila india imitando animales: caminar como pingüino, saltar como conejo, deslizar como serpiente. Movimiento variado con skis puestos.",
+    src: "NSF"
+  }, {
+    n: "02",
+    name: "Luz Roja, Luz Verde",
+    desc: "Deslizan cuando el instructor dice 'verde' y hacen la pizza para frenar con 'rojo'. Enseña deslizar y parar jugando.",
+    src: "Coach.ca"
+  }, {
+    n: "03",
+    name: "Atrapa el Tesoro",
+    desc: "Aros o juguetes de colores en la nieve; el niño los recoge mientras se desliza o camina. Induce flexión y equilibrio sin instrucción.",
+    src: "NSF / Coach.ca"
+  }, {
+    n: "04",
+    name: "El Túnel Mágico",
+    desc: "Un arco blando o dos instructores dándose las manos forman un túnel; el niño se desliza por debajo agachándose. Enseña flexión y deslizar recto.",
+    src: "NSF"
+  }, {
+    n: "05",
+    name: "Levántate Solo",
+    desc: "Juego de 'quién se levanta más rápido' tras sentarse en la nieve. Practica la habilidad de recuperarse tras una caída de forma divertida.",
+    src: "Coach.ca"
+  }],
+  pole_drills: [{
+    name: "Circuito de Conos de Colores",
+    setup: "4–6 conos blandos de colores en plano o pendiente mínima, separados 3–4 m, formando un recorrido serpenteante.",
+    fundamental: "Balance · Rotary",
+    objective: "Que el niño deslice y cambie de dirección siguiendo un recorrido divertido, sin corrección verbal.",
+    execution: "El niño sigue los conos como un caminito. No importa la técnica: importa que se divierta y complete el recorrido.",
+    coaching_tip: "Observar solo si se mantiene en pie y sonríe. Si se cae, celebrarlo y ayudar a levantarse. Nada de correcciones.",
+    difficulty: "U6"
+  }, {
+    name: "El Arco para Agacharse",
+    setup: "Un arco blando o inflable cruzando el caminito, a la altura del pecho del niño, en terreno plano.",
+    fundamental: "Balance · Pressure",
+    objective: "Inducir la flexión de rodillas de forma natural: para pasar bajo el arco hay que agacharse.",
+    execution: "El niño pasa por debajo del arco agachándose mientras se desliza o camina. Puede repetirlo tantas veces como quiera.",
+    coaching_tip: "Si se agacha doblando solo la espalda, no corregir: a esta edad basta con que pase y se divierta. La flexión llegará con el juego.",
+    difficulty: "U6"
+  }, {
+    name: "Puerta del Castillo",
+    setup: "Dos conos altos o postes blandos formando una 'puerta' ancha (1,5 m) al final de una pendiente mínima.",
+    fundamental: "Balance · Rotary",
+    objective: "Dar un objetivo hacia el que deslizar: 'entra al castillo'. Introduce la idea de dirigirse a un punto.",
+    execution: "El niño se desliza desde arriba y debe pasar entre los dos conos. La puerta es muy ancha: casi imposible fallar.",
+    coaching_tip: "El objetivo es el éxito garantizado y la alegría de lograrlo. Ensanchar la puerta si algún niño la falla. Nunca cronometrar.",
+    difficulty: "U6"
+  }],
+  fund_exercises: [{
+    fund: "Balance",
+    color: "#60a8d0",
+    exercises: [{
+      name: "Estatua sobre Skis",
+      how: "En plano, el niño se queda quieto como una estatua sobre los esquís durante 3–5 segundos cuando el entrenador lo indica. Juego de equilibrio estático básico.",
+      reps: "5–6 veces, muy corto",
+      src: "Coach.ca"
+    }, {
+      name: "Deslizar por el Túnel",
+      how: "Deslizar en línea recta por una pendiente mínima pasando bajo un arco o entre dos instructores. El objetivo es simplemente deslizar y mantenerse en pie.",
+      reps: "4–6 deslizamientos",
+      src: "NSF"
+    }]
+  }, {
+    fund: "Edge Control",
+    color: "#00c896",
+    exercises: [{
+      name: "Espina de Pescado",
+      how: "Subir una cuestita muy pequeña abriendo las puntas de los skis como pato y apoyando el canto interno. Se presenta como 'subir la montañita' para volver a deslizar.",
+      reps: "2–3 subidas cortas",
+      src: "Coach.ca / NSF"
+    }, {
+      name: "Pisadas de Gigante",
+      how: "Caminar sobre los esquís en plano dando pasos grandes y exagerados. Familiariza al niño con el peso del equipo y el apoyo del pie sobre el esquí.",
+      reps: "10–15 pasos",
+      src: "NSF"
+    }]
+  }, {
+    fund: "Pressure Control",
+    color: "#f0bf35",
+    exercises: [{
+      name: "La Pizza Mágica",
+      how: "Formar una cuña ('pizza') con las puntas juntas para frenar en pendiente mínima. Se juega a 'hacer la pizza para parar antes del muñeco'.",
+      reps: "5–6 frenadas",
+      src: "Coach.ca"
+    }, {
+      name: "Pies Pesados / Pies Ligeros",
+      how: "En plano, el niño 'aprieta' los pies contra la nieve (pesados) y luego los relaja (ligeros). Primer contacto lúdico con la idea de presión.",
+      reps: "1–2 min de juego",
+      src: "NSF"
+    }]
+  }, {
+    fund: "Rotary",
+    color: "#e8302a",
+    exercises: [{
+      name: "El Abanico",
+      how: "Girar en el sitio dando pasitos con las colas de los skis juntas y abriendo las puntas, como un abanico. El niño 'da la vuelta' para mirar a otro lado.",
+      reps: "Media vuelta a cada lado",
+      src: "Coach.ca / NSF"
+    }, {
+      name: "Sigue al Instructor",
+      how: "El niño imita al instructor que cambia de dirección caminando con los skis hacia conos o juguetes. Girar caminando hacia un objetivo, sin deslizar aún.",
+      reps: "4–6 cambios de dirección",
+      src: "NSF"
+    }]
+  }],
+  volume: "1–2 días/semana · sesiones de 30–45 min con pausas frecuentes · máximo 1–2 h de nieve/día",
+  competition: "Ninguna. Cero cronómetro, cero comparación. Solo juegos, medallas de participación y chocolate caliente. El único 'resultado' es que quieran volver.",
+  red_flags: ["Intentar enseñar técnica de esquí ('flexiona', 'canto') a esta edad", "Sesiones largas sin pausas: el frío y el cansancio generan rechazo", "Llevarlos a pendientes que dan miedo para 'que aprendan'", "Comparar niños o insinuar competencia", "Corregir verbalmente en vez de dejar que el juego enseñe"],
+  exit_criteria: ["Se desliza en control unos metros en pendiente muy suave", "Se detiene a voluntad con una cuña básica", "Se levanta solo después de una caída", "Disfruta genuinamente y quiere volver a esquiar"]
+}, {
+  cat: "U8",
+  ages: "6–7 años",
+  usst_level: "Skill Quest Nivel 1–2",
+  nsf_stage: "Alpinbarna",
+  nsf_concept: "Glede og mestring",
+  nsf_concept_es: "Alegría y dominio",
+  color: "#e8302a",
+  ratio: {
+    libre: 95,
+    puertas: 5
+  },
+  profile: ["Pensamiento concreto: aprende por imitación directa, no por instrucción verbal abstracta", "Ventana crítica para instalar el esquema corporal sobre nieve y equipo", "Alta neuroplasticidad: los patrones motores aprendidos ahora persisten toda la vida", "Atención sostenida muy corta (5–8 min): sesiones variadas y lúdicas obligatorias", "El miedo inhibe el aprendizaje motor: la confianza es el prerrequisito técnico #1"],
+  usst_focus: [{
+    f: "Balance",
+    text: "Posición atlética estática → dinámica. Equilibrio sobre skis en movimiento, antepié/talón, CM sobre la base de sustentación."
+  }, {
+    f: "Rotary",
+    text: "Rotación de cuerpo completo para cambiar dirección. Sin disociación aún: todo el cuerpo acompaña el giro."
+  }, {
+    f: "Edge",
+    text: "Noción de canto interno/externo. Juegos de aristas: caminar de lado, ascender en canto. Sin angulación consciente."
+  }, {
+    f: "Pressure",
+    text: "Sentir el ski como extensión del pie. Distinguir presión antepié vs talón con ejercicios estáticos y en movimiento."
+  }],
+  nsf_pillars: [{
+    title: "Allsidig bevegelse",
+    es: "Movimiento variado",
+    text: "Juegos en nieve con y sin skis. El esquí es UN deporte más, no el único. NSF: la especialización temprana es el mayor riesgo."
+  }, {
+    title: "Mesterlæren",
+    es: "Aprendizaje por imitación",
+    text: "El niño imita al instructor que esquía adelante. No se corrige verbalmente: se modela el movimiento correcto."
+  }, {
+    title: "Terrenglek",
+    es: "Juego en el terreno",
+    text: "Pequeñas rampas, baches, variaciones de pendiente. El terreno enseña más que el instructor."
+  }],
+  tech_objectives: ["Cuñado controlado: poder girar a voluntad hacia ambos lados", "Posición atlética básica visible: flexión de rodillas y caderas, tibias al frente", "Primeros giros paralelos enlazados en pendiente suave (2–3 consecutivos)", "Control de velocidad mediante giro, sin depender solo del freno", "Transferencia de peso al ski externo durante el giro cuñado"],
+  tech_tools: [{
+    name: "Athletic Stance",
+    desc: "Posición de guardameta de hockey: pies al ancho de hombros, rodillas y caderas en flexión activa, brazos al frente y bajos, vista al horizonte. Base de todo movimiento técnico posterior."
+  }, {
+    name: "Ski externo cargado",
+    desc: "En el giro cuñado, levantar el ski interno del suelo 2–3 segundos. Todo el peso migra al ski externo (el conductor del giro). Precursor directo del giro paralelo."
+  }, {
+    name: "Flexión/Extensión activa",
+    desc: "Agacharse y levantarse mientras se esquía. Los skis son 'los pies': las piernas amortiguan el terreno como muelles. Base del shock absorption."
+  }, {
+    name: "Direccionamiento por objeto",
+    desc: "El instructor señala un árbol, bandera o compañero. El niño apunta los skis hacia allá. Evitar corrección corporal directa: la tarea externa produce el movimiento correcto."
+  }],
+  ped_tools: [{
+    name: "Task-based learning (NSF)",
+    desc: "Dar una tarea externa ('toca ese cono', 'sigue mi estela') en lugar de correcciones corporales. El cerebro resuelve el movimiento solo."
+  }, {
+    name: "Modelado directo",
+    desc: "El entrenador esquía adelante, los niños siguen. Sin explicaciones largas: ver → imitar → repetir."
+  }, {
+    name: "Juego competitivo",
+    desc: "¿Quién llega primero al cono rojo? La motivación intrínseca acelera el aprendizaje motor más que cualquier instrucción técnica."
+  }, {
+    name: "Retroalimentación 4:1",
+    desc: "Siempre nombrar 4 cosas que SÍ salieron bien antes de 1 corrección. Ratio obligatorio en U8."
+  }, {
+    name: "Grupos de 4–6 máx.",
+    desc: "NSF recomienda máximo 6 niños por entrenador en U8 para que el instructor vea a cada niño en cada bajada."
+  }],
+  drills: [{
+    n: "01",
+    name: "El Tren",
+    desc: "Fila india. El instructor esquía adelante con movimientos exagerados. Los niños imitan todo: agacharse, saltar, gritar, levantar bastones.",
+    src: "NSF"
+  }, {
+    n: "02",
+    name: "Toca el Cono",
+    desc: "Conos de colores en la nieve. El niño debe tocarlos con la mano mientras pasa. Induce inclinación lateral natural sin corrección verbal.",
+    src: "NSF / CSIA"
+  }, {
+    n: "03",
+    name: "Silla Invisible",
+    desc: "Bajar sentado en una silla imaginaria. Talones abajo, tibias al frente, espalda recta. Base de la posición atlética.",
+    src: "USST"
+  }, {
+    n: "04",
+    name: "Ski Sobre Un Ski",
+    desc: "Levantar el ski interno completamente durante el giro. Fuerza todo el peso al ski externo. Precursor directo del paralelo.",
+    src: "USST / NSF"
+  }, {
+    n: "05",
+    name: "Saltitos en Pendiente",
+    desc: "Pequeños saltos en pendiente suave. Aterrizaje absorbiendo con piernas. Quita rigidez y enseña los skis como extensión del cuerpo.",
+    src: "NSF"
+  }],
+  pole_drills: [{
+    name: "El Corredor",
+    setup: "4–6 pares de palos verticales formando un corredor de 80cm, separados 3–4m entre pares a lo largo de la pista.",
+    fundamental: "Balance · Rotary",
+    objective: "Desarrollar direccionamiento básico y control de línea sin corrección verbal.",
+    execution: "El niño baja intentando no tocar los palos. Si toca uno, el entrenador pregunta '¿por qué?' sin dar la respuesta.",
+    coaching_tip: "Observar si el niño gira el cuerpo completo o solo la cabeza. Si va muy ancho, reducir velocidad primero.",
+    difficulty: "U8+"
+  }, {
+    name: "Saltamos el Palo",
+    setup: "Un palo horizontal apoyado sobre dos conos cruzando la pista. Altura: ras del suelo, máximo 10cm.",
+    fundamental: "Balance · Pressure",
+    objective: "Desarrollar extensión y flexión activa de piernas. El salto obliga a cargar el antepié y absorber en el aterrizaje.",
+    execution: "Bajar en línea recta y saltar el palo con ambos skis. Aterrizar lo más silencioso posible absorbiendo con piernas flexionadas.",
+    coaching_tip: "Aterrizaje ruidoso = piernas rígidas. Aterrizaje lateral = desequilibrio. El objetivo es aterrizaje silencioso y centrado.",
+    difficulty: "U8+"
+  }, {
+    name: "Toca el Palo Inclinado",
+    setup: "Palo inclinado hacia el exterior de la curva a ~45°, con la punta alta al nivel del hombro del niño. Ubicar en el apex del giro.",
+    fundamental: "Edge Control · Balance",
+    objective: "Inducir inclinación lateral natural hacia el interior de la curva sin que el entrenador diga nada sobre el cuerpo.",
+    execution: "El niño toca el palo con la mano del lado interior de la curva al pasar. El toque es suave, no aferrar. Alternar lados.",
+    coaching_tip: "Si el niño no puede alcanzar el palo, está demasiado vertical. No decir 'inclínate': dejar que el palo lo enseñe.",
+    difficulty: "U8+"
+  }],
+  fund_exercises: [{
+    fund: "Balance",
+    color: "#60a8d0",
+    exercises: [{
+      name: "Silla Invisible",
+      how: "Bajar en posición de silla imaginaria: talones abajo, tibias al frente, espalda recta. Mantener durante 3 giros completos. El instructor camina al lado evaluando la flexión.",
+      reps: "3–4 bajadas cortas",
+      src: "USST"
+    }, {
+      name: "Saltitos en Pendiente",
+      how: "En pendiente muy suave, dar saltitos pequeños mientras se desciende. Aterrizar silenciosamente absorbiendo con piernas. Si hay ruido fuerte al aterrizar, las piernas están rígidas.",
+      reps: "10–15 saltos por bajada",
+      src: "NSF"
+    }]
+  }, {
+    fund: "Edge Control",
+    color: "#00c896",
+    exercises: [{
+      name: "Caminar en Canto",
+      how: "En pendiente suave, caminar de lado usando el canto del ski para no resbalar. Identificar canto interno y externo. Sentir cómo el canto 'muerde' la nieve.",
+      reps: "10–15 pasos cada lado",
+      src: "USST"
+    }, {
+      name: "Toca el Cono",
+      how: "Conos de colores cada 5–6m. El niño los toca con la mano del lado interno mientras pasa. La acción de agacharse induce inclinación lateral sin corrección verbal.",
+      reps: "6–8 conos por bajada",
+      src: "NSF / CSIA"
+    }]
+  }, {
+    fund: "Pressure Control",
+    color: "#f0bf35",
+    exercises: [{
+      name: "Ski Sobre Un Ski",
+      how: "Durante el giro cuñado, levantar el ski interno 2–3 segundos. Todo el peso pasa al ski externo. Si cae hacia el interior, el ski externo no está realmente cargado.",
+      reps: "3–4 giros por lado",
+      src: "USST / NSF"
+    }, {
+      name: "Presión Antepié vs Talón",
+      how: "En terreno plano: 'empuja los dedos del pie contra la bota' → sentir que los skis punta se hunden. Luego 'empuja el talón'. Alternar y describir la diferencia.",
+      reps: "2 min ejercicio estático",
+      src: "USST"
+    }]
+  }, {
+    fund: "Rotary",
+    color: "#e8302a",
+    exercises: [{
+      name: "Giro al Objeto",
+      how: "El instructor señala un árbol o cono. El niño apunta sus skis hacia allá y mantiene el giro. Sin explicar cómo girar: la tarea externa produce el movimiento correcto.",
+      reps: "6–8 objetos por bajada",
+      src: "NSF"
+    }, {
+      name: "Cuñado Dirigido con Señales",
+      how: "Con cuñado, el instructor señala izquierda o derecha con el bastón. El niño gira hacia allá. Aumentar frecuencia de señales para desarrollar reacción motora rápida.",
+      reps: "Bajada completa, 2–3 repeticiones",
+      src: "USST"
+    }]
+  }],
+  volume: "2–3 días/semana · sesiones de 60–90 min · máx 4h nieve/día",
+  competition: "Sin cronómetro. Gymkhanas, carreras de habilidad, circuitos de obstáculos. El objetivo es que QUIERAN volver.",
+  red_flags: ["Cronometrar resultados o comparar tiempos entre niños", "Sesiones técnicas largas sin juego (>15 min técnica seguida)", "Correcciones verbales complejas ('angula la cadera hacia adentro')", "Forzar paralelo antes de que el cuñado sea dominado", "Empezar en pendientes pronunciadas para 'obligar' al aprendizaje"],
+  exit_criteria: ["Giro cuñado controlado a voluntad en ambos lados", "2–3 giros paralelos enlazados en pendiente verde", "Posición atlética visible sin instrucción constante", "Entusiasmo genuino: quiere volver a esquiar"]
+}, {
+  cat: "U10",
+  ages: "8–9 años",
+  usst_level: "Skill Quest Nivel 3",
+  nsf_stage: "Minialpinisten",
+  nsf_concept: "Allsidig terrenglek",
+  nsf_concept_es: "Juego en terreno variado",
+  color: "#d4a843",
+  ratio: {
+    libre: 80,
+    puertas: 20
+  },
+  profile: ["Período sensible de coordinación: la habilidad motora aprendida ahora se automatiza rápidamente", "Capaz de recibir retroalimentación más específica sobre partes del cuerpo", "Puede mantener atención técnica por 10–15 minutos", "Alta motivación por el juego competitivo con compañeros (carreras, desafíos)", "Puede comprender conceptos simples de 'inside ski / outside ski'"],
+  usst_focus: [{
+    f: "Balance",
+    text: "Equilibrio dinámico en terreno variado: baches, nieve blanda, cambios de inclinación. Presión regulada automáticamente por el terreno."
+  }, {
+    f: "Edge",
+    text: "Canto activo y consciente. Distinguir inclinación (cuerpo completo) de angulación (rodilla/cadera). Primeras trazas limpias en nieve dura."
+  }, {
+    f: "Pressure",
+    text: "Transferencia de presión ski a ski en la transición. Ski externo claramente cargado durante todo el arco del giro."
+  }, {
+    f: "Rotary",
+    text: "Inicio de separación tronco-piernas: cadera comienza a apuntar más recto mientras piernas giran. Primer 'counter' rudimentario."
+  }],
+  nsf_pillars: [{
+    title: "Variert terreng",
+    es: "Terreno variado",
+    text: "Moguls pequeños, nieve blanda, rampas. NSF: 'el terreno irregular es el mejor maestro de absorción'."
+  }, {
+    title: "Grunnleggende ferdigheter",
+    es: "Habilidades fundamentales",
+    text: "Paralelismo consolidado, canto activo y ski externo. Base técnica sólida antes de cualquier puerta."
+  }, {
+    title: "Glede i konkurranse",
+    es: "Alegría en la competencia",
+    text: "Primeras puertas muy abiertas. Medir el aprendizaje, no el resultado. La puerta como referencia, no como presión."
+  }],
+  tech_objectives: ["Paralelo consolidado en pendientes variadas, nieve blanda y dura", "Ski externo conscientemente cargado durante todo el arco", "Primera angulación de rodillas visible hacia el interior de la curva", "Canto activo: el ski 'corta' la nieve, no la empuja", "Ritmo constante y equilibrado entre giro derecho e izquierdo"],
+  tech_tools: [{
+    name: "Inclinación vs Angulación",
+    desc: "Enseñar explícitamente la diferencia: inclinación = todo el cuerpo se inclina. Angulación = rodillas hacia adentro mientras tronco más erecto. La angulación es más eficiente."
+  }, {
+    name: "Garland / Festón",
+    desc: "Iniciar el giro hasta cruzar la fall line, luego volver sin completarlo. Repetir 4–5 veces al mismo lado. Desarrolla sentido del arco, canto y presión acumulada."
+  }, {
+    name: "Cross-over básico",
+    desc: "En la transición, el cuerpo 'sube' sobre los skis cambiando el peso. Introducción al concepto de transferencia lateral del CM."
+  }, {
+    name: "Bastón detrás",
+    desc: "Tomar ambos bastones por las puntas y apoyarlos en la nieve detrás. Cualquier rotación excesiva del tronco lo revela inmediatamente."
+  }],
+  ped_tools: [{
+    name: "Corrección por tareas (NSF)",
+    desc: "'Deja una huella limpia en la nieve' en lugar de 'presiona el canto'. La imagen externa produce el movimiento interno correcto."
+  }, {
+    name: "Video feedback simple",
+    desc: "Mostrar 5–10 segundos de la propia bajada. Solo UN punto de enfoque por video. Sin pausar ni analizar: impresión global."
+  }, {
+    name: "Terreno como maestro (NSF)",
+    desc: "Usar moguls pequeños deliberadamente. El atleta resuelve la adaptación sin instrucción verbal. Luego reflexión conjunta."
+  }, {
+    name: "Feedback sandwich",
+    desc: "Bien → Qué mejorar → Bien. Mantener motivación mientras se introduce corrección técnica más específica."
+  }],
+  drills: [{
+    n: "01",
+    name: "Ski Sobre Un Ski",
+    desc: "Bajar tramos levantando el ski interno completamente. El más importante de esta etapa: instala el peso en el ski externo.",
+    src: "USST"
+  }, {
+    n: "02",
+    name: "Bastones Atrás",
+    desc: "Bastones tomados por las puntas, apoyados en la nieve detrás. Revela rotación excesiva del tronco inmediatamente.",
+    src: "USST / NSF"
+  }, {
+    n: "03",
+    name: "Garland en Nieve Dura",
+    desc: "Festones alternados en pista dura. Desarrolla confianza en el canto y sensación del ski tallando.",
+    src: "USST"
+  }, {
+    n: "04",
+    name: "Puertas de Colores Abiertas",
+    desc: "Puertas muy separadas (20–25m). Sin tiempo. Solo pasar al centro con buena postura. El ritmo importa, no la velocidad.",
+    src: "NSF"
+  }, {
+    n: "05",
+    name: "Moguls Pequeños",
+    desc: "Bajar entre moguls sin instrucciones técnicas. El terreno enseña absorción y adaptabilidad automáticamente.",
+    src: "NSF"
+  }],
+  pole_drills: [{
+    name: "Palo Exterior Inclinado — Toca el Hombro",
+    setup: "Palo inclinado ~45° hacia el exterior de la curva, punta al nivel del hombro del esquiador, en el apex del giro.",
+    fundamental: "Edge Control · Balance",
+    objective: "Forzar inclinación hacia el interior de la curva. El esquiador debe pasar con el hombro interior rozando la punta del palo.",
+    execution: "En GS abierto. En cada apex el hombro interior pasa junto al palo inclinado. Si no lo roza, fue demasiado vertical.",
+    coaching_tip: "El roce suave indica inclinación correcta. Solo vale si inclina el cuerpo completo, no solo la cabeza.",
+    difficulty: "U10+"
+  }, {
+    name: "Palo del Apex (Referencia de Línea)",
+    setup: "Palo vertical en el punto exacto del apex del giro ideal, 1–1.5m arriba de la puerta (no en la puerta).",
+    fundamental: "Line Management · Timing",
+    objective: "Hacer visible dónde está el apex correcto del giro. Pasar junto al palo confirma que el arco fue correcto.",
+    execution: "Pasar junto al palo (a 30–40cm). Lejos por abajo = giro tardío. Lejos por arriba = giro demasiado temprano.",
+    coaching_tip: "Preguntar si pasó cerca o lejos del palo. Desarrolla conciencia de línea. Combinar con video.",
+    difficulty: "U10+"
+  }, {
+    name: "Palo Horizontal Bajo",
+    setup: "Dos palos verticales a ambos lados de la pista. Un tercer palo apoyado horizontalmente a la altura de la cadera.",
+    fundamental: "Balance · Edge Control",
+    objective: "Forzar posición baja y angulación lateral simultáneas. Para pasar sin tocarlo, el esquiador debe flexionar piernas Y angular cadera.",
+    execution: "El palo horizontal está en el apex del giro. El esquiador debe agacharse y angularse para pasar bajo él.",
+    coaching_tip: "Observar si dobla solo la espalda (error) o flexiona piernas y angula cadera (correcto). El movimiento correcto viene de piernas abajo.",
+    difficulty: "U10+"
+  }, {
+    name: "Corredor Interior (Radio de Giro)",
+    setup: "Un palo vertical plantado 80cm–1m al interior de la puerta. Junto con la puerta forma un corredor estrecho.",
+    fundamental: "Rotary · Line Management",
+    objective: "Impedir el giro demasiado abierto o demasiado cerrado. El corredor define el radio correcto del arco.",
+    execution: "Pasar entre la puerta exterior y el palo interior. Tocar el interior = giro demasiado cerrado. Salir fuera = demasiado abierto.",
+    coaching_tip: "Comenzar con 1.2m de ancho y reducir. Los buenos atletas miran el corredor antes de llegar a él (anticipación).",
+    difficulty: "U10+"
+  }],
+  fund_exercises: [{
+    fund: "Balance",
+    color: "#60a8d0",
+    exercises: [{
+      name: "Moguls sin Instrucción",
+      how: "Bajar moguls pequeños sin ninguna instrucción técnica. El terreno fuerza el equilibrio dinámico. Luego reflexión: '¿qué hicieron sus piernas solas?'",
+      reps: "3–4 bajadas",
+      src: "NSF"
+    }, {
+      name: "Sin Bastones en Pista Azul",
+      how: "Pista azul completa sin bastones, brazos extendidos en cruz. Sin el apoyo del bastón el equilibrio debe ser real. Observar si el atleta va atrás al perder ese apoyo.",
+      reps: "2–3 bajadas",
+      src: "USST"
+    }]
+  }, {
+    fund: "Edge Control",
+    color: "#00c896",
+    exercises: [{
+      name: "Garland / Festón en Nieve Dura",
+      how: "Iniciar giro hasta la fall line, volver sin completar. Repetir 4–5 veces al mismo lado. En nieve dura para sentir el canto 'cortando'. El entrenador evalúa si deja vía limpia.",
+      reps: "4–5 festones por lado, 3 series",
+      src: "USST / FISI"
+    }, {
+      name: "Hockey Stop Básico Alternado",
+      how: "Frenada brusca hacia la derecha, mantener 2 segundos con cantos en la nieve, luego continuar y frenar hacia izquierda. Evaluar si hay deslizamiento.",
+      reps: "4–6 stops por bajada",
+      src: "NSF"
+    }]
+  }, {
+    fund: "Pressure Control",
+    color: "#f0bf35",
+    exercises: [{
+      name: "Garland con Flex/Extensión",
+      how: "En el festón, extenderse al inicio del movimiento y flexionarse al final cuando el canto está más cargado. Sentir cómo la presión aumenta al flexionar en el punto bajo del arco.",
+      reps: "3–4 festones por lado",
+      src: "USST"
+    }, {
+      name: "Ski Sobre Un Ski con Balizas",
+      how: "Entre balizas, levantar completamente el ski interno. El ski externo debe 'sentirse' completamente cargado en todo momento.",
+      reps: "5–6 balizas",
+      src: "USST / NSF"
+    }]
+  }, {
+    fund: "Rotary",
+    color: "#e8302a",
+    exercises: [{
+      name: "Bastones Atrás",
+      how: "Tomar bastones por las puntas y apoyarlos en la nieve detrás. Si hay rotación excesiva del tronco, los bastones se inclinan. Objetivo: bastones siempre paralelos al suelo.",
+      reps: "2–3 bajadas completas",
+      src: "USST / NSF"
+    }, {
+      name: "Tapping de Rodillas",
+      how: "Golpear suavemente rodilla derecha con mano derecha y viceversa, alternado. Mantiene la atención en las rodillas (el motor del giro) y aleja el foco del tronco.",
+      reps: "Toda la bajada, 2 repeticiones",
+      src: "NSF"
+    }]
+  }],
+  volume: "3 días/semana · sesiones de 90–120 min · equilibrio entre técnica libre (80%) y puertas (20%)",
+  competition: "Gymkhanas cronometradas de habilidad. Primeras competencias de club con GS muy abierto. Énfasis en la experiencia, no en el resultado.",
+  red_flags: ["Priorizar velocidad en puertas antes de tener paralelo sólido", "Correcciones simultáneas de más de un punto técnico", "Especialización temprana en una sola disciplina", "Más del 30% del tiempo en puertas en este nivel", "Comparar tiempos de niños de diferentes niveles de desarrollo físico"],
+  exit_criteria: ["Paralelo enlazado en pendientes variadas con nieve blanda y dura", "Ski externo visible y conscientemente cargado", "Primera angulación de rodillas en el arco", "Pasaje correcto de puertas abiertas con buena posición"]
+}, {
+  cat: "U12",
+  ages: "10–11 años",
+  usst_level: "Skill Quest Nivel 4",
+  nsf_stage: "Lillealpinisten",
+  nsf_concept: "Teknisk grunnlag",
+  nsf_concept_es: "Base técnica sólida",
+  color: "#00a8cc",
+  ratio: {
+    libre: 65,
+    puertas: 35
+  },
+  profile: ["Ventana crítica para instalar la disociación tronco-piernas: lo que no se aprende ahora cuesta mucho más tarde", "Capacidad de atención técnica sostenida de 15–20 minutos", "Inicio de pubertad en algunas niñas: vigilar impacto en coordinación y confianza", "Puede procesar conceptos técnicos en 2–3 pasos secuenciales", "Motivación por la autosuperación comienza a superar al juego puro"],
+  usst_focus: [{
+    f: "Rotary",
+    text: "PRIORIDAD MÁXIMA: disociación tronco-piernas. Las piernas giran BAJO el tronco estable. Cadera y hombros apuntan en la dirección de viaje."
+  }, {
+    f: "Edge",
+    text: "Angulación real desde cadera y rodillas. 'Z lateral' visible. El ski talla sin deslizarse en nieve dura (inicio del carving)."
+  }, {
+    f: "Timing",
+    text: "Plantada de bastón sincronizada con el inicio del nuevo giro. El bastón es el gatillo de la transición. Sin bastón = sin timing correcto."
+  }, {
+    f: "Pressure",
+    text: "Cross-under vs cross-over: primeros intentos conscientes. Timing de extensión/flexión en la transición para liberar y cargar el ski."
+  }],
+  nsf_pillars: [{
+    title: "Teknisk fundament",
+    es: "Fundamento técnico",
+    text: "NSF: no se sube de nivel sin disociación visible. Es el filtro técnico más importante de toda la formación."
+  }, {
+    title: "To disipliner",
+    es: "Dos disciplinas",
+    text: "GS y SL simultáneamente. La especialización temprana limita el techo técnico. NSF requiere entrenar ambas hasta U14."
+  }, {
+    title: "Videorefleksjon",
+    es: "Reflexión con video",
+    text: "El atleta identifica UN error en su propio video. El entrenador confirma o corrige el análisis."
+  }],
+  tech_objectives: ["Disociación tronco-piernas visible y consistente en GS y SL", "Plantada de bastón con timing correcto en SL (gatillo del nuevo giro)", "Angulación cadera-rodilla visible ('Z lateral') en arcos de GS", "Primer carving sin deslizamiento en nieve dura: dos vías limpias", "Inicio del giro ANTES o EN la puerta (no después): corrección de la línea baja"],
+  tech_tools: [{
+    name: "Pole Plant Timing",
+    desc: "Plantada obligatoria en cada giro de SL. El bastón toca la nieve justo antes del inicio del nuevo canto. Si se planta tarde = el giro ya empezó mal."
+  }, {
+    name: "Counter-rotation",
+    desc: "El tronco mantiene un leve 'counter' hacia el exterior del giro. Los hombros no acompañan a las piernas. NSF lo llama 'kroppens motstand'."
+  }, {
+    name: "Cross-under",
+    desc: "En la transición, los skis se mueven lateralmente BAJO el cuerpo (cuerpo quieto, skis se cruzan). Más eficiente que el cross-over para GS."
+  }, {
+    name: "Hockey Stop Drill",
+    desc: "Frenadas bruscas en L alternando lados. Aplaudir en el momento del canto máximo. Desarrolla explosividad del canto y timing preciso."
+  }],
+  ped_tools: [{
+    name: "Video análisis estructurado (NSF)",
+    desc: "Grabar → el atleta ve el video → identifica 1 error y 1 fortaleza → el entrenador valida → bajar con UN solo foco técnico."
+  }, {
+    name: "Instrucción bidireccional",
+    desc: "El atleta describe en voz alta qué hizo en el giro ANTES de ver el video. Desarrolla autoconciencia cinestésica."
+  }, {
+    name: "Drill → Aplicación → Juego libre",
+    desc: "1) Ejercicio técnico aislado. 2) Aplicarlo en pista. 3) Bajada libre. El cuerpo integra el movimiento en el juego."
+  }, {
+    name: "Pares técnicos",
+    desc: "Trabajar en parejas: uno baja, el otro observa UN punto específico. Luego comparten. Desarrolla capacidad de observación técnica."
+  }],
+  drills: [{
+    n: "01",
+    name: "Sideslip Angulado",
+    desc: "Deslizamiento lateral manteniendo 'Z lateral': cadera adentro, tronco erecto, rodillas inclinadas. El entrenador evalúa el ángulo.",
+    src: "NSF / FISI"
+  }, {
+    n: "02",
+    name: "Baton Planting Drill",
+    desc: "Descender solo plantando bastones, sin girar aún. Timing puro. El bastón toca al mismo tiempo que empiezan los pies a moverse.",
+    src: "USST"
+  }, {
+    n: "03",
+    name: "Hockey Stops con Aplauso",
+    desc: "Frenadas explosivas alternando lados. Aplaudir exactamente en el momento del máximo canto. Timing + explosividad.",
+    src: "NSF"
+  }, {
+    n: "04",
+    name: "Cross-under Drill",
+    desc: "En terreno suave, los skis se deslizan lateralmente bajo el CM mientras el torso permanece quieto. Luego aplicar en GS.",
+    src: "USST"
+  }, {
+    n: "05",
+    name: "GS Abierto con Foco de Línea",
+    desc: "Puertas muy abiertas. Foco exclusivo: iniciar el arco ANTES de la puerta. Sin tiempo. Solo línea.",
+    src: "NSF"
+  }],
+  pole_drills: [{
+    name: "GS con Palo Inclinado al Exterior",
+    setup: "En cada puerta de un GS, plantar un palo adicional inclinado 45–60° hacia el EXTERIOR de la curva, punta al nivel del hombro interior del esquiador.",
+    fundamental: "Edge Control · Pressure",
+    objective: "Forzar angulación lateral real (la 'Z'). El esquiador DEBE doblar cadera y rodillas hacia el interior para pasar bajo el palo.",
+    execution: "Bajar a velocidad moderada. En cada puerta, el hombro interior pasa bajo la punta del palo. Si el palo cae: poca angulación o rotación excesiva.",
+    coaching_tip: "El palo inclinado es el espejo de la angulación. Combinarlo con video lateral para mostrar la 'Z'. Aumentar el ángulo progresivamente.",
+    difficulty: "U12+"
+  }, {
+    name: "Puerta de Hairpin (Horquilla)",
+    setup: "Dos puertas muy próximas con 1.5–2m entre la salida de la primera y la entrada de la segunda, en dirección contraria.",
+    fundamental: "Timing · Edge Control",
+    objective: "Desarrollar el cambio rápido de canto y timing preciso. La distancia corta obliga a una transición explosiva sin tiempo para reorganizarse.",
+    execution: "Bajar a velocidad moderada. La transición debe ser fluida y rápida. Si llega tarde a la segunda puerta, el cambio de canto fue lento.",
+    coaching_tip: "El cambio de canto debe ocurrir ANTES de la segunda puerta, no en ella. Si frena entre las puertas, el timing no está instalado.",
+    difficulty: "U12+"
+  }, {
+    name: "Palo de Timing de Inicio",
+    setup: "En un GS, plantar un palo vertical 1–1.5m POR ENCIMA (pista arriba) de cada puerta, en la línea del apex ideal.",
+    fundamental: "Line Management · Timing",
+    objective: "Corregir el inicio tardío del giro. El esquiador debe haber comenzado el arco ANTES de llegar al palo de timing.",
+    execution: "Si el giro inicia antes del palo: correcto. Si inicia en el palo o después: tardío. Sin medir tiempo: solo el inicio del arco.",
+    coaching_tip: "Preguntar al atleta ANTES de bajar: '¿dónde vas a empezar cada giro?' Luego verificar con video lateral.",
+    difficulty: "U12+"
+  }, {
+    name: "Elástico entre Palos (Rodillas al Interior)",
+    setup: "Tensar un elástico entre dos palos verticales a la altura de las rodillas (40–50cm del suelo). Cruza el apex del giro.",
+    fundamental: "Edge Control · Rotary",
+    objective: "Forzar que las rodillas se presionen hacia el INTERIOR de la curva. El esquiador empuja el elástico con la rodilla interior al pasar.",
+    execution: "En el apex, las rodillas presionan el elástico hacia el interior. El elástico cede pero da retroalimentación táctil directa.",
+    coaching_tip: "La retroalimentación táctil del elástico es muy efectiva. Observar si la rodilla interior empuja (correcto) o si el atleta esquiva el elástico.",
+    difficulty: "U12+"
+  }, {
+    name: "Puerta Sueca (Swedish Gate)",
+    setup: "Puerta de GS estándar más un palo vertical adicional 50–60cm al INTERIOR de la puerta exterior. Corredor de ~50cm.",
+    fundamental: "Rotary · Line Management",
+    objective: "Forzar el counter (disociación) y el radio correcto. Si el hombro interior rota hacia adentro, el esquiador golpea el palo interior.",
+    execution: "Pasar en el espacio entre la puerta exterior y el palo interior. El hombro interior debe mantenerse hacia afuera (counter).",
+    coaching_tip: "El palo interior actúa como detector de rotación. El golpe es inmediato y da retroalimentación instantánea al atleta.",
+    difficulty: "U12+"
+  }],
+  fund_exercises: [{
+    fund: "Balance",
+    color: "#60a8d0",
+    exercises: [{
+      name: "One-Ski en Arcos Completos",
+      how: "Completar arcos de GS abierto apoyándose solo en el ski externo (el interno levantado). Alternar: 3 giros levantando derecho, 3 izquierdo.",
+      reps: "3 giros por lado, 3 series",
+      src: "USST"
+    }, {
+      name: "Terreno Variado sin Bastones",
+      how: "Moguls pequeños y cambios de pendiente sin bastones. Observar si el atleta activa las piernas (flexiona y absorbe) o bloquea al encontrar irregularidades.",
+      reps: "2–3 bajadas",
+      src: "NSF"
+    }]
+  }, {
+    fund: "Edge Control",
+    color: "#00c896",
+    exercises: [{
+      name: "Hockey Stops con Aplauso de Timing",
+      how: "Frenada brusca en L alternando lados. Aplaudir EXACTAMENTE en el momento de máximo canto. Si el aplauso llega tarde, el canto fue impreciso.",
+      reps: "4–6 stops por bajada, 3 bajadas",
+      src: "NSF / FISI"
+    }, {
+      name: "Sideslip Angulado",
+      how: "Deslizamiento lateral manteniendo 'Z lateral': rodillas inclinadas hacia la pendiente, cadera levemente adentro, tronco erecto. El entrenador evalúa el ángulo desde abajo.",
+      reps: "3–4 tramos de 20m",
+      src: "FISI / NSF"
+    }]
+  }, {
+    fund: "Pressure Control",
+    color: "#f0bf35",
+    exercises: [{
+      name: "Cross-under Drill",
+      how: "En terreno suave, los skis se deslizan lateralmente bajo el cuerpo mientras el torso permanece quieto. Manos en las caderas para verificar que el tronco no se mueve.",
+      reps: "5–6 transiciones en plano, luego 3 bajadas de GS",
+      src: "USST"
+    }, {
+      name: "Flex/Extensión con Timing Consciente",
+      how: "En GS abierto, extenderse DURANTE la transición y flexionarse gradualmente DURANTE el arco. El movimiento de extensión dura ~1 segundo.",
+      reps: "5–6 giros consecutivos",
+      src: "USST"
+    }]
+  }, {
+    fund: "Rotary",
+    color: "#e8302a",
+    exercises: [{
+      name: "Disociación Estática + Aplicación",
+      how: "Sin esquiar: apuntar los pies hacia la derecha mientras los hombros apuntan al frente. Mantener 5 segundos. Luego aplicar en 3 bajadas de GS.",
+      reps: "10 rep estáticas → 3 bajadas",
+      src: "USST"
+    }, {
+      name: "Pole Drag Drill",
+      how: "Arrastrar UN bastón en la nieve del lado exterior del giro. El brazo extendido mantiene el tronco orientado hacia el giro siguiente.",
+      reps: "2–3 bajadas",
+      src: "NSF"
+    }]
+  }, {
+    fund: "Timing",
+    color: "#c084fc",
+    exercises: [{
+      name: "Baton Planting — Timing Puro",
+      how: "Descender solo plantando bastones SIN intentar girar. El bastón toca la nieve justo cuando los pies empiezan a moverse. Evaluar: ¿antes, durante o después del giro?",
+      reps: "2–3 bajadas de SL",
+      src: "USST"
+    }, {
+      name: "Hockey Stop con Aplauso",
+      how: "El aplauso del entrenador define el momento en que el canto DEBE estar en la nieve. El atleta intenta coincidir con el aplauso.",
+      reps: "4–5 stops por bajada",
+      src: "NSF"
+    }]
+  }],
+  volume: "3–4 días/semana · sesiones de 90–120 min · GS y SL por igual · terreno variado semanalmente",
+  competition: "Primeras competencias de temporada. GS técnico y SL. El objetivo es la línea correcta, no el tiempo. Post-carrera: análisis técnico, no del puesto.",
+  red_flags: ["Avanzar a técnica más compleja sin disociación tronco-piernas instalada", "Ignorar la plantada de bastón ('lo veremos más adelante')", "Solo entrenar en puertas sin terreno libre", "Analizar múltiples errores técnicos simultáneamente", "Presión por resultados competitivos antes que por dominio técnico"],
+  exit_criteria: ["Disociación tronco-piernas visible en GS y SL sin instrucción constante", "Plantada de bastón consistente con timing correcto en SL", "Angulación 'Z lateral' visible en arcos de GS", "Inicio del arco antes o en la puerta en al menos 70% de las puertas"]
+}, {
+  cat: "U14",
+  ages: "12–13 años",
+  usst_level: "Skill Quest Nivel 5",
+  nsf_stage: "Junior Tidlig",
+  nsf_concept: "Teknisk utvikling og kraft",
+  nsf_concept_es: "Desarrollo técnico y potencia",
+  color: "#00c896",
+  ratio: {
+    libre: 45,
+    puertas: 55
+  },
+  profile: ["Pubertad plena: cambios corporales que pueden alterar temporalmente la coordinación", "Capacidad de análisis técnico propio: puede ver su video e identificar errores con precisión", "Alta motivación competitiva: el resultado empieza a importar tanto o más que la técnica", "Desarrollo de fuerza explosiva: primera oportunidad de trabajar potencia específica de ski", "Período crítico para instalar la mentalidad de proceso antes que resultado"],
+  usst_focus: [{
+    f: "Pressure",
+    text: "PRIORIDAD: generación activa de presión. Extensión de piernas hacia la nieve en la transición. 'Push the ski into the hill.' USST fundamental avanzado."
+  }, {
+    f: "Line",
+    text: "Gestión consciente de la línea: dónde inicia el giro, dónde está la caída, dónde libera. Cada puerta tiene su línea óptima que debe identificarse antes de bajar."
+  }, {
+    f: "Edge",
+    text: "Diferenciación SL vs GS: SL exige ángulo mayor y transición explosiva. GS exige arcos largos con energía acumulada progresiva."
+  }, {
+    f: "Timing",
+    text: "Timing discipline-specific: en SL el bastón define el ritmo. En GS el timing es más interno (extensión/flexión)."
+  }],
+  nsf_pillars: [{
+    title: "Kraft og koordinasjon",
+    es: "Fuerza y coordinación",
+    text: "NSF introduce entrenamiento físico específico fuera de la nieve. El atleta empieza a 'construirse' para el ski."
+  }, {
+    title: "Lesing av løypa",
+    es: "Lectura de trazado",
+    text: "Ver la línea, no las puertas. El buen esquiador ve el giro 2–3 puertas adelante. Habilidad enseñable y exigida."
+  }, {
+    title: "Vanskelig snø (NSF)",
+    es: "Nieve difícil",
+    text: "Entrenar intencionalmente en helada, blanda, mojada. Un error que solo aparece en nieve helada es una debilidad técnica real."
+  }],
+  tech_objectives: ["Generación activa de presión: extensión hacia la nieve visible en la transición", "Lectura de trazado previa a cada bajada: verbalizar la línea correcta", "Diferenciación técnica SL vs GS completamente desarrollada", "Carving puro sostenido en GS sobre nieve dura a velocidad media", "Adaptación técnica a condiciones variadas: mismo nivel técnico en helada y en blanda"],
+  tech_tools: [{
+    name: "Extensión activa en transición",
+    desc: "Extender ACTIVAMENTE ambas piernas empujando los skis hacia la nueva nieve. Crea pre-carga para el arco siguiente. Sin esta habilidad el arco es reactivo, no generativo."
+  }, {
+    name: "Línea marcada con spray",
+    desc: "El entrenador dibuja el arco ideal en nieve con spray. El atleta intenta pisar la marca. Combina anticipación, timing y angulación."
+  }, {
+    name: "Sector timing",
+    desc: "Dividir el trazado en 3 sectores. Tiempo parcial de cada uno. Correlacionar el más lento con el error técnico específico."
+  }, {
+    name: "Skiing in variable snow (NSF)",
+    desc: "Bloques de entrenamiento en condiciones deliberadamente variadas. El atleta adapta el timing y la presión sin instrucción."
+  }],
+  ped_tools: [{
+    name: "Visualización pre-bajada (NSF)",
+    desc: "Ver el trazado → visualizar con ojos cerrados → describir 2 puntos de referencia clave → bajar. Instala la imagen motora del arco ideal."
+  }, {
+    name: "Auto-análisis de video estructurado",
+    desc: "3 bajadas grabadas. El atleta: (1) la mejor bajada y por qué, (2) el error recurrente, (3) el foco técnico para mañana. El entrenador valida."
+  }, {
+    name: "Entrenamiento por sectores",
+    desc: "Enfocarse en el sector más débil durante 3–4 bajadas. NSF: 'el progreso viene de dominar un sector a la vez'."
+  }, {
+    name: "Mentalidad de proceso",
+    desc: "Reemplazar '¿qué lugar quedé?' por '¿cuántas puertas tuve buena línea?' La métrica de éxito es técnica, no el puesto."
+  }],
+  drills: [{
+    n: "01",
+    name: "Extensión Activa al Cambio",
+    desc: "Extender ACTIVAMENTE ambas piernas hacia la nueva nieve en la transición. El entrenador busca que los skis se 'alejen' del cuerpo.",
+    src: "USST"
+  }, {
+    n: "02",
+    name: "GS Línea Marcada",
+    desc: "Spray en nieve marcando el arco ideal de cada giro. El atleta intenta pisar la marca. Combina anticipación, timing y angulación.",
+    src: "NSF"
+  }, {
+    n: "03",
+    name: "Variable Snow Blocks",
+    desc: "Bloques de 3–4 bajadas en condición idéntica, luego cambiar. Adaptar timing y presión sin instrucción. Luego reflexión conjunta.",
+    src: "NSF"
+  }, {
+    n: "04",
+    name: "SL con Puertas Cerradas",
+    desc: "Trazado más apretado de lo normal. Fuerza angulación máxima, acortar el arco y elevar la frecuencia.",
+    src: "USST"
+  }, {
+    n: "05",
+    name: "Análisis Sectorial",
+    desc: "Tiempo de cada sector (3 partes). El atleta identifica el más lento y analiza el error técnico que lo causó.",
+    src: "NSF / USST"
+  }],
+  pole_drills: [{
+    name: "GS Palo Inclinado Exterior — Versión Avanzada",
+    setup: "Palo inclinado más hacia horizontal (70–80°) y a mayor velocidad. La punta del palo está al nivel del casco del esquiador.",
+    fundamental: "Edge Control · Pressure",
+    objective: "Instalar angulación máxima a velocidad de carrera. A mayor velocidad el esquiador necesita mayor angulación para pasar bajo el palo.",
+    execution: "Bajar a 80–90% de la velocidad de carrera. Evaluación: ¿tocó el palo? ¿redujo velocidad para pasar? Ambas indican insuficiente angulación.",
+    coaching_tip: "Combinar con video lateral: la 'Z' debe ser visible incluso a alta velocidad. Si desaparece al aumentar la velocidad, el atleta sacrifica angulación por seguridad.",
+    difficulty: "U14+"
+  }, {
+    name: "Combinación Puerta + Palo Alterno",
+    setup: "GS alternando puertas normales y puertas con palo inclinado exterior. El esquiador no sabe cuándo viene el palo hasta la bajada.",
+    fundamental: "Edge Control · Line Management",
+    objective: "Desarrollar angulación reactiva. En las puertas con palo debe ejecutar mayor angulación automáticamente, no por instrucción.",
+    execution: "Primera bajada lenta para identificar las puertas con palo. Segunda a velocidad de trabajo. Si solo angula bien cuando 'sabe' que viene el palo, no está automatizado.",
+    coaching_tip: "Si el atleta solo angula bien cuando sabe que viene el palo, la angulación no es un hábito. El objetivo es que sea igual en todas las puertas.",
+    difficulty: "U14+"
+  }, {
+    name: "Palo Horizontal de Cabeza (Baja Extrema)",
+    setup: "Palo horizontal al nivel de la CADERA (no del hombro como en U12). Soportado por dos postes en el apex del giro.",
+    fundamental: "Edge Control · Balance",
+    objective: "Exigir angulación Y flexión simultáneas: la posición técnica más compleja y eficiente del ski de competición.",
+    execution: "En el apex, doblar piernas Y angular cadera para pasar bajo el palo. Solo angula sin flexionar: toca con el tronco. Solo flexiona sin angular: toca con la cadera.",
+    coaching_tip: "El momento que el esquiador pasa bajo este palo correctamente es un instante de revelación técnica. Fotografiar o filmar ese momento.",
+    difficulty: "U14+"
+  }, {
+    name: "Hairpin de Velocidad con Corredor Interior",
+    setup: "Hairpin (2 puertas a 2m) con palo adicional en el interior de cada puerta a 60cm. Corredor de 60cm en la transición.",
+    fundamental: "Timing · Rotary",
+    objective: "Transición explosiva con disociación en máxima restricción. La hairpin fuerza el timing y el corredor interior fuerza el counter.",
+    execution: "Velocidad progresiva. La transición debe pasar DENTRO del corredor. Palo interior caído = rotación del tronco. Llegada tarde = timing lento.",
+    coaching_tip: "Muy exigente: combina timing, edge, rotary y pressure en 2 segundos. Usar solo cuando los fundamentals individuales estén consolidados.",
+    difficulty: "U14+"
+  }, {
+    name: "Palos de Referencia de Línea por Sector",
+    setup: "3 palos de referencia por giro en colores distintos: (1) punto de inicio del arco, (2) apex, (3) punto de liberación del canto.",
+    fundamental: "Line Management",
+    objective: "Hacer visible la línea óptima completa, no solo el apex. El atleta identifica en cuál de los 3 puntos se desvía más.",
+    execution: "Bajar lento primero. Post-bajada: '¿en qué palo llegaste más tarde o más lejos?' El atleta identifica su punto de quiebre de línea.",
+    coaching_tip: "La mayoría falla más en el palo 1 (inicio tardío) o en el palo 3 (liberan el canto demasiado pronto). Documentar cuál es más frecuente.",
+    difficulty: "U14+"
+  }],
+  fund_exercises: [{
+    fund: "Balance",
+    color: "#60a8d0",
+    exercises: [{
+      name: "Variable Snow Blocks",
+      how: "Bloques de 3–4 bajadas en nieve helada, luego cambiar a nieve blanda. Sin instrucciones: el atleta adapta el equilibrio solo.",
+      reps: "2 bloques por sesión",
+      src: "NSF"
+    }, {
+      name: "Off-Piste Balance",
+      how: "Bajar por nieve blanda o fuera de pista manteniendo Athletic Stance. Si va atrás, el balance sobre el antepié no está instalado.",
+      reps: "3–4 bajadas",
+      src: "NSF"
+    }]
+  }, {
+    fund: "Edge Control",
+    color: "#00c896",
+    exercises: [{
+      name: "Línea Marcada con Spray",
+      how: "El entrenador dibuja el arco ideal con spray. La distancia entre la línea real y la marcada indica el error de canto y angulación.",
+      reps: "3–4 bajadas en el mismo trazado",
+      src: "NSF"
+    }, {
+      name: "Carving en Nieve Dura",
+      how: "GS en pista helada con foco exclusivo en las vías: dos vías paralelas limpias = canto correcto. Salpicaduras = deslizamiento.",
+      reps: "2 bajadas de evaluación",
+      src: "FISI"
+    }]
+  }, {
+    fund: "Pressure Control",
+    color: "#f0bf35",
+    exercises: [{
+      name: "Extensión Activa en Transición",
+      how: "Extender ACTIVAMENTE ambas piernas empujando los skis hacia la nueva nieve. El entrenador busca los skis 'alejándose' del cuerpo.",
+      reps: "6–8 giros de GS",
+      src: "USST"
+    }, {
+      name: "Spring Drill",
+      how: "Extensión rápida y firme al inicio del arco para generar presión inmediata. Luego flexión progresiva durante el arco.",
+      reps: "5–6 giros",
+      src: "USST / NSF"
+    }]
+  }, {
+    fund: "Rotary",
+    color: "#e8302a",
+    exercises: [{
+      name: "Counter Drill",
+      how: "Bajar GS con hombros deliberadamente orientados hacia la SIGUIENTE puerta. El tronco siempre 'mira' un giro adelante.",
+      reps: "3–4 bajadas de GS",
+      src: "NSF"
+    }, {
+      name: "Leg Steering en Moguls",
+      how: "Bajar moguls medianos. Si el atleta rota el tronco en los moguls, el rotary no está automatizado. El terreno hace el trabajo de la corrección.",
+      reps: "3–4 bajadas",
+      src: "NSF"
+    }]
+  }, {
+    fund: "Timing",
+    color: "#c084fc",
+    exercises: [{
+      name: "Visualización Pre-Bajada en Tiempo Real",
+      how: "Visualizar con ojos cerrados toda la bajada de GS durante exactamente el tiempo que dura la bajada real. Si termina antes, el timing mental está comprimido.",
+      reps: "Antes de cada bajada cronometrada",
+      src: "NSF"
+    }, {
+      name: "Bastón SL — Timing Aislado",
+      how: "En SL, bajar un tramo de 6–8 puertas con foco EXCLUSIVO en la plantada del bastón. Sin pensar en posición, angulación ni velocidad.",
+      reps: "4–5 bajadas de SL específicas",
+      src: "USST"
+    }]
+  }, {
+    fund: "Line Management",
+    color: "#ff7a40",
+    exercises: [{
+      name: "Análisis Sectorial por Tiempo",
+      how: "3 sectores con tiempo parcial. El atleta identifica el más lento y describe el error técnico que lo causó: no solo 'fui lento' sino '¿dónde inicié el giro?'",
+      reps: "3 bajadas cronometradas por sectores",
+      src: "NSF / USST"
+    }, {
+      name: "Verbalización Completa de Trazado",
+      how: "Antes de bajar, el atleta verbaliza CADA puerta. Solo cuando la verbalización es correcta, bajar.",
+      reps: "Antes de cada sesión de GS nueva",
+      src: "NSF"
+    }]
+  }],
+  volume: "4–5 días/semana en nieve · 2–3 días/semana de fuerza fuera · Bloques temáticos: semana de SL, semana de GS, semana de condiciones variadas",
+  competition: "Calendario regular de competencias GS y SL. Post-carrera: análisis técnico con video obligatorio, no del puesto.",
+  red_flags: ["Presionar por resultados antes de que la técnica esté instalada", "Ignorar la lectura previa del trazado", "Entrenar solo en buenas condiciones de nieve", "No diferenciar el trabajo técnico SL del GS", "Perder el entrenamiento en terreno libre"],
+  exit_criteria: ["Generación activa de presión visible en la transición", "Verbaliza correctamente la línea antes de bajar un trazado", "Angulación y disociación consistentes a velocidad de carrera", "Adaptación técnica demostrada en condiciones variadas de nieve"]
+}, {
+  cat: "U16",
+  ages: "14–15 años",
+  usst_level: "Skill Quest Nivel 6",
+  nsf_stage: "Junior",
+  nsf_concept: "Prestasjon og teknisk perfeksjon",
+  nsf_concept_es: "Rendimiento y perfección técnica",
+  color: "#9d74f0",
+  ratio: {
+    libre: 35,
+    puertas: 65
+  },
+  profile: ["Post-pubertad en la mayoría: recuperación de coordinación y capacidad para instalar habilidades de alta complejidad", "Autonomía técnica real: puede autoevaluarse, identificar errores y proponer correcciones", "La velocidad empieza a ser una motivación poderosa: canalizar hacia dominio técnico", "Capacidad de entrenar con foco sostenido durante sesiones completas (90–120 min)", "Diferencias físicas muy marcadas entre atletas: adaptar carga por individuo, no por grupo"],
+  usst_focus: [{
+    f: "Line",
+    text: "PRIORIDAD: línea de carrera óptima a velocidad máxima. El arco inicia lo más arriba posible, presión máxima en la fall line, libera canto tarde."
+  }, {
+    f: "Pressure",
+    text: "Presión óptima en todas las condiciones. Adaptar automáticamente el timing de extensión según la respuesta de la nieve."
+  }, {
+    f: "Edge",
+    text: "Máximo ángulo de arista sostenible a velocidad. Carving puro como estándar en GS y SG. SL: angulación explosiva y corta."
+  }, {
+    f: "Timing",
+    text: "Timing automático e inconsciente: el atleta 'siente' el timing, no lo calcula. Producto de años de repetición correcta."
+  }],
+  nsf_pillars: [{
+    title: "Teknisk autonomi",
+    es: "Autonomía técnica",
+    text: "NSF: el atleta de U16 diseña su propio calentamiento, identifica sus errores sin video, y propone ejercicios correctivos. El entrenador es un guía."
+  }, {
+    title: "Disiplinspesifikk teknikk",
+    es: "Técnica específica por disciplina",
+    text: "SL, GS y SG con técnicas claramente diferenciadas. NSF exige dominio demostrado en al menos dos disciplinas."
+  }, {
+    title: "Mental trening",
+    es: "Entrenamiento mental",
+    text: "Rutinas pre-competencia, manejo del error en carrera, concentración bajo presión. NSF integra psicología del deporte desde U16."
+  }],
+  tech_objectives: ["Línea óptima a velocidad de carrera en GS: arco iniciado antes de la puerta en 90% de las puertas", "Carving puro sostenido en GS y SG: dos vías limpias sin salpicaduras en nieve dura", "SL: angulación explosiva y corta, frecuencia alta, sin pérdida de canto en salidas de arco", "Adaptación técnica automática a cualquier condición de nieve sin instrucción", "Autonomía total: identificar sus propios errores, diseñar sus ejercicios, gestionar su entrenamiento"],
+  tech_tools: [{
+    name: "Línea con spray + ventanas de inicio",
+    desc: "Marcar la línea óptima Y la 'ventana de inicio' (zona donde debe comenzar el arco). El atleta analiza en qué parte de la ventana inició."
+  }, {
+    name: "Carving puro estándar FISI",
+    desc: "En cada sesión de GS, 2 bajadas con foco exclusivo en carving. Se evalúan las vías: dos líneas limpias y paralelas sin salpicaduras."
+  }, {
+    name: "Timing gates",
+    desc: "Tiempo por microsectores (5–6 puertas). Correlacionar con el movimiento técnico que causa la diferencia."
+  }, {
+    name: "Mental imagery (NSF)",
+    desc: "Visualización de la bajada completa en tiempo real. NSF lo exige como parte del calentamiento pre-carrera."
+  }],
+  ped_tools: [{
+    name: "Autonomía dirigida (NSF)",
+    desc: "El entrenador hace preguntas, no da respuestas: '¿qué sentiste en ese giro?', '¿dónde perdiste el canto?'. El atleta diagnostica."
+  }, {
+    name: "Debriefing estructurado post-sesión",
+    desc: "Al final de cada sesión: (1) mejor momento técnico del día, (2) error recurrente, (3) propuesta de corrección para mañana."
+  }, {
+    name: "Data-driven training (USST)",
+    desc: "Tiempos por sector de cada bajada. La mejora del tiempo es consecuencia de la mejora técnica, no al revés."
+  }, {
+    name: "Peer coaching",
+    desc: "U16 avanzados actúan como referentes técnicos de U14 del club. Enseñar consolida el propio aprendizaje."
+  }],
+  drills: [{
+    n: "01",
+    name: "GS Línea + Ventanas",
+    desc: "Spray marcando la línea Y la ventana de inicio de cada giro. El atleta verifica en qué parte de la ventana inició el arco.",
+    src: "NSF"
+  }, {
+    n: "02",
+    name: "Carving Puro GS",
+    desc: "2 bajadas por sesión en modo 'evaluación de carving'. El entrenador evalúa las vías: deben ser limpias, paralelas y sin salpicaduras.",
+    src: "USST / FISI"
+  }, {
+    n: "03",
+    name: "SL Cerrado Alta Frecuencia",
+    desc: "Trazado SL muy apretado. Objetivo: mantener angulación y canto sin pérdida en salida de arco a alta frecuencia.",
+    src: "USST"
+  }, {
+    n: "04",
+    name: "Mental Imagery Pre-bajada",
+    desc: "90 segundos con ojos cerrados antes de cada bajada cronometrada. Trazar mentalmente cada puerta. Obligatorio en NSF U16.",
+    src: "NSF"
+  }, {
+    n: "05",
+    name: "Análisis Autónomo de Video",
+    desc: "El atleta recibe el video en su teléfono. Sin entrenador. Identifica 2 errores, anota los ejercicios que haría. Luego contrasta con el entrenador.",
+    src: "NSF / USST"
+  }],
+  pole_drills: [{
+    name: "Sistema Palo Inclinado + Corredor Interior",
+    setup: "GS a velocidad de carrera. CADA puerta tiene: palo inclinado al exterior (angulación) Y palo interior a 50cm (anti-rotación).",
+    fundamental: "Edge · Rotary · Line",
+    objective: "Integrar angulación, anti-rotación y línea en una sola bajada. Simula las exigencias técnicas de una carrera real.",
+    execution: "Solo para atletas que dominan cada drill por separado. Velocidad de carrera. Palo exterior caído = poca angulación. Palo interior caído = rotación excesiva.",
+    coaching_tip: "Post-bajada: correlacionar qué palo cayó en qué puerta con el error técnico de ese momento. La correlación directa es la herramienta más eficiente para U16.",
+    difficulty: "U16"
+  }, {
+    name: "Palo Horizontal Extremo a Velocidad de Carrera",
+    setup: "Palo horizontal al nivel de la cadera en el apex del giro de mayor velocidad del GS.",
+    fundamental: "Edge Control · Balance",
+    objective: "Demostrar que la angulación máxima es alcanzable a velocidad de carrera. La mayoría de U16 angula bien a baja velocidad pero reduce la angulación al acelerar.",
+    execution: "Primera bajada al 70% para evaluar. Si logra pasar: al 85%. Si logra: velocidad de carrera. Documentar la velocidad máxima sin tocar el palo.",
+    coaching_tip: "Usar la velocidad máxima de paso limpio como KPI técnico semanal. Que esa velocidad límite suba semana a semana es el indicador de progreso real.",
+    difficulty: "U16"
+  }, {
+    name: "SL Cerrado con Elástico de Rodillas Alterno",
+    setup: "En SL de alta frecuencia, elásticos entre palos a la altura de las rodillas en puertas alternadas (1, 3, 5, 7…).",
+    fundamental: "Edge Control · Rotary",
+    objective: "Automatizar la angulación de rodillas en SL. El atleta debe mantener el mismo patrón en las puertas sin elástico.",
+    execution: "En puertas con elástico, las rodillas lo presionan hacia el interior. En las puertas sin elástico, mantener el mismo patrón muscular.",
+    coaching_tip: "Si la angulación es mayor CON elástico que sin él, el atleta depende del estímulo externo y la angulación no es habitual.",
+    difficulty: "U16"
+  }, {
+    name: "Palos de Ventana de Inicio + Liberación",
+    setup: "Cada giro tiene: (1) dos palos formando una 'ventana' de 60cm de ancho en el punto de inicio ideal, y (2) un palo de liberación 1m debajo del apex.",
+    fundamental: "Line Management · Timing",
+    objective: "Definir con precisión física los dos límites de la línea óptima: inicio temprano y liberación tardía del canto.",
+    execution: "El entrenador verifica: cuántas ventanas pasaron dentro de 60cm y cuántas liberaciones ocurrieron antes del palo. Dos métricas independientes.",
+    coaching_tip: "La mayoría de U16 falla más en el palo de liberación (liberan el canto demasiado pronto). Documentar cuál de los dos errores es más frecuente.",
+    difficulty: "U16"
+  }, {
+    name: "Puerta Sueca + Palo de Timing (Disociación Integrada)",
+    setup: "GS alternando puertas normales y puertas suecas con palo de timing de inicio 1.5m arriba.",
+    fundamental: "Rotary · Line · Timing",
+    objective: "Integrar disociación, timing e inicio temprano en una sola puerta. El drill más complejo de la tabla.",
+    execution: "Solo atletas que dominan cada elemento. Primera bajada de reconocimiento. Filmar siempre. Un error en ambos palos indica que la disociación aún consume atención consciente.",
+    coaching_tip: "Si falla en ambos palos en la misma puerta, retroceder: trabajar disociación y timing por separado hasta que ambos sean automáticos.",
+    difficulty: "U16"
+  }],
+  fund_exercises: [{
+    fund: "Balance",
+    color: "#60a8d0",
+    exercises: [{
+      name: "Balance en Alta Velocidad Progresiva",
+      how: "GS a velocidad creciente: 70%, 80%, 90%, 100% del máximo. Identificar en qué % de velocidad aparece la posición defensiva (atrás).",
+      reps: "2 bajadas por nivel de velocidad",
+      src: "USST"
+    }, {
+      name: "One-Ski Racing en Trazado",
+      how: "Tramos de 4–5 puertas de GS sobre un solo ski (el externo), a velocidad creciente. Test de control más exigente a esta categoría.",
+      reps: "3–4 tramos de 5 puertas",
+      src: "USST / NSF"
+    }]
+  }, {
+    fund: "Edge Control",
+    color: "#00c896",
+    exercises: [{
+      name: "Carving Puro — Evaluación FISI",
+      how: "2 bajadas de GS por sesión en 'modo evaluación de carving'. Criterio FISI: dos vías paralelas limpias del ancho exacto del ski, sin ninguna salpicadura.",
+      reps: "2 bajadas evaluadas por sesión",
+      src: "FISI"
+    }, {
+      name: "Máximo Ángulo Sostenible",
+      how: "Buscar progresivamente el máximo ángulo de canto que puede sostener sin perder el ski a velocidad de carrera. Aumentar velocidad 5% por bajada.",
+      reps: "4–5 bajadas progresivas",
+      src: "USST"
+    }]
+  }, {
+    fund: "Pressure Control",
+    color: "#f0bf35",
+    exercises: [{
+      name: "Presión Adaptada por Condición",
+      how: "Helada: timing de extensión más suave y tardío. Blanda: más explosivo. El atleta baja en ambas condiciones el mismo día, adaptando sin instrucción.",
+      reps: "2 bajadas helada + 2 bajadas blanda",
+      src: "NSF"
+    }, {
+      name: "Timing Gates — Correlación Presión/Tiempo",
+      how: "Tiempo parcial de cada 5–6 puertas. Correlacionar el sector más lento con el tipo de presión que el atleta reportó sentir.",
+      reps: "3 bajadas con análisis post-bajada",
+      src: "USST / NSF"
+    }]
+  }, {
+    fund: "Rotary",
+    color: "#e8302a",
+    exercises: [{
+      name: "Carving Anti-Rotación (Video Evaluado)",
+      how: "Bajada de GS con foco en que el tronco NO rote. El atleta cuenta cuántos giros tienen rotación residual visible en video. Objetivo: 0.",
+      reps: "2 bajadas evaluadas por video",
+      src: "USST"
+    }, {
+      name: "SL Alta Frecuencia — Tronco Quieto",
+      how: "SL cerrado manteniendo hombros paralelos a la fall line. El entrenador filma desde arriba para ver el tronco.",
+      reps: "3–4 bajadas, análisis posterior",
+      src: "NSF"
+    }]
+  }, {
+    fund: "Timing",
+    color: "#c084fc",
+    exercises: [{
+      name: "Mental Imagery en Tiempo Real",
+      how: "Visualización con ojos cerrados durante exactamente el tiempo que dura la bajada real. Si termina antes, el timing mental está comprimido.",
+      reps: "Antes de cada bajada cronometrada",
+      src: "NSF"
+    }, {
+      name: "Video Frame por Frame — Timing",
+      how: "Identificar el frame exacto de: inicio del canto, máxima presión, liberación, plantada del bastón. Comparar con el timing técnico ideal.",
+      reps: "1 análisis completo por semana",
+      src: "NSF / USST"
+    }]
+  }, {
+    fund: "Line Management",
+    color: "#ff7a40",
+    exercises: [{
+      name: "GS Línea + Ventanas de Inicio",
+      how: "Spray marcando la línea Y la ventana de inicio para cada giro. El atleta analiza en qué parte de la ventana inició. Ideal = centro o más arriba.",
+      reps: "3–4 bajadas en el mismo trazado",
+      src: "NSF"
+    }, {
+      name: "Análisis Autónomo Video vs Línea",
+      how: "El atleta dibuja su línea real sobre la pantalla del teléfono puerta por puerta. Luego dibuja la línea ideal. Identifica la mayor diferencia y propone la corrección.",
+      reps: "1 análisis autónomo por sesión de GS",
+      src: "NSF / USST"
+    }]
+  }],
+  volume: "5–6 días/semana en nieve · 3–4 días fuerza/agilidad · Periodización por bloques: técnica → velocidad → competencia",
+  competition: "Calendario completo GS y SL. Exposición a SG. El atleta maneja su propia preparación y análisis post-carrera.",
+  red_flags: ["Seguir dirigiendo el entrenamiento sin desarrollar autonomía del atleta", "Priorizar el puesto en carrera sobre el análisis técnico", "No periodizar la carga de entrenamiento", "Ignorar la preparación mental como parte del entrenamiento", "No exponer al atleta al SG"],
+  exit_criteria: ["Autonomía técnica demostrada: identifica sus errores y diseña sus correcciones", "Carving puro sostenido en GS a velocidad de carrera", "Línea correcta en >85% de las puertas en GS cronometrado", "Rutina pre-competencia propia y establecida"]
+}];
+const SCHOOLS = [{
+  flag: "🇺🇸",
+  title: "US SKI TEAM — SKILL QUEST",
+  cls: "us",
+  items: [{
+    t: "1. Balance",
+    p: "Posición atlética dinámica. CM sobre base de sustentación. Equilibrio antero-posterior y lateral. Flexión/extensión como shock absorbers."
+  }, {
+    t: "2. Edge Control",
+    p: "Ángulo ski-nieve. Inclinación (todo el cuerpo) vs angulación (rodilla/cadera). La angulación es más eficiente y segura a alta velocidad."
+  }, {
+    t: "3. Pressure Control",
+    p: "Gestión de fuerza sobre el ski. Transferencia ski a ski. Presión anterior para control, central para arco activo. Extensión activa genera presión."
+  }, {
+    t: "4. Rotary Skills",
+    p: "De rotación cuerpo completo (U8) → steering de piernas bajo cadera (U12) → angulación pura sin rotación (U16). La evolución del rotary define el nivel."
+  }, {
+    t: "5. Timing",
+    p: "Cuándo extender, plantar bastón, iniciar canto. Origen del 80% de errores en competición. No es velocidad: es sincronización."
+  }, {
+    t: "6. Line Management",
+    p: "El arco inicia ANTES de la puerta, presión máxima en fall line, libera canto DESPUÉS. Iniciar tarde es el error #1 en U12–U16."
+  }]
+}, {
+  flag: "🇨🇦🇳🇴",
+  title: "CSIA / PIERRE LERUE + NSF",
+  cls: "ca",
+  items: [{
+    t: "Round Arc Principle",
+    p: "Cada giro debe ser un arco perfectamente redondo, no en J. El giro en J pierde tiempo y control. El círculo es la meta."
+  }, {
+    t: "Task-Based Learning",
+    p: "No 'haz esto así' sino 've hacia eso'. Tareas externas inducen el movimiento correcto sin corrección verbal directa."
+  }, {
+    t: "Terrain Reading",
+    p: "Ver 2-3 puertas adelante. El buen esquiador esquía el giro siguiente, no el actual. Lectura de terreno es un skill enseñable y medible."
+  }, {
+    t: "Neve Difficile (NSF)",
+    p: "Un error que aparece solo en nieve helada es una debilidad técnica real, no de equipo. Entrenar en todas las condiciones."
+  }]
+}, {
+  flag: "🇮🇹",
+  title: "FISI — SCUOLA ITALIANA",
+  cls: "it",
+  items: [{
+    t: "Intaglio Puro",
+    p: "Carving sin deslizamiento: dos vías limpias, cero salpicaduras. Objetivo técnico definitivo. Requiere canto exacto y presión antero-posterior perfecta."
+  }, {
+    t: "Angolazione Laterale",
+    p: "'Z' lateral visible: rodillas → cadera → tronco erecto. Angulación desde las rodillas hacia arriba. Mayor precisión articular."
+  }, {
+    t: "Gestione della Velocità",
+    p: "Velocidad como skill consciente. Energía cinética administrada deliberadamente en cada curva. Usar el terreno para ganar o controlar velocidad."
+  }]
+}, {
+  flag: "🇩🇪",
+  title: "DSV — DEUTSCHER SKIVERBAND",
+  cls: "de",
+  items: [{
+    t: "Las 3 Preguntas Fundamentales",
+    p: "Toda la técnica DSV se estructura en 3 respuestas de movimiento: Posición sobre el ski en la curva · Cambio de curva (Kurvenwechsel) · Conducción de la curva. Marco de diagnóstico simple y potente."
+  }, {
+    t: "Filosofía «BIZ»",
+    p: "Begeisternd – Individuell – Zielorientiert (Motivador – Individual – Orientado a objetivos). El alumno y su desarrollo, del principiante al experto, en el centro."
+  }, {
+    t: "Base Biomecánica (Aktion & Funktion)",
+    p: "La escuela más analítica de Centroeuropa: cada gesto se explica por su relación aktional-funktional y biomecánica. Ciencia del movimiento como fundamento."
+  }, {
+    t: "Hoch-Tief (Alto-Bajo)",
+    p: "Movimiento vertical de extensión y flexión como motor del cambio de curva. Conecta directamente con Flex/Extension del USST."
+  }, {
+    t: "Kinderskiunterricht",
+    p: "Cuaderno de esquí infantil: metodología lúdica y progresión Pflug → Pflugbogen → Grundschwung → Parallelschwung. Muy aplicable a U6–U10."
+  }]
+}];
+const CSS = `
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#07101e;--mid:#0c1827;--card:#0f1929;--card2:#111e30;--us:#1a4fa0;--usl:#6899e0;--no:#d62828;--nol:#e87070;--text:#c5dce8;--muted:#3d5a72;--muted2:#5a7a90;--white:#e8f2f8;--border:#0e1f30;--b2:rgba(255,255,255,0.06);}
+body{background:var(--bg);}
+.root{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.page{max-width:1160px;margin:0 auto;padding:0 16px 60px;}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding:28px 0 22px;border-bottom:1px solid var(--border);gap:20px;flex-wrap:wrap;}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--muted2);margin-bottom:8px;}
+.htitle{font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:800;color:var(--white);line-height:1.05;letter-spacing:-0.5px;}
+.htitle em{font-style:normal;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,0.3);}
+.src-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.spill{font-size:11px;font-weight:600;padding:4px 11px;border-radius:100px;}
+.spill.us{background:rgba(26,79,160,0.22);border:1px solid rgba(104,153,224,0.28);color:var(--usl);}
+.spill.no{background:rgba(214,40,40,0.18);border:1px solid rgba(232,112,112,0.25);color:var(--nol);}
+.slope-wrap{text-align:center;}
+.slope-vis{display:flex;align-items:flex-end;gap:12px;height:100px;}
+.slope-col{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.slope-lbl{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;}
+.slope-bar{width:26px;border-radius:3px 3px 0 0;}
+.slope-pct{font-family:'IBM Plex Mono',monospace;font-size:8px;text-align:center;color:var(--muted2);line-height:1.4;}
+.slope-note{font-size:9px;color:var(--muted);margin-top:6px;font-family:'IBM Plex Mono',monospace;letter-spacing:1px;}
+.tabs{display:flex;gap:4px;padding:16px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.tab{padding:7px 16px;border-radius:6px;border:1px solid var(--b2);background:transparent;color:var(--muted2);cursor:pointer;font-size:12px;font-family:'IBM Plex Sans',sans-serif;font-weight:500;transition:all .2s;}
+.tab:hover{color:var(--text);border-color:rgba(255,255,255,0.14);}
+.tab.on{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.2);color:var(--white);}
+.stitle{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:800;color:var(--white);margin:28px 0 5px;letter-spacing:-0.3px;}
+.ssub{color:var(--muted2);font-size:12px;line-height:1.7;margin-bottom:22px;}
+.ctabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
+.ctab{padding:8px 18px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:var(--muted2);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.ctab-age{font-family:'IBM Plex Sans',sans-serif;font-size:9px;font-weight:400;letter-spacing:0;}
+.ctab.on{font-size:17px;}
+.dh{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:18px;border-radius:10px;background:var(--card);margin-bottom:4px;flex-wrap:wrap;}
+.dcat{font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:800;line-height:1;letter-spacing:1px;}
+.dages{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted2);margin-bottom:8px;}
+.dtags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.dtag{padding:3px 9px;border-radius:5px;font-size:9px;font-weight:600;font-family:'IBM Plex Mono',monospace;border:1px solid;}
+.nsft{background:rgba(214,40,40,0.14);border-color:rgba(232,112,112,0.25);color:var(--nol);}
+.dconcept{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.cno{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--nol);}
+.ces{font-size:11px;color:var(--muted2);font-style:italic;}
+.rbar-wrap{display:flex;align-items:center;gap:12px;}
+.rbar{width:18px;height:90px;border-radius:4px;overflow:hidden;display:flex;flex-direction:column;}
+.rbar-lbls{display:flex;flex-direction:column;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;line-height:1.2;}
+.rbar-lbls em{font-style:normal;font-family:'IBM Plex Sans',sans-serif;font-size:9px;color:var(--muted2);font-weight:400;}
+.acc{border-bottom:1px solid var(--border);}
+.acch{width:100%;display:flex;justify-content:space-between;align-items:center;padding:13px 4px;background:transparent;border:none;color:var(--text);cursor:pointer;font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:600;text-align:left;transition:color .2s;gap:8px;}
+.acch:hover{color:var(--white);}
+.arr{font-size:8px;opacity:0.5;flex-shrink:0;}
+.accb{padding:10px 4px 18px;}
+.bl{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.bl li{font-size:12px;color:var(--text);line-height:1.6;padding:7px 12px;background:var(--card);border-radius:6px;}
+.ord li{border-left:3px solid;padding-left:12px;background:transparent;}
+.al li{background:rgba(232,112,112,0.06);border:1px solid rgba(232,112,112,0.14);color:#e09090;}
+.al li::before{content:"⚠ ";color:#e87070;}
+.el li{background:rgba(0,200,150,0.04);border:1px solid rgba(0,200,150,0.14);color:#80d0b0;}
+.el li::before{content:"✓ ";}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;}
+.fcard{padding:13px;background:var(--card);border-radius:8px;border-left:3px solid var(--usl);}
+.nsfc{border-left-color:var(--nol)!important;}
+.fname{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white);margin-bottom:3px;letter-spacing:0.5px;}
+.fsub{font-size:9px;color:var(--muted2);font-style:italic;margin-bottom:5px;}
+.fcard p{font-size:11px;color:var(--muted2);line-height:1.6;}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;}
+.tcard{padding:13px;background:var(--card);border-radius:8px;border-top:2px solid var(--usl);}
+.pedc{border-top-color:var(--nol);}
+.tname{font-weight:700;color:var(--white);font-size:12px;margin-bottom:5px;}
+.tcard p{font-size:11px;color:var(--muted2);line-height:1.6;}
+.drow{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.dnum{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;line-height:1;min-width:26px;flex-shrink:0;}
+.dname2{font-weight:700;color:var(--white);font-size:12px;margin-bottom:3px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.dsrc{font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,0.05);color:var(--muted2);font-family:'IBM Plex Mono',monospace;font-weight:400;}
+.drow p{font-size:11px;color:var(--muted2);line-height:1.6;}
+.pd{background:var(--card);border:1px solid var(--b2);border-radius:11px;padding:16px;margin-bottom:12px;}
+.pd-hdr{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.pd-num{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;line-height:1;flex-shrink:0;}
+.pd-tb{flex:1;}
+.pd-name{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:4px;}
+.pd-fund{display:inline-block;font-size:9px;padding:2px 8px;border-radius:4px;border:1px solid;font-family:'IBM Plex Mono',monospace;}
+.pd-diff{font-size:11px;color:var(--muted2);padding:3px 8px;border:1px solid rgba(255,255,255,0.08);border-radius:4px;white-space:nowrap;height:fit-content;}
+.pd-s{font-size:11px;color:var(--muted2);line-height:1.65;margin-bottom:8px;}
+.pd-lbl{display:block;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;font-weight:600;}
+.pd-tip{background:rgba(255,255,255,0.02);border-left:2px solid rgba(255,255,255,0.12);padding:8px 10px;border-radius:0 5px 5px 0;font-size:11px;color:var(--text);line-height:1.65;}
+.pd-tlbl{display:block;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);margin-bottom:3px;font-weight:600;}
+.fe{margin-bottom:20px;padding-left:12px;border-left:3px solid;}
+.fe-name{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.fe-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.fe-ex{background:var(--card);border-radius:8px;padding:12px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.04);}
+.fe-exh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:7px;}
+.fe-exn{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;line-height:1;flex-shrink:0;}
+.fe-exname{font-weight:700;color:var(--white);font-size:12px;}
+.fe-exsrc{font-size:8px;padding:2px 6px;border-radius:3px;background:rgba(255,255,255,0.05);color:var(--muted2);font-family:'IBM Plex Mono',monospace;margin-left:auto;}
+.fe-how{font-size:11px;color:var(--muted2);line-height:1.65;margin-bottom:5px;}
+.fe-how strong,.fe-reps strong{color:var(--text);}
+.fe-reps{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;padding:4px 8px;background:rgba(255,255,255,0.03);border-radius:4px;display:inline-block;}
+.vol{font-size:12px;color:var(--text);line-height:1.7;padding:12px;background:var(--card);border-radius:8px;font-family:'IBM Plex Mono',monospace;margin-bottom:10px;}
+.comp{font-size:12px;color:var(--text);line-height:1.7;padding:12px;background:var(--card);border-radius:8px;border-left:3px solid;}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.mt{width:100%;border-collapse:collapse;font-size:11px;min-width:900px;}
+.mt th{padding:12px 12px 9px;text-align:left;background:var(--card);border-bottom:1px solid var(--border);border-right:1px solid var(--border);vertical-align:bottom;}
+.mt td{padding:10px 12px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);vertical-align:top;}
+.mt tr:hover td{background:var(--card);}
+.rh0{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);background:var(--card)!important;position:sticky;left:0;min-width:90px;}
+.rh{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);background:var(--card2)!important;position:sticky;left:0;min-width:90px;line-height:1.5;}
+.th-cat{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;letter-spacing:1px;line-height:1;}
+.th-age{font-size:9px;color:var(--muted2);margin-top:2px;font-family:'IBM Plex Mono',monospace;}
+.th-nsf{font-size:9px;color:var(--muted);margin-top:2px;font-style:italic;}
+.sr td{background:var(--card)!important;padding:6px 12px;}
+.sl{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;color:var(--muted2);text-transform:uppercase;}
+.pill{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:600;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+.cs{font-size:10px;color:var(--muted2);margin-top:3px;line-height:1.5;}
+.nsfc2{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--nol);}
+.rw{margin-bottom:3px;}
+.rb2{height:5px;border-radius:3px;overflow:hidden;display:flex;background:rgba(255,255,255,0.04);}
+.rls{display:flex;justify-content:space-between;font-size:8px;font-family:'IBM Plex Mono',monospace;color:var(--muted2);}
+.pc{font-size:10px;line-height:1.55;padding:6px 8px;border-radius:4px;background:rgba(255,255,255,0.02);}
+.tname2{font-weight:700;color:var(--white);font-size:11px;margin-bottom:3px;}
+.ac{font-size:10px;color:#e09090;line-height:1.5;padding:5px 0;}
+.ec{font-size:10px;color:#80d0b0;line-height:1.5;padding:5px 7px;border-radius:3px;background:rgba(0,200,150,0.04);}
+.shdr{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;letter-spacing:2px;margin:26px 0 13px;}
+.shdr.us{color:#e8302a}.shdr.ca{color:#00a8cc}.shdr.it{color:#00c896}.shdr.de{color:#f0bf35}
+.fgrid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:22px;}
+.fcard2{padding:14px;background:var(--card);border-radius:10px;border-left:3px solid;}
+.fcard2.us{border-left-color:#e8302a}.fcard2.ca{border-left-color:#00a8cc}.fcard2.it{border-left-color:#00c896}.fcard2.de{border-left-color:#f0bf35}
+.fcard2 h5{font-size:12px;font-weight:700;color:var(--white);margin-bottom:6px;}
+.fcard2 p{font-size:11px;color:var(--muted2);line-height:1.65;}
+.footer{margin-top:40px;padding:18px 0;border-top:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);line-height:1.7;display:flex;flex-direction:column;gap:3px;}
+@media(max-width:600px){.htitle{font-size:28px;}.hdr{flex-direction:column;}.slope-vis{gap:8px;}.slope-bar{width:20px;}}
+.intro-overlay{position:fixed;inset:0;z-index:1000;background:radial-gradient(ellipse at 50% 30%,#0e2036,#050c15 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;animation:introFade .6s ease;}
+.intro-overlay.leaving{animation:introOut .7s ease forwards;}
+@keyframes introFade{from{opacity:0;}to{opacity:1;}}
+@keyframes introOut{to{opacity:0;visibility:hidden;transform:scale(1.04);}}
+.intro-svg{width:min(340px,72vw);height:auto;filter:drop-shadow(0 8px 30px rgba(0,0,0,0.5));}
+.intro-track{fill:none;stroke:#6899e0;stroke-width:3.5;stroke-linecap:round;stroke-dasharray:620;stroke-dashoffset:620;animation:carve 2s cubic-bezier(.5,0,.3,1) .3s forwards;}
+.intro-track.b{stroke:#8fb4e8;animation-delay:.42s;}
+.intro-spray{fill:rgba(160,200,240,0.5);opacity:0;animation:sprayPop .4s ease forwards;}
+@keyframes carve{to{stroke-dashoffset:0;}}
+@keyframes sprayPop{0%{opacity:0;transform:scale(0);}60%{opacity:.8;}100%{opacity:0;transform:scale(1.6);}}
+.intro-gate{opacity:0;transform-box:fill-box;transform-origin:bottom center;animation:gatePop .5s cubic-bezier(.3,1.4,.5,1) forwards;}
+@keyframes gatePop{from{opacity:0;transform:translateY(14px) scaleY(.5);}to{opacity:1;transform:translateY(0) scaleY(1);}}
+.intro-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:4px;color:#5a7a90;margin-top:26px;opacity:0;animation:introText .8s ease 1.4s forwards;}
+.intro-title{font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:800;color:#e8f2f8;letter-spacing:-0.5px;text-align:center;line-height:1.05;margin-top:6px;opacity:0;animation:introText .8s ease 1.6s forwards;}
+.intro-title em{font-style:normal;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,0.35);}
+.intro-enter{margin-top:22px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:#3d5a72;opacity:0;animation:introPulse 1.6s ease 2.2s infinite;}
+@keyframes introText{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes introPulse{0%,100%{opacity:.35;}50%{opacity:.8;}}
+`;
+function SkiTable() {
+  const [tab, setTab] = useState("plan");
+  const [cat, setCat] = useState("u6");
+  const [expanded, setExpanded] = useState(null);
+  const [intro, setIntro] = useState(true);
+  const toggle = s => setExpanded(expanded === s ? null : s);
+  const cur = DATA.find(d => d.cat.toLowerCase() === cat);
+  const gates = [{
+    x: 96,
+    y: 78,
+    c: "#e8302a",
+    d: ".2s"
+  }, {
+    x: 198,
+    y: 158,
+    c: "#1a4fa0",
+    d: ".5s"
+  }, {
+    x: 96,
+    y: 242,
+    c: "#e8302a",
+    d: ".8s"
+  }, {
+    x: 198,
+    y: 322,
+    c: "#1a4fa0",
+    d: "1.1s"
+  }];
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("style", null, FONTS + CSS), /*#__PURE__*/React.createElement("div", {
+    className: "root"
+  }, intro && /*#__PURE__*/React.createElement("div", {
+    className: "intro-overlay" + (intro === "leaving" ? " leaving" : ""),
+    onClick: () => {
+      setIntro("leaving");
+      setTimeout(() => setIntro(false), 650);
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    className: "intro-svg",
+    viewBox: "0 0 300 400",
+    xmlns: "http://www.w3.org/2000/svg"
+  }, gates.map((g, i) => /*#__PURE__*/React.createElement("g", {
+    key: i,
+    className: "intro-gate",
+    style: {
+      animationDelay: g.d
+    }
+  }, /*#__PURE__*/React.createElement("line", {
+    x1: g.x,
+    y1: g.y,
+    x2: g.x,
+    y2: g.y - 40,
+    stroke: g.c,
+    strokeWidth: "3.5",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M " + g.x + " " + (g.y - 40) + " L " + (g.x + 26) + " " + (g.y - 33) + " L " + g.x + " " + (g.y - 22) + " Z",
+    fill: g.c
+  }))), /*#__PURE__*/React.createElement("path", {
+    className: "intro-track",
+    d: "M 150 24 C 104 84, 150 118, 96 160 S 150 236, 198 272 S 150 350, 128 392"
+  }), /*#__PURE__*/React.createElement("path", {
+    className: "intro-track b",
+    d: "M 158 26 C 112 86, 158 120, 104 162 S 158 238, 206 274 S 158 352, 136 394"
+  }), /*#__PURE__*/React.createElement("circle", {
+    className: "intro-spray",
+    cx: "132",
+    cy: "388",
+    r: "10",
+    style: {
+      animationDelay: "2s"
+    }
+  }), /*#__PURE__*/React.createElement("circle", {
+    className: "intro-spray",
+    cx: "140",
+    cy: "380",
+    r: "7",
+    style: {
+      animationDelay: "2.15s"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "intro-eyebrow"
+  }, "ESQU\xCD ALPINO INFANTIL \xB7 U6 \u2192 U16"), /*#__PURE__*/React.createElement("div", {
+    className: "intro-title"
+  }, "Ski Development", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("em", null, "Table")), /*#__PURE__*/React.createElement("div", {
+    className: "intro-enter"
+  }, "TOCA PARA ENTRAR")), /*#__PURE__*/React.createElement("div", {
+    className: "page"
+  }, /*#__PURE__*/React.createElement("header", {
+    className: "hdr"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "hdr-left"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, "MARCO T\xC9CNICO \xB7 ESQU\xCD ALPINO INFANTIL"), /*#__PURE__*/React.createElement("h1", {
+    className: "htitle"
+  }, "Desarrollo del Atleta", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("em", null, "U6 \u2192 U16")), /*#__PURE__*/React.createElement("div", {
+    className: "src-row"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "spill us"
+  }, "\uD83C\uDDFA\uD83C\uDDF8 US Ski Team \xB7 Skill Quest"), /*#__PURE__*/React.createElement("span", {
+    className: "spill no"
+  }, "\uD83C\uDDF3\uD83C\uDDF4 Norges Skiforbund \xB7 NSF"))), /*#__PURE__*/React.createElement("div", {
+    className: "slope-wrap"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "slope-vis"
+  }, DATA.map((d, i) => /*#__PURE__*/React.createElement("div", {
+    key: d.cat,
+    className: "slope-col",
+    style: {
+      color: d.color
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "slope-lbl"
+  }, d.cat), /*#__PURE__*/React.createElement("div", {
+    className: "slope-bar",
+    style: {
+      height: 18 + i * 12,
+      background: d.color
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "slope-pct"
+  }, d.ratio.puertas, "%", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("span", null, "puertas"))))), /*#__PURE__*/React.createElement("div", {
+    className: "slope-note"
+  }, "Ratio puertas/libre por categor\xEDa"))), /*#__PURE__*/React.createElement("nav", {
+    className: "tabs"
+  }, [["plan", "📋 Plan U6–U16"], ["overview", "📊 Vista General"], ["fundamentals", "📚 Fundamentos"]].map(([id, lbl]) => /*#__PURE__*/React.createElement("button", {
+    key: id,
+    className: "tab " + (tab === id ? "on" : ""),
+    onClick: () => setTab(id)
+  }, lbl))), tab === "plan" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "stitle"
+  }, "Detalle por Categor\xEDa"), /*#__PURE__*/React.createElement("p", {
+    className: "ssub"
+  }, "Selecciona la categor\xEDa para ver perfil del atleta, fundamentals USST, pilares NSF, objetivos t\xE9cnicos, herramientas pedag\xF3gicas, drills con palos y ejercicios por fundamental."), /*#__PURE__*/React.createElement("div", {
+    className: "ctabs"
+  }, DATA.map(d => /*#__PURE__*/React.createElement("button", {
+    key: d.cat,
+    className: "ctab " + (cat === d.cat.toLowerCase() ? "on" : ""),
+    style: cat === d.cat.toLowerCase() ? {
+      borderColor: d.color,
+      color: d.color,
+      background: d.color + "14"
+    } : {},
+    onClick: () => {
+      setCat(d.cat.toLowerCase());
+      setExpanded(null);
+    }
+  }, d.cat, /*#__PURE__*/React.createElement("span", {
+    className: "ctab-age"
+  }, d.ages)))), cur && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "dh",
+    style: {
+      borderTop: "3px solid " + cur.color
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "dcat",
+    style: {
+      color: cur.color,
+      textShadow: "0 0 28px " + cur.color + "55"
+    }
+  }, cur.cat), /*#__PURE__*/React.createElement("div", {
+    className: "dages"
+  }, cur.ages), /*#__PURE__*/React.createElement("div", {
+    className: "dtags"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dtag",
+    style: {
+      background: cur.color + "18",
+      borderColor: cur.color + "44",
+      color: cur.color
+    }
+  }, cur.usst_level), /*#__PURE__*/React.createElement("span", {
+    className: "dtag nsft"
+  }, "NSF: ", cur.nsf_stage)), /*#__PURE__*/React.createElement("div", {
+    className: "dconcept"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "cno"
+  }, "\uD83C\uDDF3\uD83C\uDDF4 \xAB", cur.nsf_concept, "\xBB"), /*#__PURE__*/React.createElement("span", {
+    className: "ces"
+  }, "\u2014 ", cur.nsf_concept_es))), /*#__PURE__*/React.createElement("div", {
+    className: "rbar-wrap"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "rbar"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: cur.ratio.libre + "%",
+      background: "rgba(255,255,255,0.08)"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: cur.ratio.puertas + "%",
+      background: cur.color
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "rbar-lbls"
+  }, /*#__PURE__*/React.createElement("span", null, cur.ratio.libre, "%", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("em", null, "libre")), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: cur.color
+    }
+  }, cur.ratio.puertas, "%", /*#__PURE__*/React.createElement("br", null), /*#__PURE__*/React.createElement("em", null, "puertas"))))), [{
+    id: "profile",
+    title: "👤 Perfil del Atleta",
+    content: /*#__PURE__*/React.createElement("ul", {
+      className: "bl"
+    }, cur.profile.map((p, i) => /*#__PURE__*/React.createElement("li", {
+      key: i
+    }, p)))
+  }, {
+    id: "usst",
+    title: "🇺🇸 USST Skill Quest — " + cur.usst_level,
+    content: /*#__PURE__*/React.createElement("div", {
+      className: "fgrid"
+    }, cur.usst_focus.map((f, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "fcard",
+      style: {
+        borderLeftColor: cur.color
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "fname"
+    }, f.f), /*#__PURE__*/React.createElement("p", null, f.text))))
+  }, {
+    id: "nsf",
+    title: "🇳🇴 Pilares NSF",
+    content: /*#__PURE__*/React.createElement("div", {
+      className: "fgrid"
+    }, cur.nsf_pillars.map((p, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "fcard nsfc"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "fname"
+    }, p.title), /*#__PURE__*/React.createElement("div", {
+      className: "fsub"
+    }, "\xAB", p.es, "\xBB"), /*#__PURE__*/React.createElement("p", null, p.text))))
+  }, {
+    id: "tech",
+    title: "🎯 Objetivos Técnicos",
+    content: /*#__PURE__*/React.createElement("ol", {
+      className: "bl ord"
+    }, cur.tech_objectives.map((o, i) => /*#__PURE__*/React.createElement("li", {
+      key: i,
+      style: {
+        borderLeftColor: cur.color
+      }
+    }, o)))
+  }, {
+    id: "techtools",
+    title: "⚙️ Herramientas Técnicas",
+    content: /*#__PURE__*/React.createElement("div", {
+      className: "tgrid"
+    }, cur.tech_tools.map((t, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "tcard",
+      style: {
+        borderTopColor: cur.color
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "tname"
+    }, t.name), /*#__PURE__*/React.createElement("p", null, t.desc))))
+  }, {
+    id: "ped",
+    title: "📚 Herramientas Pedagógicas",
+    content: /*#__PURE__*/React.createElement("div", {
+      className: "tgrid"
+    }, cur.ped_tools.map((t, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "tcard pedc"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "tname"
+    }, t.name), /*#__PURE__*/React.createElement("p", null, t.desc))))
+  }, {
+    id: "drills",
+    title: "🏋️ Ejercicios de Sesión",
+    content: /*#__PURE__*/React.createElement("div", null, cur.drills.map((d, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "drow"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "dnum",
+      style: {
+        color: cur.color
+      }
+    }, d.n), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      className: "dname2"
+    }, d.name, " ", /*#__PURE__*/React.createElement("span", {
+      className: "dsrc"
+    }, d.src)), /*#__PURE__*/React.createElement("p", null, d.desc)))))
+  }, {
+    id: "poles",
+    title: "🎿 Drills con Palos en Pista",
+    content: /*#__PURE__*/React.createElement("div", null, cur.pole_drills.map((d, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "pd"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "pd-hdr"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "pd-num",
+      style: {
+        color: cur.color
+      }
+    }, String(i + 1).padStart(2, "0")), /*#__PURE__*/React.createElement("div", {
+      className: "pd-tb"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "pd-name"
+    }, d.name), /*#__PURE__*/React.createElement("span", {
+      className: "pd-fund",
+      style: {
+        background: cur.color + "16",
+        borderColor: cur.color + "44",
+        color: cur.color
+      }
+    }, d.fundamental)), /*#__PURE__*/React.createElement("div", {
+      className: "pd-diff"
+    }, d.difficulty)), /*#__PURE__*/React.createElement("div", {
+      className: "pd-s"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "pd-lbl"
+    }, "Objetivo"), d.objective), /*#__PURE__*/React.createElement("div", {
+      className: "pd-s"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "pd-lbl"
+    }, "\u2699 Montaje en pista"), d.setup), /*#__PURE__*/React.createElement("div", {
+      className: "pd-s"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "pd-lbl"
+    }, "\u25B6 Ejecuci\xF3n"), d.execution), /*#__PURE__*/React.createElement("div", {
+      className: "pd-tip"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "pd-tlbl"
+    }, "\uD83D\uDC41 Qu\xE9 observar"), d.coaching_tip))))
+  }, {
+    id: "fundex",
+    title: "🎯 Ejercicios por Fundamental (USST)",
+    content: /*#__PURE__*/React.createElement("div", null, cur.fund_exercises.map((fe, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      className: "fe",
+      style: {
+        borderLeftColor: fe.color
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "fe-name",
+      style: {
+        color: fe.color
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "fe-dot",
+      style: {
+        background: fe.color
+      }
+    }), fe.fund), fe.exercises.map((ex, j) => /*#__PURE__*/React.createElement("div", {
+      key: j,
+      className: "fe-ex"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "fe-exh"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "fe-exn",
+      style: {
+        color: fe.color
+      }
+    }, String(j + 1).padStart(2, "0")), /*#__PURE__*/React.createElement("span", {
+      className: "fe-exname"
+    }, ex.name), /*#__PURE__*/React.createElement("span", {
+      className: "fe-exsrc"
+    }, ex.src)), /*#__PURE__*/React.createElement("div", {
+      className: "fe-how"
+    }, /*#__PURE__*/React.createElement("strong", null, "C\xF3mo:"), " ", ex.how), /*#__PURE__*/React.createElement("div", {
+      className: "fe-reps"
+    }, /*#__PURE__*/React.createElement("strong", null, "Carga:"), " ", ex.reps))))))
+  }, {
+    id: "volume",
+    title: "⏱️ Volumen & Competencia",
+    content: /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      className: "vol"
+    }, cur.volume), /*#__PURE__*/React.createElement("div", {
+      className: "comp",
+      style: {
+        borderLeftColor: cur.color
+      }
+    }, cur.competition))
+  }, {
+    id: "flags",
+    title: "⚠️ Señales de Alerta — Errores del Entrenador",
+    content: /*#__PURE__*/React.createElement("ul", {
+      className: "bl al"
+    }, cur.red_flags.map((r, i) => /*#__PURE__*/React.createElement("li", {
+      key: i
+    }, r)))
+  }, {
+    id: "exit",
+    title: "✅ Criterios de Salida",
+    content: /*#__PURE__*/React.createElement("ol", {
+      className: "bl el"
+    }, cur.exit_criteria.map((e, i) => /*#__PURE__*/React.createElement("li", {
+      key: i,
+      style: {
+        borderLeftColor: cur.color
+      }
+    }, e)))
+  }].map(sec => /*#__PURE__*/React.createElement("div", {
+    key: sec.id,
+    className: "acc"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "acch " + (expanded === sec.id ? "on" : ""),
+    onClick: () => toggle(sec.id),
+    style: expanded === sec.id ? {
+      color: cur.color
+    } : {}
+  }, /*#__PURE__*/React.createElement("span", null, sec.title), /*#__PURE__*/React.createElement("span", {
+    className: "arr"
+  }, expanded === sec.id ? "▲" : "▼")), expanded === sec.id && /*#__PURE__*/React.createElement("div", {
+    className: "accb"
+  }, sec.content))))), tab === "overview" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "stitle"
+  }, "Vista General Comparativa"), /*#__PURE__*/React.createElement("p", {
+    className: "ssub"
+  }, "Todas las categor\xEDas comparadas en paralelo."), /*#__PURE__*/React.createElement("div", {
+    className: "tscroll"
+  }, /*#__PURE__*/React.createElement("table", {
+    className: "mt"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
+    className: "rh0"
+  }, "Dimensi\xF3n"), DATA.map(d => /*#__PURE__*/React.createElement("th", {
+    key: d.cat,
+    style: {
+      borderTop: "3px solid " + d.color
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "th-cat",
+    style: {
+      color: d.color
+    }
+  }, d.cat), /*#__PURE__*/React.createElement("div", {
+    className: "th-age"
+  }, d.ages), /*#__PURE__*/React.createElement("div", {
+    className: "th-nsf"
+  }, d.nsf_stage))))), /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", {
+    className: "sr"
+  }, /*#__PURE__*/React.createElement("td", {
+    colSpan: 7,
+    className: "sl"
+  }, "USST SKILL QUEST")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    className: "rh"
+  }, "Nivel"), DATA.map(d => /*#__PURE__*/React.createElement("td", {
+    key: d.cat
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pill",
+    style: {
+      background: d.color + "16",
+      border: "1px solid " + d.color + "44",
+      color: d.color
+    }
+  }, d.usst_level)))), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    className: "rh"
+  }, "Fundamental Prioritario"), DATA.map(d => /*#__PURE__*/React.createElement("td", {
+    key: d.cat
+  }, /*#__PURE__*/React.createElement("strong", {
+    style: {
+      color: d.color
+    }
+  }, d.usst_focus[0].f), /*#__PURE__*/React.createElement("div", {
+    className: "cs"
+  }, d.usst_focus[0].text.substring(0, 80), "\u2026")))), /*#__PURE__*/React.createElement("tr", {
+    className: "sr"
+  }, /*#__PURE__*/React.createElement("td", {
+    colSpan: 7,
+    className: "sl"
+  }, "NORGES SKIFORBUND (NSF)")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    className: "rh"
+  }, "Concepto NSF"), DATA.map(d => /*#__PURE__*/React.createElement("td", {
+    key: d.cat
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "nsfc2"
+  }, d.nsf_concept), /*#__PURE__*/React.createElement("div", {
+    className: "cs"
+  }, "\xAB", d.nsf_concept_es, "\xBB")))), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    className: "rh"
+  }, "Ratio Libre/Puertas"), DATA.map(d => /*#__PURE__*/React.createElement("td", {
+    key: d.cat
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "rw"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "rb2"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: d.ratio.libre + "%",
+      height: "100%",
+      background: "rgba(255,255,255,0.1)"
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: d.ratio.puertas + "%",
+      height: "100%",
+      background: d.color
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "rls"
+  }, /*#__PURE__*/React.createElement("span", null, d.ratio.libre, "% libre"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: d.color
+    }
+  }, d.ratio.puertas, "% puertas"))))), /*#__PURE__*/React.createElement("tr", {
+    className: "sr"
+  }, /*#__PURE__*/React.createElement("td", {
+    colSpan: 7,
+    className: "sl"
+  }, "OBJETIVOS T\xC9CNICOS")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    className: "rh"
+  }, "Prioridad #1"), DATA.map(d => /*#__PURE__*/React.createElement("td", {
+    key: d.cat
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pc",
+    style: {
+      borderLeft: "3px solid " + d.color
+    }
+  }, d.tech_objectives[0])))), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    className: "rh"
+  }, "Prioridad #2"), DATA.map(d => /*#__PURE__*/React.createElement("td", {
+    key: d.cat
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "pc",
+    style: {
+      borderLeft: "3px solid " + d.color + "66"
+    }
+  }, d.tech_objectives[1])))), /*#__PURE__*/React.createElement("tr", {
+    className: "sr"
+  }, /*#__PURE__*/React.createElement("td", {
+    colSpan: 7,
+    className: "sl"
+  }, "DRILL CON PALOS")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    className: "rh"
+  }, "Drill Principal"), DATA.map(d => /*#__PURE__*/React.createElement("td", {
+    key: d.cat
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "tname2"
+  }, d.pole_drills[0].name), /*#__PURE__*/React.createElement("div", {
+    className: "cs"
+  }, d.pole_drills[0].objective.substring(0, 70), "\u2026")))), /*#__PURE__*/React.createElement("tr", {
+    className: "sr"
+  }, /*#__PURE__*/React.createElement("td", {
+    colSpan: 7,
+    className: "sl"
+  }, "SE\xD1ALES DE ALERTA")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    className: "rh"
+  }, "Error #1 del Entrenador"), DATA.map(d => /*#__PURE__*/React.createElement("td", {
+    key: d.cat
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ac"
+  }, "\u26A0 ", d.red_flags[0])))), /*#__PURE__*/React.createElement("tr", {
+    className: "sr"
+  }, /*#__PURE__*/React.createElement("td", {
+    colSpan: 7,
+    className: "sl"
+  }, "CRITERIOS DE SALIDA")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    className: "rh"
+  }, "Criterio #1"), DATA.map(d => /*#__PURE__*/React.createElement("td", {
+    key: d.cat
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ec",
+    style: {
+      borderLeft: "3px solid " + d.color
+    }
+  }, "\u2713 ", d.exit_criteria[0])))), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
+    className: "rh"
+  }, "Criterio #2"), DATA.map(d => /*#__PURE__*/React.createElement("td", {
+    key: d.cat
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ec",
+    style: {
+      borderLeft: "3px solid " + d.color + "77"
+    }
+  }, "\u2713 ", d.exit_criteria[1])))))))), tab === "fundamentals" && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "stitle"
+  }, "Base T\xE9cnica"), /*#__PURE__*/React.createElement("p", {
+    className: "ssub"
+  }, "Los fundamentos sobre los que se construye todo el sistema de formaci\xF3n U6\u2013U16."), SCHOOLS.map((sch, si) => /*#__PURE__*/React.createElement("div", {
+    key: si
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "shdr " + sch.cls
+  }, sch.flag, " ", sch.title), /*#__PURE__*/React.createElement("div", {
+    className: "fgrid2"
+  }, sch.items.map((c, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "fcard2 " + sch.cls
+  }, /*#__PURE__*/React.createElement("h5", null, c.t), /*#__PURE__*/React.createElement("p", null, c.p))))))), /*#__PURE__*/React.createElement("footer", {
+    className: "footer"
+  }, /*#__PURE__*/React.createElement("div", null, "Marco t\xE9cnico basado en: US Ski Team Skill Quest Program & Norges Skiforbund \u2014 Alpint for barn og unge"), /*#__PURE__*/React.createElement("div", null, "Complementado con CSIA (Pierre LeRue), FISI (Scuola Italiana) & DSV (Deutscher Skiverband). Para uso de entrenadores certificados.")))));
+}
+ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(SkiTable, null));
+</script>
+</body>
+</html>

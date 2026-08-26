@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anatomía de la curva · Esquí alpino de competición</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sombra:#0D1B2C;
+    --hielo:#16293F;
+    --hielo-2:#1E3A57;
+    --nieve:#EEF2F7;
+    --nieve-pura:#FFFFFF;
+    --tinta:#101E30;
+    --gris:#5B6B7E;
+    --azul:#2E6FD9;
+    --rojo:#E0322C;
+    --ambar:#F2B705;
+    --cian:#5FC9E8;
+    --linea:rgba(255,255,255,.14);
+    --display:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+    --body:'Inter',system-ui,-apple-system,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--nieve);color:var(--tinta);
+    font-family:var(--body);font-size:16px;line-height:1.55;
+  }
+  .wrap{max-width:1440px;margin:0 auto;padding:0 28px}
+
+  /* ---------- Cabecera ---------- */
+  header{background:var(--sombra);color:#fff;padding:34px 0 26px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .eyebrow{
+    font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--cian);margin:0 0 10px
+  }
+  h1{
+    font-family:var(--display);font-weight:700;text-transform:uppercase;
+    font-size:clamp(38px,8.5vw,74px);line-height:.92;letter-spacing:-.01em;margin:0;
+  }
+  h1 em{font-style:normal;color:var(--ambar)}
+  .dek{max-width:60ch;color:#9FB2C6;font-size:15px;margin:14px 0 0}
+
+  /* ---------- Analizador ---------- */
+  .analizador{background:var(--sombra);color:#fff;padding:26px 0 40px}
+  .grid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:36px;align-items:start}
+  @media(max-width:860px){.grid{grid-template-columns:1fr;gap:20px}}
+
+  .piste{
+    background:linear-gradient(170deg,#16293F 0%,#0F1F33 55%,#0B1828 100%);
+    border:1px solid var(--linea);border-radius:4px;padding:10px;
+  }
+  .piste svg{display:block;width:100%;height:clamp(500px,70vh,820px)}
+
+  /* ---------- Panel ---------- */
+  .fase-tag{
+    display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;padding:5px 10px;border-radius:2px;color:#0D1B2C;font-weight:600;
+  }
+  h2.fase{font-family:var(--display);text-transform:uppercase;font-size:clamp(30px,6vw,46px);
+    line-height:1;margin:12px 0 4px;font-weight:700}
+  .rango{font-family:var(--mono);font-size:12px;color:#7E93A9;letter-spacing:.06em}
+  .fase-texto{color:#C7D5E3;font-size:17px;margin:14px 0 0}
+  .fase-texto strong{color:#fff;font-weight:600}
+  .clave{
+    margin:16px 0 0;padding:12px 14px;border-left:2px solid var(--ambar);
+    background:rgba(242,183,5,.07);font-size:16px;color:#E4D9BC
+  }
+  .clave b{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+    display:block;color:var(--ambar);margin-bottom:4px;font-weight:600}
+
+  /* telemetría */
+  .telemetria{margin-top:22px;border-top:1px solid var(--linea);padding-top:16px}
+  .metrica{display:grid;grid-template-columns:118px 1fr 62px;gap:10px;align-items:center;margin-bottom:9px}
+  .metrica .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#8298AE}
+  .barra{height:7px;background:rgba(255,255,255,.08);border-radius:1px;overflow:hidden}
+  .barra i{display:block;height:100%;width:0;background:var(--cian);transition:width .08s linear}
+  .val{font-family:var(--mono);font-size:14px;text-align:right;font-weight:500}
+  .aft{position:relative;height:7px;background:rgba(255,255,255,.08);border-radius:1px}
+  .aft::before{content:"";position:absolute;left:50%;top:-3px;width:1px;height:13px;background:rgba(255,255,255,.3)}
+  .aft i{position:absolute;top:-2px;width:3px;height:11px;background:#fff;left:50%;transform:translateX(-50%);transition:left .08s linear}
+
+  /* controles */
+  .controles{display:flex;align-items:center;gap:12px;margin-top:18px}
+  .velocidad{display:flex;align-items:center;gap:7px;color:#B9C9D9;font-family:var(--mono);font-size:11px;white-space:nowrap}
+  .velocidad output{min-width:42px;color:#fff;text-align:right}
+  button.play{
+    background:var(--ambar);border:0;color:#0D1B2C;font-family:var(--display);font-weight:700;
+    text-transform:uppercase;letter-spacing:.08em;font-size:17px;padding:9px 18px;border-radius:2px;cursor:pointer
+  }
+  button.play:hover{background:#ffc927}
+  input[type=range]{
+    flex:1;-webkit-appearance:none;appearance:none;background:transparent;height:22px;cursor:pointer;min-width:0
+  }
+  input[type=range]::-webkit-slider-runnable-track{height:2px;background:rgba(255,255,255,.25)}
+  input[type=range]::-moz-range-track{height:2px;background:rgba(255,255,255,.25)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:#fff;margin-top:-6px}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border:0;border-radius:50%;background:#fff}
+  :focus-visible{outline:2px solid var(--ambar);outline-offset:2px}
+
+  /* selector de fases */
+  .fases-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:16px}
+  .fases-nav button{
+    background:rgba(255,255,255,.05);border:1px solid var(--linea);border-top:2px solid;
+    color:#B9C9D9;font-family:var(--display);text-transform:uppercase;letter-spacing:.04em;
+    font-size:17px;font-weight:600;padding:11px 4px;cursor:pointer;border-radius:0 0 2px 2px;line-height:1.1
+  }
+  .fases-nav button:hover{background:rgba(255,255,255,.11);color:#fff}
+  .fases-nav button[aria-current=true]{background:#fff;color:#0D1B2C}
+
+  /* ---------- Secciones claras ---------- */
+  section.claro{padding:56px 0;border-top:1px solid #D8E0EA}
+  .titulo-seccion{font-family:var(--display);text-transform:uppercase;font-size:clamp(26px,5vw,40px);
+    line-height:1;margin:0 0 6px;font-weight:700}
+  .sub{color:var(--gris);font-size:15px;max-width:62ch;margin:0 0 28px}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:#D8E0EA;border:1px solid #D8E0EA}
+  .card{background:var(--nieve-pura);padding:20px}
+  .card h3{font-family:var(--display);text-transform:uppercase;font-size:21px;margin:0 0 6px;letter-spacing:.01em}
+  .card p{margin:0;font-size:14.5px;color:#38495C}
+  .card .ref{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--azul);
+    text-transform:uppercase;display:block;margin-bottom:9px}
+
+  /* rectas de referencia */
+  .refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:0 0 30px}
+  .refs>div{border-top:2px solid var(--ambar);padding-top:10px}
+  .refs .k{font-family:var(--display);text-transform:uppercase;font-size:19px;font-weight:700;display:block}
+  .refs p{margin:2px 0 0;font-size:14px;color:#38495C}
+
+  /* táctica */
+  .tactica{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:30px;align-items:center}
+  @media(max-width:760px){.tactica{grid-template-columns:1fr}}
+  .tactica svg{width:100%;height:auto;background:var(--nieve-pura);border:1px solid #D8E0EA}
+  .comp{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:6px}
+  .comp.tres{grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:520px){.comp,.comp.tres{grid-template-columns:1fr}}
+  .comp h4{font-family:var(--display);text-transform:uppercase;font-size:19px;margin:0 0 4px;display:flex;align-items:center}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;flex:none}
+  .fuente{font-size:13px;color:var(--gris);margin:14px 0 0;padding-top:12px;border-top:1px solid #D8E0EA}
+  .fuente a{color:var(--azul)}
+  .comp p{margin:0;font-size:14px;color:#38495C}
+  .badge-ok{color:#1B7F4C}.badge-no{color:var(--rojo)}
+
+  /* tabla */
+  .tabla-wrap{overflow-x:auto;border:1px solid #D8E0EA;background:#fff}
+  table{border-collapse:collapse;width:100%;min-width:620px;font-size:14px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid #E4EAF1}
+  thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+    color:#fff;background:var(--sombra);border:0;font-weight:500}
+  tbody th{font-family:var(--display);text-transform:uppercase;font-size:19px;font-weight:700}
+  td{font-family:var(--mono);font-size:13px;color:#2C3B4D}
+  tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+
+  /* inspección */
+  .sub-titulo{font-family:var(--display);text-transform:uppercase;font-size:23px;margin:0 0 8px;letter-spacing:.01em}
+  .t-ok{color:#1B7F4C!important;font-weight:500}
+  .t-dir{color:var(--azul)!important;font-weight:500}
+  .pasos{counter-reset:p;list-style:none;padding:0;margin:0}
+  .pasos li{counter-increment:p;position:relative;padding:0 0 14px 40px;font-size:14.5px;color:#38495C}
+  .pasos li::before{content:counter(p);position:absolute;left:0;top:0;width:26px;height:26px;
+    background:var(--sombra);color:#fff;border-radius:50%;display:grid;place-items:center;
+    font-family:var(--mono);font-size:12px}
+  .errores.viz li{border-left-color:var(--azul)}
+
+  /* errores */
+  .errores{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .errores li{background:#fff;border:1px solid #D8E0EA;border-left:3px solid var(--rojo);padding:14px 16px}
+  .errores b{display:block;font-family:var(--display);text-transform:uppercase;font-size:18px;margin-bottom:3px}
+  .errores span{font-size:14px;color:#38495C}
+  .errores em{display:block;font-style:normal;font-family:var(--mono);font-size:11.5px;color:#1B7F4C;margin-top:7px}
+
+  footer{background:var(--sombra);color:#7E93A9;font-size:13px;padding:24px 0;text-align:center}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">Técnica · Análisis de trazada</p>
+    <h1>Anatomía de<br>una <em>curva</em></h1>
+    <p class="dek">Las cuatro fases del giro en competición, con el apex como punto de referencia. Mueve el cursor por la trazada: el color de la línea es la carga sobre el esquí exterior.</p>
+  </div>
+</header>
+
+<div class="analizador">
+ <div class="wrap grid">
+
+  <!-- ================= PISTA ================= -->
+  <div class="piste">
+    <svg id="svg" viewBox="0 0 400 700" preserveAspectRatio="xMidYMid meet" aria-label="Trazada de dos curvas con puertas, apex y trayectoria del centro de masas">
+      <defs>
+        <linearGradient id="fall" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fff" stop-opacity=".07"/>
+          <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+
+      <rect x="0" y="0" width="400" height="700" fill="url(#fall)"/>
+      <!-- línea de máxima pendiente -->
+      <line x1="200" y1="0" x2="200" y2="700" stroke="#fff" stroke-opacity=".12" stroke-dasharray="2 8"/>
+      <text x="205" y="16" fill="#fff" fill-opacity=".3" font-family="IBM Plex Mono,monospace" font-size="9" letter-spacing="1.4">MÁXIMA PENDIENTE</text>
+
+      <!-- trazada base (oculta, referencia de cálculo) -->
+      <path id="ruta" fill="none" stroke="none"
+        d="M 200 20 C 250 60, 285 100, 285 150 C 285 200, 230 235, 200 280 C 170 325, 115 360, 115 410 C 115 460, 170 495, 200 540 C 215 565, 220 600, 215 660"/>
+
+      <g id="trazaCarga"></g>
+      <polyline id="cdmPath" fill="none" stroke="#5FC9E8" stroke-width="1.4" stroke-opacity=".85" stroke-dasharray="5 4"/>
+
+      <!-- puertas -->
+      <g id="puertas"></g>
+      <!-- apex -->
+      <g id="apexMarks"></g>
+      <!-- esquiador -->
+      <g id="rider"></g>
+
+      <!-- leyenda -->
+      <g font-family="IBM Plex Mono,monospace" font-size="9" letter-spacing=".8">
+        <line x1="18" y1="662" x2="38" y2="662" stroke="#fff" stroke-width="3"/>
+        <text x="44" y="665" fill="#fff" fill-opacity=".65">TRAZADA DEL ESQUÍ</text>
+        <line x1="18" y1="678" x2="38" y2="678" stroke="#5FC9E8" stroke-width="1.4" stroke-dasharray="5 4"/>
+        <text x="44" y="681" fill="#fff" fill-opacity=".65">TRAYECTORIA DEL CDM</text>
+        <line x1="18" y1="694" x2="38" y2="694" stroke="#F2B705" stroke-width="1" stroke-dasharray="7 5"/>
+        <text x="44" y="697" fill="#F2B705" fill-opacity=".8">RISE LINE (SUBE DESDE EL PALO)</text>
+      </g>
+    </svg>
+  </div>
+
+  <!-- ================= PANEL ================= -->
+  <div>
+    <span class="fase-tag" id="tag">—</span>
+    <h2 class="fase" id="faseNombre">—</h2>
+    <p class="rango" id="faseRango">—</p>
+    <p class="fase-texto" id="faseTexto">—</p>
+    <div class="clave"><b id="claveTitulo">Clave</b><span id="claveTexto">—</span></div>
+
+    <div class="telemetria">
+      <div class="metrica">
+        <span class="lbl">Ángulo de canto</span>
+        <div class="barra"><i id="bCanto"></i></div>
+        <span class="val" id="vCanto">0°</span>
+      </div>
+      <div class="metrica">
+        <span class="lbl">Fuerza (exterior)</span>
+        <div class="barra"><i id="bCarga"></i></div>
+        <span class="val" id="vCarga">0.4 G</span>
+      </div>
+      <div class="metrica">
+        <span class="lbl">Angulación</span>
+        <div class="barra"><i id="bAng"></i></div>
+        <span class="val" id="vAng">0%</span>
+      </div>
+      <div class="metrica">
+        <span class="lbl">Antero-post.</span>
+        <div class="aft"><i id="bAft"></i></div>
+        <span class="val" id="vAft">centro</span>
+      </div>
+    </div>
+
+    <div class="controles">
+      <button class="play" id="play" aria-label="Reproducir la secuencia">▶ Play</button>
+      <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Avanzar por la trazada">
+      <label class="velocidad" for="velocidad">Velocidad <input type="range" id="velocidad" min="0.02" max="0.16" step="0.005" value="0.055" aria-label="Velocidad de la animación"><output id="velocidadValor">lenta</output></label>
+    </div>
+
+    <div class="fases-nav" id="nav"></div>
+  </div>
+ </div>
+</div>
+
+<!-- ================= FUNDAMENTOS ================= -->
+<section class="claro">
+  <div class="wrap">
+    <h2 class="titulo-seccion">Los fundamentos que operan debajo</h2>
+    <p class="sub">Las fases describen <em>cuándo</em>. Los fundamentos describen <em>con qué</em>. Cada uno actúa en toda la curva, pero tiene un momento en el que decide el resultado.</p>
+    <div class="cards" id="fund"></div>
+  </div>
+</section>
+
+<!-- ================= TÁCTICA DEL APEX ================= -->
+<section class="claro">
+  <div class="wrap">
+    <h2 class="titulo-seccion">La rise line y la elección de trazada</h2>
+    <p class="sub">Hay tres rectas de referencia y conviene no mezclarlas: la de máxima pendiente, la de puerta y la <em>rise line</em>. Es esta última la que decide cuándo empieza la curva, y de ahí salen tres trazadas distintas.</p>
+
+    <div class="refs">
+      <div><span class="k">Máxima pendiente</span><p>Por dónde bajaría una bola. Marca dónde el esquí acelera y dónde frena.</p></div>
+      <div><span class="k">Línea de puerta</span><p>La imaginaria que une el palo de giro con el palo exterior. En gigante, súper-G y descenso hay que cruzarla <strong>pasando entre ambos palos</strong>; en slalom, con un solo palo, los dos pies y las dos espátulas pasan por el mismo lado del palo de giro. Define el paso válido, no la trazada.</p></div>
+      <div><span class="k">Rise line</span><p>La recta imaginaria que sube la ladera desde el palo de giro. Es el punto de referencia para saber <em>cuándo</em> empezar a dirigir.</p></div>
+    </div>
+
+    <div class="tactica">
+      <svg viewBox="0 0 300 342" aria-label="Trazada ancha, directa y de recuperación respecto a la rise line">
+        <line x1="150" y1="8" x2="150" y2="322" stroke="#C9D4E0" stroke-dasharray="2 6"/>
+        <text x="146" y="20" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#9AA8B7" letter-spacing=".8" text-anchor="end">MÁX. PENDIENTE</text>
+
+        <!-- rise line -->
+        <line x1="212" y1="205" x2="212" y2="14" stroke="#C08800" stroke-width="1.2" stroke-dasharray="7 5"/>
+        <text x="218" y="24" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#B07E00" letter-spacing=".9">RISE LINE</text>
+
+        <!-- único palo de giro -->
+        <g fill="#5B6B7E">
+          <rect x="210.6" y="180" width="2.8" height="25"/><circle cx="212" cy="205" r="3.6"/>
+        </g>
+
+        <!-- trazada directa -->
+        <path d="M 150 10 L 172 24 C 206 44, 230 84, 232 132 C 234 178, 224 214, 190 258 C 176 278, 162 296, 150 310" fill="none" stroke="#2E6FD9" stroke-width="2.4"/>
+        <circle cx="172" cy="24" r="4.2" fill="#fff" stroke="#2E6FD9" stroke-width="1.8"/>
+        <circle cx="233" cy="152" r="4.2" fill="#2E6FD9"/>
+
+        <!-- trazada ancha -->
+        <path d="M 150 10 L 200 52 C 232 76, 246 104, 246 142 C 246 186, 208 240, 150 308" fill="none" stroke="#1B7F4C" stroke-width="3.4"/>
+        <circle cx="200" cy="52" r="4.2" fill="#fff" stroke="#1B7F4C" stroke-width="1.8"/>
+        <circle cx="246" cy="142" r="4.6" fill="#1B7F4C"/>
+
+        <!-- trazada de recuperación -->
+        <path d="M 150 10 L 228 118 C 246 150, 250 190, 238 218 C 224 250, 176 268, 112 300" fill="none" stroke="#E0322C" stroke-width="2.2" stroke-dasharray="7 5"/>
+        <circle cx="228" cy="118" r="4.2" fill="#fff" stroke="#E0322C" stroke-width="1.8"/>
+        <text x="238" y="252" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="#E0322C" letter-spacing=".6">PIVOT / STIVOT</text>
+
+        <g font-family="IBM Plex Mono,monospace" font-size="8.5" letter-spacing=".6">
+          <text x="166" y="20" fill="#2E6FD9" text-anchor="end">DIRECTA</text>
+          <text x="194" y="48" fill="#1B7F4C" text-anchor="end">ANCHA</text>
+          <text x="236" y="114" fill="#E0322C">TARDE</text>
+          <text x="10" y="334" fill="#7A8A9B">○ INICIO DE CURVA · ● APEX</text>
+        </g>
+      </svg>
+      <div>
+        <div class="comp tres">
+          <div>
+            <h4 class="badge-ok"><span class="dot" style="background:#1B7F4C"></span>Ancha o alta</h4>
+            <p>En puertas estándar de gigante y slalom, se empieza la curva <strong>justo antes</strong> de llegar a la rise line. Da una forma más redonda, mantiene velocidad y control y evita la curva tarde y derrapada. Coloca el apex justo por encima de la puerta. Es la opción generalmente más segura y más rápida para curvas cortadas.</p>
+          </div>
+          <div>
+            <h4 style="color:#2E6FD9"><span class="dot" style="background:#2E6FD9"></span>Directa o agresiva</h4>
+            <p>Se empieza la curva <strong>aún antes</strong> respecto a la rise line, para trazar un camino más directo hacia la puerta y alrededor de ella. Suele ser más rápida cuando el trazado se endereza. Test infalible: si el esquí empieza a derrapar, la línea es demasiado directa.</p>
+          </div>
+          <div>
+            <h4 class="badge-no"><span class="dot" style="background:#E0322C"></span>Recuperación</h4>
+            <p>No es una elección, es dónde acabas. Se llega a la rise line todavía plano y la posición resultante no permite cortar hacia la puerta siguiente. Toca acción de recuperación —pivot, doble clavada— o salir del trazado por seguridad. En pendiente dura y rota, el <em>stivot</em> es la herramienta.</p>
+          </div>
+        </div>
+        <p class="sub" style="margin-top:22px">Dos matices que evitan malinterpretar el dibujo. El primero: dónde empezar respecto a la rise line no es un dogma, depende del tipo de trazado, la forma de curva buscada, el terreno y la velocidad. El segundo: hay que dejar al esquí exterior <strong>distancia suficiente respecto al palo</strong> para que pueda ponerse de canto, flexionarse y cortar; esa distancia varía con la técnica del corredor, el trazado y el estado de la nieve, así que la separación del gráfico es indicativa y no una medida.</p>
+        <p class="fuente">Modelo de las tres trazadas y referencia de la rise line según <a href="https://alpineracemethod.com/race-line-1">Alpine Race Method · Race Line</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INSPECCIÓN ================= -->
+<section class="claro">
+  <div class="wrap">
+    <h2 class="titulo-seccion">Inspección: la trazada se elige antes de bajar</h2>
+    <p class="sub">Durante la bajada no hay tiempo de pensar curva a curva. Lo que se decide en inspección son los rasgos principales del trazado —puertas de retardo, flushes, cambios de nieve— y la línea que quieres a través de ellos.</p>
+
+    <div class="cards">
+      <div class="card"><span class="ref">Clave 1</span><h3>Ritmo</h3><p>Memorizar el ritmo y sus cambios, incluidos los cambios de distancia entre puertas. Es lo primero porque ordena todo lo demás.</p></div>
+      <div class="card"><span class="ref">Clave 2</span><h3>Terreno</h3><p>Observar los rasgos del terreno y, sobre todo, <strong>dónde cambian</strong>. El cambio importa más que el rasgo.</p></div>
+      <div class="card"><span class="ref">Clave 3</span><h3>Offset</h3><p>Considerar el offset: la distancia horizontal entre puertas. Es lo que dice cuánta dirección hay que fabricar en cada curva.</p></div>
+    </div>
+    <p class="fuente" style="margin-bottom:36px">Las tres claves de inspección de Mikaela Shiffrin, recogidas en <a href="https://alpineracemethod.com/inspection">Alpine Race Method · Inspection</a>.</p>
+
+    <h3 class="sub-titulo">De lo que ves a la trazada que eliges</h3>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr><th>Lo que ves en inspección</th><th>Lo que impone</th><th>Trazada</th></tr></thead>
+        <tbody>
+          <tr><th>Offset grande</th><td>Mucha dirección por curva; si entras tarde no queda sitio para fabricarla</td><td class="t-ok">Ancha · enganche justo antes de la rise line</td></tr>
+          <tr><th>El trazado se endereza</th><td>Poca dirección necesaria; el tiempo está en no frenar</td><td class="t-dir">Directa</td></tr>
+          <tr><th>Cambio de ritmo o retardo</th><td>La curva de antes decide: hay que llegar temprano al gate de retardo</td><td class="t-ok">Ancha en la curva previa</td></tr>
+          <tr><th>Rompiente con puerta oculta</th><td>No hay referencia visual en el momento de dirigir</td><td class="t-ok">Dirección preparada arriba · ver protocolo</td></tr>
+          <tr><th>Pendiente fuerte y hielo</th><td>El canto puede no agarrar a tiempo si la línea es tensa</td><td class="t-ok">Ancha · stivot en reserva</td></tr>
+          <tr><th>Surcos bajo la puerta</th><td>La zona picada está degradada y se come la salida</td><td class="t-ok">Más alto · apex arriba del hoyo</td></tr>
+          <tr><th>Últimas puertas antes de un plano</th><td>Prima la velocidad de salida sobre la forma</td><td class="t-dir">Directa · salida limpia</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fuente">Cruce propio entre el modelo de trazadas y las claves de inspección. La regla de fondo es la de la fuente: la trazada directa compensa cuando el trazado se endereza, y deja de compensar en cuanto el esquí derrapa.</p>
+
+    <h3 class="sub-titulo" style="margin-top:44px">Protocolo de la rompiente</h3>
+    <p class="sub">Cuando el trazado pasa de plano a fuerte pendiente, la primera puerta de la pendiente suele quedar oculta a la vista. La dirección hay que decidirla antes de verla.</p>
+    <div class="tactica">
+      <svg viewBox="0 0 320 165" aria-label="Perfil de una rompiente con la primera puerta oculta bajo la línea de visión">
+        <defs>
+          <linearGradient id="nieve" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#DDE5EE"/><stop offset="1" stop-color="#F4F7FA"/>
+          </linearGradient>
+        </defs>
+        <path d="M 8 62 L 130 74 C 172 80, 202 102, 240 126 L 312 152 L 312 162 L 8 162 Z" fill="url(#nieve)" stroke="none"/>
+        <path d="M 8 62 L 130 74 C 172 80, 202 102, 240 126 L 312 152" fill="none" stroke="#8FA0B2" stroke-width="1.6"/>
+        <!-- zona ciega -->
+        <path d="M 150 78 L 312 94 L 312 152 L 240 126 C 202 102, 172 80, 150 78 Z" fill="#E0322C" fill-opacity=".09"/>
+        <!-- línea de visión -->
+        <line x1="86" y1="58" x2="312" y2="80" stroke="#5B6B7E" stroke-width="1" stroke-dasharray="5 4"/>
+        <text x="238" y="72" font-family="IBM Plex Mono,monospace" font-size="8" fill="#5B6B7E" letter-spacing=".6">LÍNEA DE VISIÓN</text>
+        <!-- corredor -->
+        <circle cx="86" cy="58" r="4" fill="#101E30"/>
+        <line x1="86" y1="62" x2="86" y2="71" stroke="#101E30" stroke-width="2"/>
+        <!-- puerta alta -->
+        <rect x="144.6" y="58" width="2.6" height="20" fill="#2E6FD9"/>
+        <circle cx="146" cy="78" r="3.2" fill="#2E6FD9"/>
+        <!-- dirección de los esquís en inspección -->
+        <line x1="150" y1="80" x2="196" y2="99" stroke="#F2B705" stroke-width="2.6"/>
+        <path d="M 196 99 l -8 -1 l 3 6 z" fill="#F2B705"/>
+        <text x="150" y="94" font-family="IBM Plex Mono,monospace" font-size="8" fill="#B07E00" letter-spacing=".5">APUNTA LOS ESQUÍS AQUÍ</text>
+        <!-- puerta oculta -->
+        <rect x="212.6" y="90" width="2.6" height="20" fill="#E0322C"/>
+        <circle cx="214" cy="110" r="3.2" fill="#E0322C"/>
+        <text x="222" y="112" font-family="IBM Plex Mono,monospace" font-size="8" fill="#E0322C" letter-spacing=".5">PUERTA OCULTA</text>
+      </svg>
+      <div>
+        <ol class="pasos">
+          <li>En la inspección, colócate junto a la puerta que está arriba del cambio de pendiente y apunta los esquís en la dirección de la curva siguiente.</li>
+          <li>Las espátulas deben señalar a la nieve <strong>por encima</strong> de la puerta siguiente: ahí es donde empezarás a presionar el nuevo esquí exterior.</li>
+          <li>Ahora mira hacia arriba y visualiza el arco que va a dejar tus esquís exactamente en esa dirección.</li>
+          <li>Inspecciona en pareja, turnándose para colocar los esquís, y así ves la forma de la curva desde arriba y desde abajo.</li>
+        </ol>
+        <p class="fuente">Protocolo de Daron Rahlves recogido en Alpine Race Method · Inspection.</p>
+      </div>
+    </div>
+
+    <h3 class="sub-titulo" style="margin-top:44px">Y después, la visualización</h3>
+    <p class="sub">La inspección física es la mitad. La otra mitad es reconstruir el trazado en la cabeza antes de salir.</p>
+    <ul class="errores viz">
+      <li><b>Primera persona</b><span>Recorrerlo puerta a puerta desde dentro, como si estuvieras esquiando, no viéndote desde fuera.</span></li>
+      <li><b>Todos los sentidos</b><span>El esquí en la nieve, la presión de la bota, el aire en la cara, el sonido bajo el canto. Cuantos más sentidos, más real.</span></li>
+      <li><b>A velocidad real</b><span>Visualizar al ritmo al que vas a bajar de verdad. Es lo que entrena el <em>timing</em>, que es de lo que va todo.</span></li>
+      <li><b>Repetir y ajustar</b><span>Varias pasadas mentales, y después contrastar con el trazado real y volver a inspeccionar los tramos que no encajen.</span></li>
+    </ul>
+    <p class="fuente">Guía de visualización de <a href="https://alpineracemethod.com/visualize">Alpine Race Method · Visualize</a>.</p>
+  </div>
+</section>
+
+<!-- ================= DISCIPLINAS ================= -->
+<section class="claro">
+  <div class="wrap">
+    <h2 class="titulo-seccion">La misma curva, cuatro escalas</h2>
+    <p class="sub">Las fases no cambian entre disciplinas; cambian su duración, la magnitud de las fuerzas y el mecanismo de transición. Valores orientativos: las especificaciones de material FIS se revisan periódicamente.</p>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr>
+          <th>Disciplina</th><th>Radio esquí</th><th>Canto en apex</th><th>Pico de carga</th><th>Transición dominante</th><th>Fase crítica</th>
+        </tr></thead>
+        <tbody>
+          <tr><th>SL</th><td>≈ 11–13 m</td><td>50–65°</td><td>2–3 G</td><td>Retracción (cross-under)</td><td>Transición: el ritmo manda</td></tr>
+          <tr><th>GS</th><td>≈ 30 m</td><td>55–70°</td><td>2,5–3,5 G</td><td>Cruce del CDM (cross-over)</td><td>Iniciación: la curva se decide arriba</td></tr>
+          <tr><th>SG</th><td>≈ 40–45 m</td><td>45–60°</td><td>3–4 G</td><td>Cruce largo y progresivo</td><td>Apex: sostener sin derrapar</td></tr>
+          <tr><th>DH</th><td>≥ 50 m</td><td>30–50°</td><td>3–4+ G</td><td>Cruce muy anticipado</td><td>Finalización: salir con velocidad</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ERRORES ================= -->
+<section class="claro">
+  <div class="wrap">
+    <h2 class="titulo-seccion">Fallos que se ven en vídeo</h2>
+    <p class="sub">Cada uno con la corrección que ataca la causa, no el síntoma.</p>
+    <ul class="errores" id="errores"></ul>
+  </div>
+</section>
+
+<footer>Modelo de fases y valores de referencia orientativos para análisis técnico y entrenamiento.<br>Rise line y modelo de trazadas ancha, directa y de recuperación según <a href="https://alpineracemethod.com/race-line-1" style="color:#5FC9E8">Alpine Race Method</a>.</footer>
+
+<script>
+(function(){
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const svgNS = "http://www.w3.org/2000/svg";
+
+  /* ---------- Modelo de la curva ---------- */
+  const CICLO = 0.4255;               // fracción de la ruta que ocupa un giro completo
+  const FASES = [
+    { id:"transicion", nombre:"Transición", rango:"94 → 6 % del ciclo", color:"#5FC9E8",
+      texto:"Fin de una curva y principio de la siguiente. El centro de masas cruza la línea de los esquís (<strong>cross-over</strong>) o los esquís cruzan bajo el cuerpo por retracción (<strong>cross-under</strong>). La presión cae al mínimo, el esquí se descarga y los cantos se liberan y se cambian. Es también la ventana para recuperar el equilibrio antero-posterior: si sales atrás de la curva anterior, aquí es donde vuelves al centro, avanzando las tibias contra la caña de la bota.",
+      clave:"Cuanto menos tiempo pase el esquí plano, mejor. Cruce temprano = canto nuevo antes de la línea de máxima pendiente." },
+    { id:"iniciacion", nombre:"Iniciación", rango:"6 → 39 % del ciclo", color:"#7FD4C1",
+      texto:"Desde el cambio de canto hasta antes del apex. Se construye ángulo de canto de forma progresiva: primero por <strong>inclinación</strong> del conjunto cuerpo-esquís hacia el interior, después sostenida con <strong>angulación</strong> de cadera y rodilla. La pierna exterior se extiende mientras la interior se flexiona, y la presión se transfiere al esquí exterior. Posición ligeramente adelantada para cargar la espátula y que el esquí engance y empiece a dibujar.",
+      clave:"Referencia de línea: en la trazada ancha se empieza justo antes de llegar a la rise line. Empezar todavía antes es la trazada directa, más rápida solo mientras el esquí no derrape. Empezar después ya no es una trazada, es recuperación." },
+    { id:"apex", nombre:"Apex", rango:"39 → 60 % del ciclo", color:"#F2B705",
+      texto:"No es un punto, es una zona corta. Coinciden el <strong>máximo ángulo de canto</strong>, la máxima angulación, la mayor distancia del CDM respecto a la base de apoyo y la <strong>máxima fuerza de reacción del suelo</strong> (2–4 G según disciplina). El esquí está flexionado al máximo, así que su radio efectivo es el más pequeño de toda la curva. El 80–95 % de la carga va al esquí exterior; el tronco queda encarado hacia el valle (contra) y el hombro exterior bajo.",
+      clave:"Táctica: el apex cae por fuera de la rise line y por encima de la puerta. Es el punto de máxima separación lateral respecto al palo, no el punto de paso. Geometría: en carving puro R ≈ R_esquí · cos(ángulo de canto), y la flexión lo reduce aún más." },
+    { id:"finalizacion", nombre:"Finalización", rango:"60 → 94 % del ciclo", color:"#E0322C",
+      texto:"Se completa la dirección y se libera la presión de forma controlada. El ángulo de canto baja, el esquí se estira y el CDM ya empieza a viajar hacia la curva siguiente. <strong>El paso de puerta ocurre aquí</strong>: cuando llegas al palo ya has vuelto a cruzar la rise line hacia dentro y estás abriendo. La fuerza acumulada tiende a empujarte hacia atrás y resistir ese retroceso es lo que permite que la próxima transición llegue a tiempo.",
+      clave:"Objetivo: salir apuntando ya a la puerta siguiente. Cada metro extra de dirección aquí es velocidad que no vuelve." }
+  ];
+
+  function faseDe(u){
+    if (u < 0.06 || u >= 0.94) return 0;
+    if (u < 0.39) return 1;
+    if (u < 0.60) return 2;
+    return 3;
+  }
+  const CENTROS = [0.005, 0.22, 0.495, 0.77];   // u representativo de cada fase
+
+  /* ---------- Modelos físicos simplificados ---------- */
+  const canto  = u => 64 * Math.pow(Math.sin(Math.PI * Math.pow(u,0.88)), 1.15);
+  const carga  = u => 0.42 + 2.35 * Math.pow(Math.max(0, Math.sin(Math.PI*(u-0.05)/0.95)), 1.5);
+  const angula = u => 100 * Math.pow(Math.sin(Math.PI * Math.pow(u,0.95)), 1.6);
+  const aft    = u => Math.sin(2*Math.PI*u) * 0.85;     // + adelante / − atrás
+
+  const CARGA_MAX = 2.77;
+  function colorCarga(g){
+    const t = Math.min(1, Math.max(0, (g-0.42)/(CARGA_MAX-0.42)));
+    const A=[143,184,232], B=[242,183,5], C=[224,50,44];
+    const mix=(x,y,k)=>Math.round(x+(y-x)*k);
+    let c;
+    if (t < 0.62){ const k=t/0.62; c=[mix(A[0],B[0],k),mix(A[1],B[1],k),mix(A[2],B[2],k)]; }
+    else { const k=(t-0.62)/0.38; c=[mix(B[0],C[0],k),mix(B[1],C[1],k),mix(B[2],C[2],k)]; }
+    return `rgb(${c[0]},${c[1]},${c[2]})`;
+  }
+
+  /* ---------- Geometría a partir de la ruta ---------- */
+  const ruta = $("ruta");
+  const L = ruta.getTotalLength();
+  const cicloDe = t => { const n = Math.floor(t/CICLO); return { u:(t-n*CICLO)/CICLO, giro:n }; };
+
+  function estado(t){
+    const {u,giro} = cicloDe(t);
+    const len = t*L;
+    const p  = ruta.getPointAtLength(len);
+    const p1 = ruta.getPointAtLength(Math.min(L, len+1.2));
+    const p0 = ruta.getPointAtLength(Math.max(0, len-1.2));
+    let tx = p1.x-p0.x, ty = p1.y-p0.y;
+    const m = Math.hypot(tx,ty) || 1; tx/=m; ty/=m;
+    const s = (giro % 2 === 0) ? 1 : -1;          // lado interior de la curva
+    const nx = ty*s, ny = -tx*s;
+    const E = canto(u);
+    const d = 48 * Math.sin(E*Math.PI/180);
+    return { u, giro, p, tx, ty, nx, ny, E, d,
+             cdm:{x:p.x+nx*d, y:p.y+ny*d},
+             G: carga(u), ang: angula(u), af: aft(u) };
+  }
+
+  /* ---------- Dibujo estático ---------- */
+  const gTraza = $("trazaCarga"), N = 170;
+  for (let i=0;i<N;i++){
+    const t0=i/N, t1=(i+1)/N;
+    const a=estado(t0), b=estado(t1);
+    const ln=document.createElementNS(svgNS,"line");
+    ln.setAttribute("x1",a.p.x); ln.setAttribute("y1",a.p.y);
+    ln.setAttribute("x2",b.p.x); ln.setAttribute("y2",b.p.y);
+    ln.setAttribute("stroke", colorCarga((a.G+b.G)/2));
+    ln.setAttribute("stroke-width", 3 + (a.G/CARGA_MAX)*3.4);
+    ln.setAttribute("stroke-linecap","round");
+    gTraza.appendChild(ln);
+  }
+  let pts=[];
+  for (let i=0;i<=200;i++){ const c=estado(i/200).cdm; pts.push(c.x.toFixed(1)+","+c.y.toFixed(1)); }
+  $("cdmPath").setAttribute("points", pts.join(" "));
+
+  // Puertas y rise lines
+  // El interior del giro está hacia el centro de la pista: el palo de giro va
+  // ENTRE la trazada y la máxima pendiente, y el palo exterior por fuera.
+  // La trazada cruza la rise line arriba, apexa por fuera y vuelve a cruzarla
+  // justo por debajo del palo. Verificado: en y=204 la trazada está en x=264;
+  // en y=464, en x=136.
+  const PUERTAS = [
+    { x:250, y:204, out:312, color:"#E0322C", top:28,  lado: 1 },
+    { x:150, y:464, out:88,  color:"#2E6FD9", top:288, lado:-1 }
+  ];
+  const gP = $("puertas");
+  PUERTAS.forEach((g,i)=>{
+    // rise line: recta que sube la ladera desde el palo de giro
+    const rl=document.createElementNS(svgNS,"line");
+    rl.setAttribute("x1",g.x); rl.setAttribute("y1",g.y);
+    rl.setAttribute("x2",g.x); rl.setAttribute("y2",g.top);
+    rl.setAttribute("stroke","#F2B705"); rl.setAttribute("stroke-opacity",".5");
+    rl.setAttribute("stroke-width","1"); rl.setAttribute("stroke-dasharray","7 5");
+    gP.appendChild(rl);
+    const rt=document.createElementNS(svgNS,"text");
+    rt.setAttribute("x", g.x + g.lado*6); rt.setAttribute("y", g.top+10);
+    rt.setAttribute("text-anchor", g.lado===1?"start":"end");
+    rt.setAttribute("font-family","IBM Plex Mono,monospace"); rt.setAttribute("font-size","8.5");
+    rt.setAttribute("fill","#F2B705"); rt.setAttribute("fill-opacity",".85");
+    rt.setAttribute("letter-spacing",".9");
+    rt.textContent="RISE LINE"; gP.appendChild(rt);
+    // Un único palo de giro por puerta. Sin palo acompañante ni puerta exterior.
+    const r=document.createElementNS(svgNS,"rect");
+    r.setAttribute("x",g.x-1.4); r.setAttribute("y",g.y-26);
+    r.setAttribute("width",2.8); r.setAttribute("height",26);
+    r.setAttribute("fill",g.color); gP.appendChild(r);
+    const c=document.createElementNS(svgNS,"circle");
+    c.setAttribute("cx",g.x); c.setAttribute("cy",g.y); c.setAttribute("r",3.6);
+    c.setAttribute("fill",g.color); gP.appendChild(c);
+  });
+
+  // Punto donde la trazada cruza la rise line
+  function cruceRise(giro, gx){
+    const t0=giro*CICLO; let prev=null;
+    for(let k=0;k<=400;k++){
+      const t=t0+CICLO*k/400;
+      const d=estado(t).p.x-gx;
+      if(prev!==null && Math.sign(d)!==Math.sign(prev)) return t;
+      prev=d;
+    }
+    return null;
+  }
+
+  // Marcas de apex y de cruce
+  const gA = $("apexMarks");
+  [0,1].forEach(k=>{
+    const st = estado(CICLO*(k+CENTROS[2]));
+    const g = PUERTAS[k];
+    const cr=document.createElementNS(svgNS,"g");
+    cr.innerHTML =
+      `<line x1="${st.p.x-9}" y1="${st.p.y}" x2="${st.p.x+9}" y2="${st.p.y}" stroke="#F2B705" stroke-width="1.2"/>
+       <line x1="${st.p.x}" y1="${st.p.y-9}" x2="${st.p.x}" y2="${st.p.y+9}" stroke="#F2B705" stroke-width="1.2"/>
+       <line x1="${st.p.x}" y1="${st.p.y}" x2="${g.x}" y2="${st.p.y}" stroke="#F2B705"
+             stroke-opacity=".6" stroke-dasharray="2 3"/>
+       <text x="${st.p.x + g.lado*14}" y="${st.p.y-12}" fill="#F2B705"
+             font-family="Barlow Condensed,sans-serif" font-size="15" font-weight="700"
+             letter-spacing="1" text-anchor="${g.lado===1?'start':'end'}">APEX</text>`;
+    gA.appendChild(cr);
+
+    const tc = cruceRise(k, g.x);
+    if (tc!==null){
+      const c = estado(tc).p;
+      const m = document.createElementNS(svgNS,"g");
+      m.innerHTML =
+        `<circle cx="${c.x}" cy="${c.y}" r="3.6" fill="none" stroke="#F2B705" stroke-width="1.4"/>
+         <text x="${c.x - g.lado*9}" y="${c.y+3}" fill="#F2B705" fill-opacity=".9"
+               font-family="IBM Plex Mono,monospace" font-size="8.5" letter-spacing=".6"
+               text-anchor="${g.lado===1?'end':'start'}">CRUCE</text>`;
+      gA.appendChild(m);
+    }
+  });
+  const nota=document.createElementNS(svgNS,"text");
+  nota.setAttribute("x",192); nota.setAttribute("y",152);
+  nota.setAttribute("text-anchor","end");
+  nota.setAttribute("font-family","IBM Plex Mono,monospace");
+  nota.setAttribute("font-size","8"); nota.setAttribute("fill","#F2B705");
+  nota.setAttribute("fill-opacity",".8"); nota.setAttribute("letter-spacing",".5");
+  nota.textContent = "apex por fuera de la rise line";
+  gA.appendChild(nota);
+  const nota2=document.createElementNS(svgNS,"text");
+  nota2.setAttribute("x",192); nota2.setAttribute("y",208);
+  nota2.setAttribute("text-anchor","end");
+  nota2.setAttribute("font-family","IBM Plex Mono,monospace");
+  nota2.setAttribute("font-size","8"); nota2.setAttribute("fill","#fff");
+  nota2.setAttribute("fill-opacity",".55"); nota2.setAttribute("letter-spacing",".5");
+  nota2.textContent = "el palo se pasa ya en salida";
+  gA.appendChild(nota2);
+
+  // Esquiador
+  const rider = $("rider");
+  rider.innerHTML =
+    `<line id="rLeg" stroke="#fff" stroke-opacity=".5" stroke-width="1.2"/>
+     <line id="rSki" stroke="#fff" stroke-width="4.6" stroke-linecap="round"/>
+     <circle id="rCdm" r="5.2" fill="#F2B705" stroke="#0D1B2C" stroke-width="1.4"/>`;
+  const rSki=$("rSki"), rLeg=$("rLeg"), rCdm=$("rCdm");
+
+  /* ---------- Panel ---------- */
+  const nav=$("nav");
+  FASES.forEach((f,i)=>{
+    const b=document.createElement("button");
+    b.textContent=f.nombre; b.style.borderTopColor=f.color;
+    b.addEventListener("click",()=>{ pausar(); irA(CENTROS[i]*CICLO + (i===0?0.002:0)); });
+    nav.appendChild(b);
+  });
+
+  let faseActual=-1;
+  function pintarFase(i){
+    if (i===faseActual) return;
+    faseActual=i;
+    const f=FASES[i];
+    const tag=$("tag");
+    tag.textContent=f.id.toUpperCase(); tag.style.background=f.color;
+    $("faseNombre").textContent=f.nombre;
+    $("faseRango").textContent=f.rango;
+    $("faseTexto").innerHTML=f.texto;
+    $("claveTexto").textContent=f.clave;
+    $("claveTitulo").textContent = i===2 ? "Apex · clave" : "Clave";
+    [...nav.children].forEach((b,k)=>b.setAttribute("aria-current", k===i));
+  }
+
+  function render(t){
+    const s=estado(t);
+    rSki.setAttribute("x1", s.p.x - s.tx*17); rSki.setAttribute("y1", s.p.y - s.ty*17);
+    rSki.setAttribute("x2", s.p.x + s.tx*17); rSki.setAttribute("y2", s.p.y + s.ty*17);
+    rLeg.setAttribute("x1", s.p.x); rLeg.setAttribute("y1", s.p.y);
+    rLeg.setAttribute("x2", s.cdm.x); rLeg.setAttribute("y2", s.cdm.y);
+    rCdm.setAttribute("cx", s.cdm.x); rCdm.setAttribute("cy", s.cdm.y);
+    rCdm.setAttribute("fill", colorCarga(s.G));
+
+    $("bCanto").style.width = (s.E/70*100)+"%";
+    $("bCanto").style.background = "#5FC9E8";
+    $("vCanto").textContent = Math.round(s.E)+"°";
+    $("bCarga").style.width = (s.G/3.2*100)+"%";
+    $("bCarga").style.background = colorCarga(s.G);
+    $("vCarga").textContent = s.G.toFixed(1)+" G";
+    $("bAng").style.width = s.ang+"%";
+    $("bAng").style.background = "#F2B705";
+    $("vAng").textContent = Math.round(s.ang)+"%";
+    $("bAft").style.left = (50 + s.af*44)+"%";
+    $("vAft").textContent = s.af > 0.25 ? "adelante" : (s.af < -0.25 ? "atrás" : "centro");
+
+    pintarFase(faseDe(s.u));
+  }
+
+  /* ---------- Controles ---------- */
+  const scrub=$("scrub"), play=$("play"), analizador=$(".analizador"), velocidad=$("velocidad"), velocidadValor=$("velocidadValor");
+  let t=0, animando=false, raf=null, ultimo=0;
+
+  function irA(v){ t=Math.max(0,Math.min(0.999,v)); scrub.value=Math.round(t*1000); render(t); }
+  scrub.addEventListener("input",()=>{ pausar(); irA(scrub.value/1000); });
+  function velocidadActual(){ return velocidad ? Number(velocidad.value) : 0.055; }
+  function actualizarVelocidad(){ if(velocidadValor) velocidadValor.textContent=velocidadActual() < 0.06 ? "lenta" : velocidadActual() < 0.11 ? "media" : "rápida"; }
+  if(velocidad) velocidad.addEventListener("input", actualizarVelocidad);
+  actualizarVelocidad();
+  if(analizador) analizador.addEventListener("wheel", ev=>{
+    ev.preventDefault();
+    pausar();
+    irA(t + (ev.deltaY > 0 ? 0.012 : -0.012));
+  }, { passive:false });
+
+  function bucle(ts){
+    if(!ultimo) ultimo=ts;
+    const dt=(ts-ultimo)/1000; ultimo=ts;
+    t+=dt*velocidadActual();
+    if(t>=0.999) t=0;
+    scrub.value=Math.round(t*1000); render(t);
+    raf=requestAnimationFrame(bucle);
+  }
+  function arrancar(){ animando=true; ultimo=0; play.textContent="❚❚ Pausa"; raf=requestAnimationFrame(bucle); }
+  function pausar(){ if(!animando) return; animando=false; cancelAnimationFrame(raf); play.textContent="▶ Play"; }
+  play.addEventListener("click",()=> animando?pausar():arrancar());
+
+  irA(0.002);
+  if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches) arrancar();
+
+  /* ---------- Contenido de las secciones ---------- */
+  const FUND=[
+    ["Equilibrio antero-posterior","Avance y retroceso","Mantener el centro de presión en la zona útil del esquí. Adelantado al iniciar para que la espátula muerda; centrado en el apex; el retroceso al final es la fuga más común y hay que combatirla activamente."],
+    ["Flexo-extensión","Regulación de presión","Es el volumen del sistema. Extensión progresiva de la pierna exterior para aplicar presión en la iniciación; flexión para absorber en el apex y para descargar en la transición. Retracción rápida cuando el ritmo aprieta."],
+    ["Inclinación","Crear el ángulo","El conjunto cuerpo-esquís se inclina hacia el interior de la curva. Genera ángulo de canto rápido, pero sola no basta: sin angulación el CDM cae dentro y el esquí exterior se descarga."],
+    ["Angulación","Sostener el ángulo","Flexión lateral en cadera y rodilla. Permite un ángulo de canto grande manteniendo el peso sobre el exterior y el CDM en equilibrio con la resultante de fuerzas. Es lo que distingue el ángulo útil del ángulo aparente."],
+    ["Separación tren superior-inferior","Contra y anticipación","Las piernas dirigen; el tronco permanece encarado hacia el valle y hacia la puerta siguiente. Evita la rotación en bloque, estabiliza el exterior y deja el cuerpo preparado para la transición."],
+    ["Independencia de piernas","Transferencia al exterior","Cada pierna hace un trabajo distinto y simultáneo: la exterior se extiende y carga, la interior se flexiona, retrocede y guía. Sin ella no hay ángulo grande con apoyo sólido."],
+    ["Dirección con los pies","Pivote y conducción","El grado de pivote respecto a conducción pura define el compromiso entre trazada y velocidad. En competición se busca el mínimo derrape necesario, no cero derrape a cualquier precio."],
+    ["Visión y ritmo","Anticipación táctica","La mirada trabaja dos puertas por delante. La curva no se resuelve donde se ve, sino donde se preparó: el ritmo es el fundamento que ordena todos los demás."]
+  ];
+  $("fund").innerHTML = FUND.map(f=>
+    `<div class="card"><span class="ref">${f[1]}</span><h3>${f[0]}</h3><p>${f[2]}</p></div>`).join("");
+
+  const ERR=[
+    ["Cruce tardío","El cambio de cantos llega en la línea de máxima pendiente o después. La curva empieza tarde, hay que cerrar abajo y aparece el derrape.","Corrección: empezar a liberar en la finalización, no al llegar al palo."],
+    ["Llegar plano a la rise line","Se cruza la vertical del palo sin ángulo de canto todavía. La dirección se retrasa entera y el apex se cae por debajo de la puerta.","Corrección: adelantar el cambio de cantos para llegar a la rise line ya dirigiendo."],
+    ["Apex en el palo","La dirección se completa por debajo de la puerta: se pierde línea y llegas a la siguiente ya tarde.","Corrección: buscar un punto de entrada más alto y más abierto, por fuera de la rise line."],
+    ["Rotación del tronco","Se dirige con los hombros. El esquí exterior se descarga, el interior se cruza y el ángulo se desmonta.","Corrección: tronco al valle, dirigir con piernas y pies."],
+    ["Sentarse en la salida","La fuerza del final de la curva empuja atrás, la espátula se levanta y la transición llega tarde.","Corrección: avanzar tibias activamente durante la descarga."],
+    ["Angulación solo de rodilla","Ángulo de canto suficiente para el ojo, pero sin apoyo: la rodilla trabaja aislada y el canto se va cuando la nieve es dura.","Corrección: angulación desde la cadera, con el hombro exterior bajo."],
+    ["Peso en el esquí interior","Reparto de carga demasiado equilibrado. El exterior no se flexiona lo bastante y el radio no se cierra.","Corrección: extender la exterior mientras se flexiona la interior."]
+  ];
+  $("errores").innerHTML = ERR.map(e=>
+    `<li><b>${e[0]}</b><span>${e[1]}</span><em>${e[2]}</em></li>`).join("");
+})();
+</script>
+</body>
+</html>
