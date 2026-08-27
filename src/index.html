@@ -261,18 +261,10 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
   .capa{position:fixed;inset:0;z-index:60;background:rgba(7,11,15,.86);display:flex;align-items:center;justify-content:center;padding:16px}.capa[hidden]{display:none}.ficha{background:var(--panel);border:1px solid var(--linea);border-radius:12px;width:min(940px,100%);max-height:92vh;display:flex;flex-direction:column;overflow:hidden}.ficha header{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--linea)}.ficha h3{margin:0;font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;flex:1}.ficha .opciones{padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 20px}.ficha .salida{flex:1;min-height:180px;background:#070B0F;display:flex;align-items:center;justify-content:center;position:relative;overflow:auto;padding:8px}.ficha canvas{max-width:100%;max-height:56vh;display:block}.progreso{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(7,11,15,.9);font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--ambar)}.progreso[hidden]{display:none}.ficha footer{display:flex;gap:10px;padding:12px 14px;border-top:1px solid var(--linea)}.nota{grid-column:1/-1;margin:0;color:var(--tenue);font-size:13px;line-height:1.5;max-width:70ch}.nota b{color:var(--ambar);font-weight:600;font-family:var(--mono);font-size:12px}.aviso{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(14px);background:var(--panel-alto);border:1px solid var(--linea);border-left:3px solid var(--ambar);padding:11px 16px;border-radius:7px;font-size:14px;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:88vw}.aviso.ver{opacity:1;transform:translateX(-50%) translateY(0)}
   input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0 0 0 0);pointer-events:none}.cargadores{display:flex;gap:6px}.cargadores .btn{min-height:36px;padding:7px 12px;font-size:13px}.cargadores .btn.cargado{background:currentColor}.cargadores .btn.cargado::before{content:"✓ "}.cargadores .btn.a.cargado{color:var(--azul);background:color-mix(in srgb,var(--azul) 22%,transparent)}.cargadores .btn.b.cargado{color:var(--rojo);background:color-mix(in srgb,var(--rojo) 22%,transparent)}
   .comparador.inmersivo .barra,.comparador.inmersivo .transporte,.comparador.inmersivo .ajustes{display:none}.comparador.inmersivo .escena{position:fixed;left:0;right:0;top:74px;bottom:0;z-index:100}
-  :scope:fullscreen{width:100vw;height:100vh;min-height:0}.comparador:fullscreen .escena{position:relative;inset:auto;height:100%}
-  /* el video ocupa toda la pantalla; la barra y el transporte flotan encima, no le quitan espacio */
-  .comparador.completa{position:relative}
-  .comparador.completa .barra,.comparador.completa .transporte{position:absolute;left:0;right:0;z-index:20;background:rgba(23,32,43,.92)}
-  .comparador.completa .barra{top:0}
-  .comparador.completa .transporte{bottom:0}
   @media (max-width:720px){.marca span{display:none}.fila{gap:8px;padding:9px 10px}.fila.util{gap:12px;padding-top:8px}.grupo .et{display:none}.grupo{gap:4px}.fila.util .btn{padding:8px 10px;font-size:12px}.barra{padding:8px 10px;gap:8px}.cargadores .btn{padding:7px 9px;font-size:12px}.modos button{padding:7px 10px;font-size:13px}.crono{font-size:18px;min-width:92px}.campo.oculta-movil{display:none}.tiempo{padding:4px 10px 10px}}
   @media (prefers-reduced-motion:reduce){:scope *{transition:none!important}}
-  .comparador.completa .barra,.comparador.completa .transporte,.comparador.completa .herramientas,.comparador.completa .mandos{transition:opacity .3s ease,transform .3s ease}
-  .comparador.completa .barra.oculta,.comparador.completa .transporte.oculta,.comparador.completa .herramientas.oculta,.comparador.completa .mandos.oculta{opacity:0;pointer-events:none;transform:translateY(-10px)}
-  .comparador.completa .barra.oculta{transform:translateY(-10px)}
-  .comparador.completa .transporte.oculta{transform:translateY(10px)}
+  .comparador.completa .herramientas,.comparador.completa .mandos{transition:opacity .3s ease,transform .3s ease}
+  .comparador.completa .herramientas.oculta,.comparador.completa .mandos.oculta{opacity:0;pointer-events:none;transform:translateY(-10px)}
 }
 </style>
 </head>
@@ -1229,9 +1221,10 @@ function pantallaCompleta(){
     if(salir) salir.call(document);
     return;
   }
-  const pedir=raiz.requestFullscreen || raiz.webkitRequestFullscreen;
+  const esc=$("escena");
+  const pedir=esc.requestFullscreen || esc.webkitRequestFullscreen;
   if(pedir){
-    pedir.call(raiz).catch(()=>modoInmersivo());
+    pedir.call(esc).catch(()=>modoInmersivo());
   }else modoInmersivo();
 }
 al("pantalla", "click", pantallaCompleta);
@@ -2284,10 +2277,9 @@ function refrescarMandos(){
 ].forEach(id => { if(!document.getElementById(id)) console.warn(`[comparador] falta #${id} en el HTML`); });
 
 /* ---------- auto-ocultamiento de barras en pantalla completa ---------- */
-const elementosUI = [raiz.querySelector('.barra'), raiz.querySelector('.transporte'),
-  raiz.querySelector('.herramientas'), raiz.querySelector('.mandos')].filter(el => el);
+const elementosUI = [raiz.querySelector('.herramientas'), raiz.querySelector('.mandos')].filter(el => el);
 let timeoutOcultar;
-const TIEMPO_INACTIVIDAD = 5000; // 5 segundos
+const TIEMPO_INACTIVIDAD = 2000; // 2 segundos
 function mostrarUI(){
   elementosUI.forEach(el => el.classList.remove('oculta'));
   clearTimeout(timeoutOcultar);
