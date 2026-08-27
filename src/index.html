@@ -213,6 +213,9 @@ main{max-width:820px;margin:0 auto;padding:24px 16px 60px;}
 footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-spacing:2px;
   text-transform:uppercase;font-family:'JetBrains Mono',monospace;border-top:1px solid var(--b2);}
 @media(max-width:560px){.scv{font-size:28px;}.sc{min-width:70px;padding:10px 6px;}.ss{gap:5px;}main{padding:20px 12px 50px;}}
+/* de repuesto: por si @scope no aplica bien esta regla dinámica en algún navegador */
+#pantalla-comparador.completa #mandos,#pantalla-comparador.inmersivo #mandos{display:flex!important}
+#pantalla-comparador.completa #mandos.oculta,#pantalla-comparador.inmersivo #mandos.oculta{opacity:0!important;pointer-events:none!important;transform:translateY(-10px)!important}
 </style>
 <style id="estilos-comparador">
 @scope (.comparador){
