@@ -243,7 +243,7 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
   .pizarra{position:absolute;inset:0;z-index:6;pointer-events:none;touch-action:none}.pizarra.activa{pointer-events:auto;cursor:crosshair}
   .flotaPantalla{position:absolute;top:10px;right:10px;z-index:9;width:38px;height:38px;border:1px solid var(--linea);border-radius:8px;background:rgba(7,11,15,.82);color:var(--texto);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}.flotaPantalla:hover{background:var(--panel-alto)}.comparador.completa .flotaPantalla,.comparador.inmersivo .flotaPantalla{display:none}
   .mandos{position:absolute;right:14px;top:50%;transform:translateY(-50%);z-index:9;display:none;flex-direction:column;gap:7px;padding:8px 10px;border-radius:12px;background:rgba(7,11,15,.84);border:1px solid var(--linea);width:260px;max-height:calc(100% - 20px);overflow-y:auto;scrollbar-width:none;transition:opacity .25s}.mandos::-webkit-scrollbar{display:none}
-  .comparador.completa .mandos,.comparador.inmersivo .mandos{display:flex}.mandos.esfuma{opacity:0;pointer-events:none}.mFila{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+  .comparador.completa .mandos,.comparador.inmersivo .mandos{display:flex}.mFila{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
   .mandos button{border:1px solid var(--linea);background:var(--panel-alto);color:var(--texto);border-radius:7px;min-height:38px;padding:8px 11px;cursor:pointer;flex-shrink:0;font-family:var(--display);font-size:13px;font-weight:600;letter-spacing:.07em;text-transform:uppercase}.mandos button.grande{font-size:17px;min-width:54px;padding:8px}.mandos button.on{background:var(--ambar);color:#0E141B;border-color:var(--ambar)}.mandos .modos{margin:0;padding:2px;flex-shrink:0}.mandos .modos button{min-height:32px;padding:6px 11px;border:0;background:none}.mandos #mA[aria-pressed="true"]{background:color-mix(in srgb,var(--azul) 30%,transparent);color:#BFD8FF}.mandos #mB[aria-pressed="true"]{background:color-mix(in srgb,var(--rojo) 30%,transparent);color:#FFCFCF}.mandos #mAtleta.oculto{display:none}
   .mandos select{background:var(--panel-alto);color:var(--texto);border:1px solid var(--linea);border-radius:7px;min-height:38px;padding:7px;flex-shrink:0;font-family:var(--cuerpo);font-size:14px}.mSolo{display:flex;align-items:center;gap:3px;padding:2px 5px;border-radius:8px;background:var(--sombra);flex-shrink:0}.mSolo.oculto{display:none}.mSolo button{min-height:30px;padding:5px 8px;font-size:11px;border:0;background:var(--panel-alto)}.mSolo .etq{font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.06em;padding:0 3px}.mSolo .etq.a{color:#7FB0FF}.mSolo .etq.b{color:#FF9A9A}.mTc{font-family:var(--mono);font-size:15px;color:var(--ambar);font-variant-numeric:tabular-nums;min-width:56px;text-align:center;flex-shrink:0}
   .jogFila{display:flex;align-items:center;gap:8px;margin-top:6px}.jogFila .mJog{flex:1}.objetivo{display:flex;gap:2px;background:var(--sombra);padding:2px;border-radius:7px;flex-shrink:0}.objetivo button{font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:none;border:0;color:var(--tenue);padding:7px 10px;border-radius:5px;cursor:pointer;min-height:30px}.objetivo button[aria-pressed="true"]{background:var(--panel-alto);color:var(--texto)}.objetivo button[data-obj="a"][aria-pressed="true"]{background:color-mix(in srgb,var(--azul) 30%,transparent);color:#BFD8FF}.objetivo button[data-obj="b"][aria-pressed="true"]{background:color-mix(in srgb,var(--rojo) 30%,transparent);color:#FFCFCF}
@@ -2107,20 +2107,6 @@ al("mModo", "click", ()=>{
   cambiarModo(orden[(orden.indexOf(estado.modo) + 1) % 3]);
 });
 arrastrable($("mBarra"), (x)=>{ pausar(); irA(tDesdeX(x, $("mBarra")), true); dibujar(); });
-
-/* aparecen al tocar y se apagan solas para no tapar la imagen */
-let ocioso;
-function despertarMandos(){
-  $("mandos").classList.remove("esfuma");
-  clearTimeout(ocioso);
-  ocioso = setTimeout(()=>{
-    if(anot.tool === "mano") $("mandos").classList.add("esfuma");
-  }, 3500);
-}
-["pointermove","pointerdown","wheel"].forEach(ev=>
-  al("escena", ev, despertarMandos, { passive:true }));
-al("mandos", "pointerenter", ()=>{ clearTimeout(ocioso); $("mandos").classList.remove("esfuma"); });
-al("mandos", "pointerleave", despertarMandos);
 
 /* mover un solo video, disponible también a pantalla completa */
 function moverSolo(k, dir){

@@ -116,7 +116,6 @@ body.completa .flotaPantalla,body.inmersivo .flotaPantalla{display:none}
 }
 .mandos::-webkit-scrollbar{display:none}
 body.completa .mandos,body.inmersivo .mandos{display:flex}
-.mandos.esfuma{opacity:0;pointer-events:none}
 .mFila{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .mandos button{
   border:1px solid var(--linea);background:var(--panel-alto);color:var(--texto);
@@ -2213,20 +2212,6 @@ al("mModo", "click", ()=>{
   cambiarModo(orden[(orden.indexOf(estado.modo) + 1) % 3]);
 });
 arrastrable($("mBarra"), (x)=>{ pausar(); irA(tDesdeX(x, $("mBarra")), true); dibujar(); });
-
-/* aparecen al tocar y se apagan solas para no tapar la imagen */
-let ocioso;
-function despertarMandos(){
-  $("mandos").classList.remove("esfuma");
-  clearTimeout(ocioso);
-  ocioso = setTimeout(()=>{
-    if(anot.tool === "mano") $("mandos").classList.add("esfuma");
-  }, 3500);
-}
-["pointermove","pointerdown","wheel"].forEach(ev=>
-  al("escena", ev, despertarMandos, { passive:true }));
-al("mandos", "pointerenter", ()=>{ clearTimeout(ocioso); $("mandos").classList.remove("esfuma"); });
-al("mandos", "pointerleave", despertarMandos);
 
 /* mover un solo video, disponible también a pantalla completa */
 function moverSolo(k, dir){
