@@ -98,6 +98,15 @@ body{
 .punto.p2{background:#7DE2A8}
 .pizarra{position:absolute;inset:0;z-index:6;pointer-events:none;touch-action:none}
 .pizarra.activa{pointer-events:auto;cursor:crosshair}
+/* siempre alcanzable, sin depender de que la barra de transporte tenga espacio o haya que deslizarla */
+.flotaPantalla{
+  position:absolute;top:10px;right:10px;z-index:9;
+  width:38px;height:38px;border:1px solid var(--linea);border-radius:8px;
+  background:rgba(7,11,15,.82);color:var(--texto);font-size:17px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;padding:0;
+}
+.flotaPantalla:hover{background:var(--panel-alto)}
+body.completa .flotaPantalla,body.inmersivo .flotaPantalla{display:none}
 .mandos{
   position:absolute;right:14px;top:50%;transform:translateY(-50%);z-index:9;
   display:none;flex-direction:column;gap:7px;padding:8px 10px;border-radius:12px;
@@ -439,6 +448,7 @@ body.completa .transporte.oculta{transform:translateY(10px)}
   </div>
   <div class="guias" id="guias"><i class="v"></i><i class="h"></i><i class="t"></i><i class="b"></i></div>
   <canvas class="pizarra" id="pizarra"></canvas>
+  <button class="flotaPantalla" id="pantallaFlot" title="Pantalla completa">⛶</button>
   <div class="mandos" id="mandos">
     <div class="mFila">
       <div class="modos" id="mAtleta">
@@ -1182,13 +1192,16 @@ function disponer(){
   aplicarReparto();
   ultimoDominio = "";
 }
-/* video apaisado → uno sobre otro; vertical → lado a lado */
+/* video apaisado → uno sobre otro; vertical → lado a lado.
+   si cualquiera de los dos videos es vertical, manda el lado a lado: es el que
+   mejor aprovecha la pantalla para una toma en formato retrato. */
 let corteFijado = false;
 function autoCorte(){
   if(corteFijado) return;
-  const c = clips.a.listo ? clips.a : clips.b;
-  if(!c || !c.ancho) return;
-  estado.corte = (c.ancho >= c.alto) ? "horizontal" : "vertical";
+  const listos = [clips.a, clips.b].filter(c => c.listo && c.ancho);
+  if(!listos.length) return;
+  const hayVertical = listos.some(c => c.ancho < c.alto);
+  estado.corte = hayVertical ? "vertical" : "horizontal";
   $("corte").value = estado.corte;
   aplicarModo();
 }
@@ -1322,6 +1335,7 @@ function pantallaCompleta(){
   }else modoInmersivo();
 }
 al("pantalla", "click", pantallaCompleta);
+al("pantallaFlot", "click", pantallaCompleta);
 document.addEventListener("fullscreenchange", ()=>{
   const on = !!document.fullscreenElement;
   document.body.classList.toggle("completa", on);
@@ -2275,7 +2289,7 @@ function refrescarMandos(){
   "vA","vB","aviso","fileA","fileB","cargaA","cargaA2","cargaB","cargaB2","barraA","barraB",
   "nomA","nomB","cambiaAtleta","carrilA","carrilB","regla","agujaR",
   "play","atras","adelante","vel","fps","tc","marcaIn","marcaOut","bucle",
-  "verGuias","guias","verFormas","herramientas","pantalla","escena","lienzo",
+  "verGuias","guias","verFormas","herramientas","pantalla","pantallaFlot","escena","lienzo",
   "mUno","mDiv","mSup","verA","verB","corte","encaje","ctrOpacidad","opac","opacV",
   "ctrFusion","fusion","ctrReparto","reparto","repartoV","ctrCorte","vacio","faltante",
   "selA","selB","zoom","zoomV","posX","posXV","posY","posYV","giro","giroV","espejo","reset",
@@ -2304,7 +2318,7 @@ seleccionar("a"); aplicarModo(); dibujar();
   const pizarra = document.querySelector('.pizarra');
 
   let timeoutOcultar;
-  const TIEMPO_INACTIVIDAD = 2000; // 2 segundos
+  const TIEMPO_INACTIVIDAD = 5000; // 5 segundos
 
   function mostrar() {
     elementosUI.forEach(el => el.classList.remove('oculta'));
