@@ -504,6 +504,8 @@ body.completa .transporte.oculta{transform:translateY(10px)}
     <button id="colorAnot" title="Color del trazo">●</button>
     <button id="deshacer" title="Deshacer">↶</button>
     <button id="borrarTodo" title="Borrar todo">⌫</button>
+    <button id="capturarCuadro" title="Guardar fotograma con dibujos">📷</button>
+    <button id="renombrarSesion" title="Cambiar carpeta de capturas">📁</button>
   </div>
 
   <div class="vacio" id="vacio">
@@ -1890,6 +1892,85 @@ al("borrarTodo", "click", ()=>{
   avisar("Anotaciones borradas.");
 });
 
+/* ---------- exportar fotograma con dibujos ---------- */
+/* cae siempre en la carpeta de Descargas del dispositivo: es lo único que funciona
+   igual en la tablet (Android) y en el computador — elegir una carpeta cualquiera
+   con un selector no anda en Chrome de Android. La ruta dentro de Descargas/EntrenadorAndino
+   la define el entrenador y se puede cambiar cuando quiera con "Renombrar carpeta". */
+let sesionCaptura = null;
+function rutaSesionValida(txt){
+  const limpio = (txt || "").trim().split("/")
+    .map(seg => seg.trim().replace(/[\\:*?"<>|]+/g, "-")).filter(Boolean).join("/");
+  return limpio || new Date().toISOString().slice(0, 10);
+}
+function pedirNombreSesion(actual){
+  const sugerido = actual || new Date().toISOString().slice(0, 10);
+  return prompt(
+    "¿En qué (sub)carpeta de Descargas/EntrenadorAndino guardo las capturas?\n"+
+    "Usa / para varios niveles, por ejemplo: Fran/Marzo2026",
+    sugerido
+  );
+}
+function renombrarSesion(){
+  const resp = pedirNombreSesion(sesionCaptura && sesionCaptura.nombre);
+  if(resp === null) return;
+  sesionCaptura = { nombre: rutaSesionValida(resp), contador: 0 };
+  avisar("Las próximas capturas van a Descargas/EntrenadorAndino/"+sesionCaptura.nombre);
+}
+function capturarCuadro(){
+  const act = activos().filter(k => clips[k].listo);
+  if(!act.length){ avisar("Carga un video antes de capturar."); return; }
+  if(!sesionCaptura){
+    const resp = pedirNombreSesion(null);
+    if(resp === null) return;
+    sesionCaptura = { nombre: rutaSesionValida(resp), contador: 0 };
+  }
+  const esc = $("escena");
+  const W = esc.clientWidth, H = esc.clientHeight, dpr = window.devicePixelRatio || 1;
+  const out = document.createElement("canvas");
+  out.width = Math.round(W * dpr); out.height = Math.round(H * dpr);
+  const ctx = out.getContext("2d");
+  ctx.scale(dpr, dpr);
+  ctx.fillStyle = "#070B0F"; ctx.fillRect(0, 0, W, H);
+  const rEsc = esc.getBoundingClientRect();
+  for(const k of act){
+    const c = clips[k];
+    const marco = document.querySelector('.marco[data-clip="'+k+'"]');
+    const rM = marco.getBoundingClientRect();
+    const ox = rM.left - rEsc.left, oy = rM.top - rEsc.top;
+    const Wm = marco.clientWidth, Hm = marco.clientHeight;
+    const m = new DOMMatrix(getComputedStyle(c.el).transform);
+    const vw = c.el.videoWidth || 16, vh = c.el.videoHeight || 9;
+    const s = Math.min(Wm / vw, Hm / vh);
+    const dw = vw * s, dh = vh * s, dx = (Wm - dw) / 2, dy = (Hm - dh) / 2;
+    ctx.save();
+    if(estado.modo === "superpuesta" && k === "b"){
+      ctx.globalAlpha = parseFloat($("opac").value) / 100;
+      const fusion = $("fusion").value;
+      ctx.globalCompositeOperation = (fusion === "normal") ? "source-over" : fusion;
+    }
+    ctx.translate(ox + Wm, oy + Hm);
+    ctx.transform(m.a, m.b, m.c, m.d, m.e, m.f);
+    ctx.translate(-Wm / 2, -Hm / 2);
+    ctx.drawImage(c.el, dx, dy, dw, dh);
+    ctx.restore();
+  }
+  ctx.drawImage(piz, 0, 0, W, H);
+  out.toBlob((blob)=>{
+    if(!blob){ avisar("No se pudo generar la imagen."); return; }
+    sesionCaptura.contador++;
+    const archivo = "EntrenadorAndino/"+sesionCaptura.nombre+"/captura"+sesionCaptura.contador+".png";
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = archivo;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=> URL.revokeObjectURL(url), 4000);
+    avisar("Guardado en Descargas: "+archivo);
+  }, "image/png");
+}
+al("capturarCuadro", "click", capturarCuadro);
+al("renombrarSesion", "click", renombrarSesion);
+
 let pintando = false;
 piz.addEventListener("pointerdown", (ev)=>{
   if(anot.tool === "mano") return;
@@ -2294,7 +2375,7 @@ function refrescarMandos(){
   "ctrFusion","fusion","ctrReparto","reparto","repartoV","ctrCorte","vacio","faltante",
   "selA","selB","zoom","zoomV","posX","posXV","posY","posYV","giro","giroV","espejo","reset",
   "ajustes","panel","cerrarPanel","autoEnc","calibrar","copiarEnc","notaEnc",
-  "colorAnot","deshacer","borrarTodo",
+  "colorAnot","deshacer","borrarTodo","capturarCuadro","renombrarSesion",
   "refA","refB","finA","finB","resetSync","resetBarra","autoSync","igualarPartida","notaSync",
   "mandos","mPlay","mTc","mAguja","mVel","mModo","mAtleta","mSolo","mA","mB",
   "mGuias","mFormas","mSalir","mBarra","mAmenos","mAmas","mBmenos","mBmas",
