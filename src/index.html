@@ -215,7 +215,8 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
 @media(max-width:560px){.scv{font-size:28px;}.sc{min-width:70px;padding:10px 6px;}.ss{gap:5px;}main{padding:20px 12px 50px;}}
 /* de repuesto: por si @scope no aplica bien esta regla dinámica en algún navegador */
 #pantalla-comparador.completa #mandos,#pantalla-comparador.inmersivo #mandos{display:flex!important}
-#pantalla-comparador.completa #mandos.oculta,#pantalla-comparador.inmersivo #mandos.oculta{opacity:0!important;pointer-events:none!important;transform:translateY(-10px)!important}
+#pantalla-comparador.completa #mandos.oculta,#pantalla-comparador.inmersivo #mandos.oculta{opacity:0!important;pointer-events:none!important}
+#pantalla-comparador.completa .reabrirFlotante.ver,#pantalla-comparador.inmersivo .reabrirFlotante.ver{display:flex!important}
 </style>
 <style id="estilos-comparador">
 @scope (.comparador){
@@ -245,8 +246,19 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
   .punto{position:absolute;z-index:6;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid #0E141B;pointer-events:none;font-family:var(--mono);font-size:10px;color:#0E141B;font-weight:700;display:flex;align-items:center;justify-content:center}.punto.p1{background:var(--ambar)}.punto.p2{background:#7DE2A8}
   .pizarra{position:absolute;inset:0;z-index:6;pointer-events:none;touch-action:none}.pizarra.activa{pointer-events:auto;cursor:crosshair}
   .flotaPantalla{position:absolute;top:10px;right:10px;z-index:9;width:38px;height:38px;border:1px solid var(--linea);border-radius:8px;background:rgba(7,11,15,.82);color:var(--texto);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}.flotaPantalla:hover{background:var(--panel-alto)}.comparador.completa .flotaPantalla,.comparador.inmersivo .flotaPantalla{display:none}
-  .mandos{position:absolute;right:14px;top:50%;transform:translateY(-50%);z-index:9;display:none;flex-direction:column;gap:7px;padding:8px 10px;border-radius:12px;background:rgba(7,11,15,.84);border:1px solid var(--linea);width:260px;max-height:calc(100% - 20px);overflow-y:auto;scrollbar-width:none;transition:opacity .25s}.mandos::-webkit-scrollbar{display:none}
-  .comparador.completa .mandos,.comparador.inmersivo .mandos{display:flex}.mFila{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+  .mandos{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:9;display:none;flex-direction:column;gap:7px;padding:8px 10px;border-radius:12px;background:rgba(7,11,15,.9);border:1px solid var(--linea);width:max-content;max-width:calc(100% - 24px);max-height:calc(100% - 20px);overflow-y:auto;scrollbar-width:none;touch-action:none;transition:opacity .2s ease,transform .15s ease}.mandos::-webkit-scrollbar{display:none}.mandos.arrastrando{transition:none}
+  .comparador.completa .mandos,.comparador.inmersivo .mandos{display:flex}
+  .mCabecera{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-2px -2px 0}
+  .mAsa{flex:1;min-height:20px;display:flex;align-items:center;justify-content:center;gap:3px;cursor:grab;color:var(--tenue)}
+  .mAsa:active{cursor:grabbing}
+  .mAsa i{width:3px;height:3px;border-radius:50%;background:currentColor}
+  .mCerrar{border:0;background:none;color:var(--tenue);min-height:26px;min-width:26px;padding:0;border-radius:6px;cursor:pointer;font-size:13px;flex-shrink:0}
+  .mCerrar:hover{background:color-mix(in srgb,var(--rojo) 22%,transparent);color:#FFCFCF}
+  .reabrirFlotante{position:absolute;z-index:9;width:40px;height:40px;border-radius:50%;background:rgba(7,11,15,.86);border:1px solid var(--linea);color:var(--texto);align-items:center;justify-content:center;font-size:16px;cursor:pointer;padding:0;display:none}
+  .comparador.completa .reabrirFlotante.ver,.comparador.inmersivo .reabrirFlotante.ver{display:flex}
+  #reabrirMandos{right:14px;bottom:14px}
+  #reabrirHerramientas{left:10px;top:50%;transform:translateY(-50%)}
+  .mFila{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
   .mandos button{border:1px solid var(--linea);background:var(--panel-alto);color:var(--texto);border-radius:7px;min-height:38px;padding:8px 11px;cursor:pointer;flex-shrink:0;font-family:var(--display);font-size:13px;font-weight:600;letter-spacing:.07em;text-transform:uppercase}.mandos button.grande{font-size:17px;min-width:54px;padding:8px}.mandos button.on{background:var(--ambar);color:#0E141B;border-color:var(--ambar)}.mandos .modos{margin:0;padding:2px;flex-shrink:0}.mandos .modos button{min-height:32px;padding:6px 11px;border:0;background:none}.mandos #mA[aria-pressed="true"]{background:color-mix(in srgb,var(--azul) 30%,transparent);color:#BFD8FF}.mandos #mB[aria-pressed="true"]{background:color-mix(in srgb,var(--rojo) 30%,transparent);color:#FFCFCF}.mandos #mAtleta.oculto{display:none}
   .mandos select{background:var(--panel-alto);color:var(--texto);border:1px solid var(--linea);border-radius:7px;min-height:38px;padding:7px;flex-shrink:0;font-family:var(--cuerpo);font-size:14px}.mSolo{display:flex;align-items:center;gap:3px;padding:2px 5px;border-radius:8px;background:var(--sombra);flex-shrink:0}.mSolo.oculto{display:none}.mSolo button{min-height:30px;padding:5px 8px;font-size:11px;border:0;background:var(--panel-alto)}.mSolo .etq{font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.06em;padding:0 3px}.mSolo .etq.a{color:#7FB0FF}.mSolo .etq.b{color:#FF9A9A}.mTc{font-family:var(--mono);font-size:15px;color:var(--ambar);font-variant-numeric:tabular-nums;min-width:56px;text-align:center;flex-shrink:0}
   .jogFila{display:flex;align-items:center;gap:8px;margin-top:6px}.jogFila .mJog{flex:1}.objetivo{display:flex;gap:2px;background:var(--sombra);padding:2px;border-radius:7px;flex-shrink:0}.objetivo button{font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:none;border:0;color:var(--tenue);padding:7px 10px;border-radius:5px;cursor:pointer;min-height:30px}.objetivo button[aria-pressed="true"]{background:var(--panel-alto);color:var(--texto)}.objetivo button[data-obj="a"][aria-pressed="true"]{background:color-mix(in srgb,var(--azul) 30%,transparent);color:#BFD8FF}.objetivo button[data-obj="b"][aria-pressed="true"]{background:color-mix(in srgb,var(--rojo) 30%,transparent);color:#FFCFCF}
@@ -256,7 +268,7 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
   .vacio{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:24px}.vacio h2{font-family:var(--display);font-size:26px;font-weight:600;letter-spacing:.04em;margin:0;text-transform:uppercase}.vacio p{margin:0;color:var(--tenue);max-width:34ch;line-height:1.5}.cargas{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}.vacio.parcial{inset:auto 0 14px 0;flex-direction:row;gap:12px;padding:0;pointer-events:none}.vacio.parcial h2{font-size:14px;letter-spacing:.09em;background:rgba(7,11,15,.8);padding:9px 13px;border-radius:7px;color:var(--tenue);font-weight:600}.vacio.parcial p{display:none}.vacio.parcial .cargas{pointer-events:auto}.vacio.parcial .cargas .btn{background:rgba(7,11,15,.86)}.vacio.parcial .cargas .btn.hecho{display:none}
   .btn{font-family:var(--display);font-size:14px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:var(--panel-alto);color:var(--texto);border:1px solid var(--linea);padding:10px 14px;border-radius:7px;cursor:pointer;min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn:hover{border-color:#3A4C63}.btn:active{transform:translateY(1px)}.btn.a{border-color:var(--azul);color:var(--azul)}.btn.b{border-color:var(--rojo);color:var(--rojo)}.btn.on{background:var(--ambar);color:#0E141B;border-color:var(--ambar)}.btn.icono{padding:10px;min-width:44px;font-size:16px}.btn.play{min-width:62px;font-size:19px}
   :scope :focus-visible{outline:2px solid var(--ambar);outline-offset:2px}
-  .transporte{background:var(--panel);border-top:1px solid var(--linea);flex-shrink:0}.fila{display:flex;align-items:center;gap:10px;padding:10px 14px}.fila.principal{flex-wrap:nowrap;padding-bottom:8px;overflow-x:auto;scrollbar-width:none}.fila.principal::-webkit-scrollbar{display:none}.fila.util{gap:16px;padding-top:0;padding-bottom:10px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;border-top:1px solid var(--linea);padding-top:9px;margin-top:2px}.fila.util::-webkit-scrollbar{display:none}.fila.util .btn{min-height:38px;padding:8px 12px;font-size:13px}.grupo{display:flex;align-items:center;gap:5px;flex-shrink:0}.grupo .et{font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tenue);margin-right:3px}.fila .campo{flex-shrink:0}.fila .crono{margin-right:auto}.crono{font-family:var(--mono);font-size:22px;font-weight:500;color:var(--ambar);letter-spacing:-.01em;font-variant-numeric:tabular-nums;min-width:112px}.crono small{font-size:12px;color:var(--tenue);letter-spacing:.06em}.sep{width:1px;height:26px;background:var(--linea)}.campo{display:flex;align-items:center;gap:7px;font-family:var(--display);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--tenue)}.campo select,.campo input[type=range]{accent-color:var(--ambar)}.campo select{background:var(--panel-alto);color:var(--texto);border:1px solid var(--linea);border-radius:6px;padding:8px 9px;font-family:var(--cuerpo);font-size:14px;min-height:40px}
+  .transporte{background:var(--panel);border-top:1px solid var(--linea);flex-shrink:0}.fila{display:flex;align-items:center;gap:10px;padding:10px 14px}.fila.principal{flex-wrap:nowrap;padding-bottom:8px;overflow-x:auto;scrollbar-width:none}.fila.principal::-webkit-scrollbar{display:none}.fila.util{gap:16px;padding-top:0;padding-bottom:10px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;border-top:1px solid var(--linea);padding-top:9px;margin-top:2px}.fila.util::-webkit-scrollbar{display:none}.fila.util .btn{min-height:38px;padding:8px 12px;font-size:13px}.grupo{display:flex;align-items:center;gap:5px;flex-shrink:0}.grupo .et{font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tenue);margin-right:3px}#estelaCant{width:46px;min-height:38px;background:var(--panel-alto);color:var(--texto);border:1px solid var(--linea);border-radius:7px;padding:6px;font-family:var(--mono);font-size:13px;text-align:center}.fila .campo{flex-shrink:0}.fila .crono{margin-right:auto}.crono{font-family:var(--mono);font-size:22px;font-weight:500;color:var(--ambar);letter-spacing:-.01em;font-variant-numeric:tabular-nums;min-width:112px}.crono small{font-size:12px;color:var(--tenue);letter-spacing:.06em}.sep{width:1px;height:26px;background:var(--linea)}.campo{display:flex;align-items:center;gap:7px;font-family:var(--display);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--tenue)}.campo select,.campo input[type=range]{accent-color:var(--ambar)}.campo select{background:var(--panel-alto);color:var(--texto);border:1px solid var(--linea);border-radius:6px;padding:8px 9px;font-family:var(--cuerpo);font-size:14px;min-height:40px}
   input[type=range]{-webkit-appearance:none;appearance:none;height:26px;background:none;cursor:pointer}input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--linea);border-radius:2px}input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--texto);margin-top:-8px;box-shadow:0 1px 3px rgba(0,0,0,.5)}input[type=range]::-moz-range-track{height:4px;background:var(--linea);border-radius:2px}input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radius:50%;background:var(--texto)}
   .tiempo{padding:4px 14px 12px}.regla{position:relative;height:22px;cursor:pointer;touch-action:none;border-bottom:1px solid var(--linea);margin-bottom:6px}.regla b{position:absolute;bottom:0;width:1px;height:7px;background:var(--linea)}.regla b em{position:absolute;bottom:9px;left:0;transform:translateX(-50%);font-style:normal;font-family:var(--mono);font-size:10px;color:var(--tenue)}.carril{display:flex;align-items:center;gap:8px;margin-bottom:5px}.carril .nudge{display:flex;gap:3px}.nudge button{background:var(--panel-alto);border:1px solid var(--linea);color:var(--tenue);width:30px;height:30px;border-radius:5px;cursor:pointer;font-size:13px;line-height:1;padding:0}.nudge button:hover{color:var(--texto)}.candado{font-size:12px}.candado.on{background:var(--ambar);border-color:var(--ambar)}.reloj-carril{font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;width:52px;text-align:right;flex-shrink:0}.reloj-carril[data-clip="a"]{color:#BFD8FF}.reloj-carril[data-clip="b"]{color:#FFCFCF}
   .pista{cursor:ew-resize;position:relative;flex:1;height:30px;background:#0B1119;border-radius:5px;overflow:hidden;touch-action:none}.clip{position:absolute;top:0;bottom:0;border-radius:4px;cursor:grab;display:flex;align-items:center;padding:0 9px;overflow:hidden;font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}.clip:active{cursor:grabbing}.clip[data-clip="a"]{background:color-mix(in srgb,var(--azul) 26%,#0B1119);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--azul) 70%,transparent);color:#BFD8FF}.clip[data-clip="b"]{background:color-mix(in srgb,var(--rojo) 26%,#0B1119);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--rojo) 70%,transparent);color:#FFCFCF}.clip.vacia{background:none;box-shadow:inset 0 0 0 1px var(--linea);color:var(--tenue);left:0;right:0;justify-content:center;cursor:default}.aguja{position:absolute;top:0;bottom:0;width:2px;background:var(--ambar);pointer-events:none;z-index:3}.aguja.regla{height:100%;border:0;margin:0}.bucle{position:absolute;top:0;bottom:0;background:rgba(245,184,65,.13);border-left:1px solid var(--ambar);border-right:1px solid var(--ambar);pointer-events:none;z-index:2}
@@ -266,8 +278,8 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
   .comparador.inmersivo .barra,.comparador.inmersivo .transporte,.comparador.inmersivo .ajustes{display:none}.comparador.inmersivo .escena{position:fixed;left:0;right:0;top:74px;bottom:0;z-index:100}
   @media (max-width:720px){.marca span{display:none}.fila{gap:8px;padding:9px 10px}.fila.util{gap:12px;padding-top:8px}.grupo .et{display:none}.grupo{gap:4px}.fila.util .btn{padding:8px 10px;font-size:12px}.barra{padding:8px 10px;gap:8px}.cargadores .btn{padding:7px 9px;font-size:12px}.modos button{padding:7px 10px;font-size:13px}.crono{font-size:18px;min-width:92px}.campo.oculta-movil{display:none}.tiempo{padding:4px 10px 10px}}
   @media (prefers-reduced-motion:reduce){:scope *{transition:none!important}}
-  .comparador.completa .herramientas,.comparador.completa .mandos{transition:opacity .3s ease,transform .3s ease}
-  .comparador.completa .herramientas.oculta,.comparador.completa .mandos.oculta{opacity:0;pointer-events:none;transform:translateY(-10px)}
+  .comparador.completa .herramientas.oculta{opacity:0;pointer-events:none}
+  .comparador.completa .mandos.oculta{opacity:0;pointer-events:none}
 }
 </style>
 </head>
@@ -365,6 +377,11 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
       <b style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--white);letter-spacing:0.5px;">&#127916; Inspector de fotogramas</b>
       <span id="fzt" style="font-family:ui-monospace,monospace;font-size:12px;color:var(--ice);">00:00.00</span>
     </div>
+    <div id="fnota" style="display:none;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12.5px;line-height:1.55;color:var(--text);position:relative;">
+      <button type="button" onclick="cerrarNotaFrame()" style="position:absolute;top:6px;right:8px;background:none;border:0;color:var(--muted2);font-size:14px;cursor:pointer;line-height:1;">&#10005;</button>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:#ef4444;margin-bottom:4px;">&#9888; Error en este instante</div>
+      <div id="fnotaTexto"></div>
+    </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
       <button class="hbtn" onclick="stepFrame(-10)" title="10 fotogramas atrás">&#171;&#171;</button>
       <button class="hbtn" onclick="stepFrame(-1)" title="1 fotograma atrás">&#171;</button>
@@ -377,7 +394,11 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
     <div style="font-size:11px;color:var(--muted2);line-height:1.6;margin-bottom:10px;">
       Los tiempos del análisis quedan como enlaces: toca uno y el video salta ahí. Después ajusta fotograma a fotograma y captura.
     </div>
-    <div id="fshots" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;"></div>
+    <button type="button" id="fshotsCabecera" onclick="toggleFshots()" style="display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:1px solid var(--b2);border-radius:10px;padding:9px 12px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;color:var(--white);cursor:pointer;">
+      <span>&#128247; Fotogramas capturados <span id="fshotsCount" style="color:var(--muted2);font-weight:500;">(0)</span></span>
+      <span id="fshotsChevron" style="color:var(--muted2);">&#9662;</span>
+    </button>
+    <div id="fshots" style="display:none;gap:8px;overflow-x:auto;padding:10px 2px 4px;"></div>
   </div>
   <canvas id="fzc" style="display:none;"></canvas>
 
@@ -495,6 +516,10 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
     <canvas class="pizarra" id="pizarra"></canvas>
     <button class="flotaPantalla" id="pantallaFlot" title="Pantalla completa">⛶</button>
     <div class="mandos" id="mandos">
+      <div class="mCabecera">
+        <span class="mAsa" id="mAsa" title="Arrastrar"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        <button class="mCerrar" id="mCerrar" title="Ocultar mandos">✕</button>
+      </div>
       <div class="mFila">
         <div class="modos" id="mAtleta">
           <button id="mA" aria-pressed="true">A</button>
@@ -524,9 +549,11 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
         <div class="mJog" id="mJog" title="Lanzadera: arrastra y suelta para volver al centro"><span class="mJogEje"></span><span class="mJogTxt" id="mJogTxt">Lanzadera</span><span class="mJogPuno" id="mJogPuno"></span></div>
       </div>
     </div>
+    <button class="reabrirFlotante" id="reabrirMandos" title="Mostrar mandos">🎛</button>
     <div class="herramientas" id="herramientas">
-      <button data-tool="mano" class="on" title="Navegar (Esc)">✋</button><button data-tool="linea" title="Línea con ángulo">╱</button><button data-tool="angulo" title="Ángulo de 3 puntos">∠</button><button data-tool="plomada" title="Vertical de referencia">⊥</button><button data-tool="rect" title="Rectángulo">▭</button><button data-tool="circulo" title="Círculo">◯</button><button data-tool="libre" title="Mano alzada">✎</button><button data-tool="borrador" title="Borrador selectivo">🧹</button><button id="colorAnot" title="Color del trazo">●</button><button id="deshacer" title="Deshacer">↶</button><button id="borrarTodo" title="Borrar todo">⌫</button><button id="capturarCuadro" title="Guardar fotograma con dibujos">📷</button><button id="renombrarSesion" title="Cambiar carpeta de capturas">📁</button>
+      <button data-tool="mano" class="on" title="Navegar (Esc)">✋</button><button data-tool="linea" title="Línea con ángulo">╱</button><button data-tool="angulo" title="Ángulo de 3 puntos">∠</button><button data-tool="plomada" title="Vertical de referencia">⊥</button><button data-tool="rect" title="Rectángulo">▭</button><button data-tool="circulo" title="Círculo">◯</button><button data-tool="libre" title="Mano alzada">✎</button><button data-tool="borrador" title="Borrador selectivo">🧹</button><button data-tool="estela" title="Estela de movimiento: marca al esquiador en varios cuadros del giro">🎬</button><button id="colorAnot" title="Color del trazo">●</button><button id="deshacer" title="Deshacer">↶</button><button id="borrarTodo" title="Borrar todo">⌫</button><button id="capturarCuadro" title="Guardar fotograma con dibujos">📷</button><button id="renombrarSesion" title="Cambiar carpeta de capturas">📁</button><button id="herramientasCerrar" title="Ocultar herramientas">✕</button>
     </div>
+    <button class="reabrirFlotante" id="reabrirHerramientas" title="Mostrar herramientas">🖌</button>
     <div class="vacio" id="vacio">
       <h2 id="faltante">Compara dos bajadas</h2>
       <p id="pista-vacio">Carga el video de cada esquiador. Después ajusta la sincronía para que ambos entren a la puerta en el mismo instante.
@@ -546,6 +573,7 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
     <div class="fila util">
       <div class="grupo"><span class="et">Bucle</span><button class="btn" id="marcaIn" title="Marcar el inicio del tramo">Entrada</button><button class="btn" id="marcaOut" title="Marcar el fin del tramo">Salida</button><button class="btn" id="bucle" title="Repetir el tramo marcado">Repetir</button></div>
       <div class="grupo"><span class="et">Análisis</span><button class="btn" id="verGuias" title="Guías sobre la imagen">Guías</button><button class="btn" id="verFormas" title="Formas y ángulos">Formas</button></div>
+      <div class="grupo" id="ctrEstela" style="display:none"><span class="et">Estela</span><input type="number" id="estelaCant" value="6" min="2" max="14" title="Cantidad de fotogramas"><button class="btn" id="estelaGenerar">Generar guía</button></div>
       <div class="grupo"><span class="et">Ajustes</span><button class="btn icono" id="resetBarra" title="Reiniciar sincronía">↺</button><button class="btn" id="verEncuadre" title="Igualar los encuadres">Encuadre</button><button class="btn" id="panel" title="Todos los ajustes">Ajuste</button></div>
     </div>
     <div class="tiempo">
@@ -1655,6 +1683,25 @@ function dimPizarra(){
 window.addEventListener("resize", () => { if (comparadorVisible) dimPizarra(); });
 document.addEventListener("fullscreenchange", ()=> setTimeout(dimPizarra, 60));
 
+/* ---------- estela de movimiento ---------- */
+/* recorta un cuadrado de píxeles nativos del video alrededor del punto q (el mismo
+   punto u,v que usan las demás formas), deshaciendo el ajuste "contain" del <video>
+   además del espejo — el zoom/giro/paneo no hace falta deshacerlos porque q ya viene
+   sin ellos (aFotograma se los quita antes de llegar acá) */
+const RADIO_ESTELA = 90;
+function recorteNativo(k, q, radio){
+  const clip = clips[k], vid = clip.el, caja = cajaDe(k);
+  const rawU = clip.espejo ? -q.u : q.u;
+  const mx = caja.W/2 + rawU*caja.H, my = caja.H/2 + q.v*caja.H;
+  const esc = Math.min(caja.W/vid.videoWidth, caja.H/vid.videoHeight);
+  const offX = (caja.W - vid.videoWidth*esc)/2, offY = (caja.H - vid.videoHeight*esc)/2;
+  const nx = (mx-offX)/esc, ny = (my-offY)/esc;
+  const cv = document.createElement("canvas");
+  cv.width = radio*2; cv.height = radio*2;
+  cv.getContext("2d").drawImage(vid, nx-radio, ny-radio, radio*2, radio*2, 0, 0, radio*2, radio*2);
+  return cv;
+}
+
 /* de coordenadas de fotograma a píxeles del escenario */
 function aEscenario(k, q){
   const { m, W, H } = cajaDe(k);
@@ -1694,19 +1741,13 @@ function anguloEntre(v, p1, p2){
   return d;
 }
 
-function pintarForma(f, pts){
+function pintarForma(f, pts, k){
   const c = f.color;
   pz.beginPath();
   if(f.tipo === "linea" || f.tipo === "libre"){
     pz.moveTo(pts[0].x, pts[0].y);
     for(let i=1; i<pts.length; i++) pz.lineTo(pts[i].x, pts[i].y);
     trazo(pz, c, 2.5);
-    if(f.tipo === "linea" && pts.length > 1){
-      const dx = pts[1].x - pts[0].x, dy = pts[1].y - pts[0].y;
-      let g = Math.abs(Math.atan2(dy, dx)*180/Math.PI);
-      if(g > 90) g = 180 - g;
-      rotulo(pz, g.toFixed(1)+"° horiz", (pts[0].x+pts[1].x)/2 + 8, (pts[0].y+pts[1].y)/2, c);
-    }
   }else if(f.tipo === "rect"){
     pz.rect(pts[0].x, pts[0].y, pts[1].x - pts[0].x, pts[1].y - pts[0].y);
     trazo(pz, c, 2.5);
@@ -1739,6 +1780,20 @@ function pintarForma(f, pts){
       pz.fillStyle = c; pz.fill();
       pz.strokeStyle = "rgba(7,11,15,.8)"; pz.lineWidth = 1.5; pz.stroke();
     }
+  }else if(f.tipo === "estela" && f.imgs && k){
+    const clip = clips[k], vid = clip.el, caja = cajaDe(k);
+    const esc = Math.min(caja.W/vid.videoWidth, caja.H/vid.videoHeight) * (clip.zoom/100);
+    const dSize = RADIO_ESTELA*2*esc;
+    f.imgs.forEach((img, i)=>{
+      const p = pts[i]; if(!p) return;
+      pz.save();
+      pz.beginPath(); pz.arc(p.x, p.y, dSize/2, 0, Math.PI*2); pz.clip();
+      pz.drawImage(img, p.x-dSize/2, p.y-dSize/2, dSize, dSize);
+      pz.restore();
+      pz.beginPath(); pz.arc(p.x, p.y, dSize/2, 0, Math.PI*2);
+      pz.strokeStyle = c; pz.lineWidth = 2; pz.stroke();
+      rotulo(pz, (i+1)+"/"+f.imgs.length, p.x - 16, p.y + dSize/2 + 22, c);
+    });
   }
 }
 /* una forma solo se ve en el cuadro en que se dibujó: compara contra el currentTime
@@ -1755,23 +1810,45 @@ function pintarAnotaciones(){
   const vis = activos();
   for(const k of vis)
     for(const f of anot.formas[k])
-      if(mismoCuadro(f, k)) pintarForma(f, f.pts.map(q => aEscenario(k, q)));
+      if(mismoCuadro(f, k)) pintarForma(f, f.pts.map(q => aEscenario(k, q)), k);
   if(anot.temp && vis.includes(anot.temp.clip))
-    pintarForma(anot.temp, anot.temp.pts.map(q => aEscenario(anot.temp.clip, q)));
+    pintarForma(anot.temp, anot.temp.pts.map(q => aEscenario(anot.temp.clip, q)), anot.temp.clip);
   if(anot.clicks.length && anot.clipActual)
     pintarForma({ tipo:"angulo", color:COLORES[anot.color] },
-                anot.clicks.map(q => aEscenario(anot.clipActual, q)));
+                anot.clicks.map(q => aEscenario(anot.clipActual, q)), anot.clipActual);
 }
 
 /* ---- interacción ---- */
+let estelaGuia = null; // {tiempos, indice, marcas, clip} mientras se está armando una estela
+function cancelarEstelaGuia(){
+  if(!estelaGuia) return;
+  estelaGuia = null;
+  $("estelaGenerar").textContent = "Generar guía";
+  avisar("Guía de estela cancelada.");
+}
 function elegirTool(t){
+  if(anot.tool === "estela" && t !== "estela") cancelarEstelaGuia();
   anot.tool = t; anot.clicks = []; anot.temp = null;
   document.querySelectorAll("#herramientas [data-tool]").forEach(b=>
     b.classList.toggle("on", b.dataset.tool === t));
   piz.classList.toggle("activa", t !== "mano");
+  $("ctrEstela").style.display = t === "estela" ? "flex" : "none";
 }
 document.querySelectorAll("#herramientas [data-tool]").forEach(b=>
   b.addEventListener("click", ()=> elegirTool(b.dataset.tool)));
+al("estelaGenerar", "click", ()=>{
+  if(estelaGuia){ cancelarEstelaGuia(); return; }
+  if(estado.entrada === null || estado.salida === null || estado.salida <= estado.entrada){
+    avisar("Marca Entrada y Salida del tramo (grupo Bucle) antes de generar la guía.");
+    return;
+  }
+  const n = Math.max(2, Math.min(14, Math.round(+$("estelaCant").value || 6)));
+  const tiempos = Array.from({length:n}, (_,i)=> estado.entrada + (estado.salida-estado.entrada)*i/(n-1));
+  estelaGuia = { tiempos, indice:0, marcas:[], clip:null };
+  pausar(); irA(tiempos[0], true);
+  $("estelaGenerar").textContent = "✕ Cancelar guía";
+  avisar(`Estela: toca al esquiador — cuadro 1 de ${n}`);
+});
 al("colorAnot", "click", ()=>{
   anot.color = (anot.color + 1) % COLORES.length;
   $("colorAnot").style.color = COLORES[anot.color];
@@ -1886,6 +1963,28 @@ piz.addEventListener("pointerdown", (ev)=>{
     }
     return;
   }
+  if(anot.tool === "estela"){
+    if(!estelaGuia){ avisar('Toca "Generar guía" primero.'); return; }
+    if(!estelaGuia.clip) estelaGuia.clip = k;
+    const kk = estelaGuia.clip;
+    if(!clips[kk].listo) return;
+    const qq = aFotograma(kk, ev);
+    estelaGuia.marcas.push({ q:qq, img: recorteNativo(kk, qq, RADIO_ESTELA) });
+    estelaGuia.indice++;
+    if(estelaGuia.indice >= estelaGuia.tiempos.length){
+      anot.formas[kk].push({
+        tipo:"estela", color:COLORES[anot.color],
+        pts: estelaGuia.marcas.map(m=>m.q), imgs: estelaGuia.marcas.map(m=>m.img),
+        t: clips[kk].el.currentTime
+      });
+      avisar(`Estela lista: ${estelaGuia.marcas.length} fotogramas.`);
+      estelaGuia = null; $("estelaGenerar").textContent = "Generar guía";
+    }else{
+      irA(estelaGuia.tiempos[estelaGuia.indice], true);
+      avisar(`Estela: toca al esquiador — cuadro ${estelaGuia.indice+1} de ${estelaGuia.tiempos.length}`);
+    }
+    return;
+  }
   pintando = true;
   anot.temp = { tipo:anot.tool, color:COLORES[anot.color], clip:k, pts:[q, q], t:clips[k].el.currentTime };
 });
@@ -1951,8 +2050,11 @@ document.addEventListener("keydown", (ev) => {
 al("verFormas", "click", ()=>{
   const oculta = $("herramientas").classList.toggle("oculta");
   $("verFormas").classList.toggle("on", !oculta);
+  $("reabrirHerramientas").classList.toggle("ver", oculta);
   if(oculta) elegirTool("mano");
 });
+al("herramientasCerrar", "click", ()=> $("verFormas").click());
+al("reabrirHerramientas", "click", ()=> $("verFormas").click());
 $("verFormas").classList.add("on");
 dimPizarra();
 
@@ -2254,39 +2356,64 @@ function refrescarMandos(){
   "nomA","nomB","cambiaAtleta","carrilA","carrilB","regla","agujaR",
   "play","atras","adelante","vel","fps","tc","marcaIn","marcaOut","bucle",
   "verGuias","guias","verFormas","herramientas","pantalla","pantallaFlot","escena","lienzo",
+  "ctrEstela","estelaCant","estelaGenerar",
   "mUno","mDiv","mSup","verA","verB","corte","encaje","ctrOpacidad","opac","opacV",
   "ctrFusion","fusion","ctrReparto","reparto","repartoV","ctrCorte","vacio","faltante",
   "selA","selB","zoom","zoomV","posX","posXV","posY","posYV","giro","giroV","espejo","reset",
   "ajustes","panel","cerrarPanel","autoEnc","calibrar","copiarEnc","notaEnc",
-  "colorAnot","deshacer","borrarTodo","capturarCuadro","renombrarSesion",
+  "colorAnot","deshacer","borrarTodo","capturarCuadro","renombrarSesion","herramientasCerrar","reabrirHerramientas",
   "refA","refB","finA","finB","resetSync","resetBarra","autoSync","igualarPartida","notaSync",
-  "mandos","mPlay","mTc","mAguja","mVel","mModo","mAtleta","mSolo","mA","mB",
+  "mandos","mAsa","mCerrar","reabrirMandos","mPlay","mTc","mAguja","mVel","mModo","mAtleta","mSolo","mA","mB",
   "mGuias","mFormas","mSalir","mBarra","mAmenos","mAmas","mBmenos","mBmas",
   "mJog","mJogPuno","mJogTxt","jog2","jogPuno2","jogTxt2"
 ].forEach(id => { if(!document.getElementById(id)) console.warn(`[comparador] falta #${id} en el HTML`); });
 
-/* ---------- auto-ocultamiento de barras en pantalla completa ---------- */
-const elementosUI = [raiz.querySelector('.herramientas'), raiz.querySelector('.mandos')].filter(el => el);
-let timeoutOcultar;
-const TIEMPO_INACTIVIDAD = 2000; // 2 segundos
-function mostrarUI(){
-  elementosUI.forEach(el => el.classList.remove('oculta'));
-  clearTimeout(timeoutOcultar);
+/* ---------- cierre manual de mandos, y arrastre libre dentro del video ---------- */
+al("mCerrar", "click", ()=>{ $("mandos").classList.add("oculta"); $("reabrirMandos").classList.add("ver"); });
+al("reabrirMandos", "click", ()=>{ $("mandos").classList.remove("oculta"); $("reabrirMandos").classList.remove("ver"); });
+
+let posMandos = null; /* null = en su sitio por defecto (abajo, centrada) */
+function aplicarPosMandos(){
+  const m = $("mandos");
+  if(!posMandos){
+    m.style.left = "50%"; m.style.bottom = "14px"; m.style.top = ""; m.style.transform = "translateX(-50%)";
+    return;
+  }
+  m.style.left = posMandos.left+"px"; m.style.top = posMandos.top+"px";
+  m.style.bottom = "auto"; m.style.transform = "none";
 }
-function ocultarUI(){
-  if(raiz.classList.contains('completa') || raiz.classList.contains('inmersivo'))
-    elementosUI.forEach(el => el.classList.add('oculta'));
+function acomodarMandosEnPantalla(){
+  if(!posMandos) return;
+  const re = $("escena").getBoundingClientRect(), rm = $("mandos").getBoundingClientRect();
+  posMandos.left = Math.max(6, Math.min(posMandos.left, re.width - rm.width - 6));
+  posMandos.top = Math.max(6, Math.min(posMandos.top, re.height - rm.height - 6));
+  aplicarPosMandos();
 }
-function programarOcultamiento(){
-  if(!comparadorVisible) return;
-  clearTimeout(timeoutOcultar);
-  mostrarUI();
-  timeoutOcultar = setTimeout(ocultarUI, TIEMPO_INACTIVIDAD);
-}
-["mousemove","touchstart","click","keydown"].forEach(ev =>
-  document.addEventListener(ev, programarOcultamiento, { passive:true }));
-raiz.querySelectorAll('[id*="Salir"], [title*="completa"]').forEach(btn =>
-  btn.addEventListener('click', ()=> setTimeout(programarOcultamiento, 100)));
+(function(){
+  let arrastrando = false, offX = 0, offY = 0;
+  const asa = $("mAsa"), mandos = $("mandos"), escena = $("escena");
+  if(!asa || !mandos || !escena) return;
+  asa.addEventListener("pointerdown", (ev)=>{
+    ev.preventDefault();
+    arrastrando = true; mandos.classList.add("arrastrando");
+    asa.setPointerCapture(ev.pointerId);
+    const re = escena.getBoundingClientRect(), rm = mandos.getBoundingClientRect();
+    if(!posMandos) posMandos = { left: rm.left - re.left, top: rm.top - re.top };
+    offX = ev.clientX - (re.left + posMandos.left);
+    offY = ev.clientY - (re.top + posMandos.top);
+  });
+  asa.addEventListener("pointermove", (ev)=>{
+    if(!arrastrando) return;
+    const re = escena.getBoundingClientRect();
+    posMandos = { left: ev.clientX - re.left - offX, top: ev.clientY - re.top - offY };
+    acomodarMandosEnPantalla();
+  });
+  ["pointerup","pointercancel"].forEach(ev => asa.addEventListener(ev, ()=>{
+    arrastrando = false; mandos.classList.remove("arrastrando");
+  }));
+})();
+window.addEventListener("resize", ()=> { if(comparadorVisible) acomodarMandosEnPantalla(); });
+document.addEventListener("fullscreenchange", ()=> setTimeout(acomodarMandosEnPantalla, 80));
 
 function iniciar() {
   comparadorVisible = true;
@@ -2849,11 +2976,18 @@ function copyAnalysis(){
 // ─── RENDER ───
 function scol(v){ if(!v)return'#4a6880'; if(v<=4)return'#ef4444'; if(v<=5)return'#f97316'; if(v<=6)return'#f59e0b'; if(v<=7)return'#60a8d0'; return'#10b981'; }
 // ─── INSPECTOR DE FOTOGRAMAS ───
-let FPS=30, shots=[];
+let FPS=30, shots=[], fshotsAbierto=false;
+function toggleFshots(forzar){
+  fshotsAbierto = typeof forzar==='boolean' ? forzar : !fshotsAbierto;
+  document.getElementById('fshots').style.display = fshotsAbierto ? 'flex' : 'none';
+  document.getElementById('fshotsChevron').innerHTML = fshotsAbierto ? '&#9652;' : '&#9662;';
+}
 function initFrameZone(){
   const vp=document.getElementById('vp');
   document.getElementById('fzone').style.display='block';
   document.getElementById('fshots').innerHTML=''; shots=[];
+  document.getElementById('fshotsCount').textContent='(0)';
+  toggleFshots(false);
   FPS=30;
   vp.addEventListener('loadedmetadata',()=>{ detectFps(vp); updStamp(); },{once:true});
   vp.addEventListener('timeupdate',updStamp);
@@ -2905,12 +3039,27 @@ function grabFrame(){
        <span style="position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,0.7);color:#fff;font-family:ui-monospace,monospace;font-size:9px;padding:2px 5px;border-radius:4px;">${stamp}</span>
        <a href="${url}" download="fotograma-${stamp.replace(/[:.]/g,'-')}.jpg" style="position:absolute;right:4px;top:4px;background:rgba(0,0,0,0.7);color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;text-decoration:none;">&#8595;</a>
      </div>`);
+  document.getElementById('fshotsCount').textContent=`(${shots.length})`;
+  toggleFshots(true);
 }
 // Convierte los tiempos del análisis (0:14, 1:23.5, "momento: 12s") en enlaces que saltan el video
 function linkStamps(html){
   return html.replace(/\b(\d{1,2}:\d{2}(?:[.,]\d{1,2})?)\b/g,
     (m)=>`<a href="javascript:void(0)" onclick="gotoStamp('${m}')" style="color:var(--ice);border-bottom:1px dotted var(--ice);text-decoration:none;font-family:ui-monospace,monospace;">${m}</a>`);
 }
+// Igual que linkStamps, pero además deja el texto del error a la vista junto al fotograma
+let notaFrameTextos=[];
+function linkStampsConNota(html, texto){
+  const idx=notaFrameTextos.push(texto)-1;
+  return html.replace(/\b(\d{1,2}:\d{2}(?:[.,]\d{1,2})?)\b/g,
+    (m)=>`<a href="javascript:void(0)" onclick="gotoStamp('${m}');mostrarNotaFrame(${idx})" style="color:var(--ice);border-bottom:1px dotted var(--ice);text-decoration:none;font-family:ui-monospace,monospace;">${m}</a>`);
+}
+function mostrarNotaFrame(idx){
+  const texto=notaFrameTextos[idx]; if(texto==null) return;
+  document.getElementById('fnotaTexto').textContent=texto;
+  document.getElementById('fnota').style.display='block';
+}
+function cerrarNotaFrame(){ document.getElementById('fnota').style.display='none'; }
 function render(text,meta){
   document.getElementById('res-name').textContent=(meta?.name||'Análisis');
   document.getElementById('res-date').textContent=(meta?.cat||'')+' · '+(meta?.disc||'')+' · '+(meta?.date||'');
@@ -2920,7 +3069,8 @@ function render(text,meta){
   const obs=sec('OBSERVACIÓN GENERAL'),foco=sec('FOCO PARA'),nota=sec('NOTA PARA'),palo=sec('DRILL CON PALOS'),linea=sec('ANÁLISIS DE LÍNEA Y APEX'),causas=sec('ANÁLISIS DE CAUSAS RAÍZ');
   document.getElementById('tr').innerHTML=[obs?`<div class="rb"><b class="rbt">🔍 Observación General</b><div class="rbc">${linkStamps(obs)}</div></div>`:'',linea?`<div class="rb linea"><b class="rbt">📐 Línea y Apex</b><div class="rbc">${linkStamps(linea)}</div></div>`:'',causas?`<div class="rb causas"><b class="rbt">🧩 Causas Raíz</b><div class="rbc">${linkStamps(causas)}</div></div>`:'',foco?`<div class="rb foco"><b class="rbt">🎯 Foco para la Próxima Sesión</b><div class="rbc">${foco}</div></div>`:'',nota?`<div class="rb nota"><b class="rbt">💬 Nota para el Entrenador</b><div class="rbc">${nota}</div></div>`:'',palo?`<div class="rb palo"><b class="rbt">🎿 Drill con Palos</b><div class="rbc">${palo}</div></div>`:''].join('');
   const el=text.split('\n').filter(l=>/\[(CRÍTICO|MEDIO|MENOR)\]/i.test(l));
-  document.getElementById('te').innerHTML=el.length?el.map(l=>{ const iC=/CRÍTICO/i.test(l),iM=/MEDIO/i.test(l),t=iC?'c':iM?'m':'n',lb=iC?'CRÍTICO':iM?'MEDIO':'MENOR',txt=l.replace(/\[(CRÍTICO|MEDIO|MENOR)\]\s*/i,'').replace(/\*+/g,'').trim(); return`<div class="ei e${t}_"><div class="ed d${t}"></div><div><span class="eb eb${t}">${lb}</span><div class="et">${linkStamps(txt)}</div></div></div>`; }).join(''):`<p style="color:var(--muted2);padding:12px 0">Ver análisis completo para los errores.</p>`;
+  notaFrameTextos=[]; cerrarNotaFrame();
+  document.getElementById('te').innerHTML=el.length?el.map(l=>{ const iC=/CRÍTICO/i.test(l),iM=/MEDIO/i.test(l),t=iC?'c':iM?'m':'n',lb=iC?'CRÍTICO':iM?'MEDIO':'MENOR',txt=l.replace(/\[(CRÍTICO|MEDIO|MENOR)\]\s*/i,'').replace(/\*+/g,'').trim(); return`<div class="ei e${t}_"><div class="ed d${t}"></div><div><span class="eb eb${t}">${lb}</span><div class="et">${linkStampsConNota(txt,txt)}</div></div></div>`; }).join(''):`<p style="color:var(--muted2);padding:12px 0">Ver análisis completo para los errores.</p>`;
   const xs=sec('EJERCICIOS CORRECTIVOS'),xb=xs.split(/\n\*\*\d+\.\s+/).filter(Boolean);
   document.getElementById('tx').innerHTML=xb.length?xb.map((b,i)=>{ const lines=b.split('\n').filter(Boolean),t=lines[0]?.replace(/\*+/g,'').trim()||'',sl=lines.find(l=>/📌/.test(l))||'',s=sl.replace(/.*Fuente:\s*/i,'').replace(/\*+/g,'').trim(),bd=lines.filter(l=>!/📌/.test(l)).slice(1).join(' ').replace(/\*+/g,'').trim(); return`<div class="xc"><div class="xh"><span class="xn">0${i+1}</span><span class="xt">${t}</span>${s?`<span class="xs">${s}</span>`:''}</div><div class="xb">${bd}</div></div>`; }).join(''):`<p style="color:var(--muted2);padding:12px 0">Ver análisis completo.</p>`;
   document.getElementById('tf').innerHTML=`<div class="ft">${linkStamps(text)}</div>`;

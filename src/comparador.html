@@ -108,14 +108,37 @@ body{
 .flotaPantalla:hover{background:var(--panel-alto)}
 body.completa .flotaPantalla,body.inmersivo .flotaPantalla{display:none}
 .mandos{
-  position:absolute;right:14px;top:50%;transform:translateY(-50%);z-index:9;
+  position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:9;
   display:none;flex-direction:column;gap:7px;padding:8px 10px;border-radius:12px;
-  background:rgba(7,11,15,.84);border:1px solid var(--linea);
-  width:260px;max-height:calc(100% - 20px);overflow-y:auto;scrollbar-width:none;
-  transition:opacity .25s;
+  background:rgba(7,11,15,.9);border:1px solid var(--linea);
+  width:max-content;max-width:calc(100% - 24px);max-height:calc(100% - 20px);
+  overflow-y:auto;scrollbar-width:none;touch-action:none;
+  transition:opacity .2s ease,transform .15s ease;
 }
 .mandos::-webkit-scrollbar{display:none}
+.mandos.arrastrando{transition:none}
 body.completa .mandos,body.inmersivo .mandos{display:flex}
+.mCabecera{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-2px -2px 0}
+.mAsa{
+  flex:1;min-height:20px;display:flex;align-items:center;justify-content:center;gap:3px;
+  cursor:grab;color:var(--tenue);
+}
+.mAsa:active{cursor:grabbing}
+.mAsa i{width:3px;height:3px;border-radius:50%;background:currentColor}
+.mCerrar{
+  border:0;background:none;color:var(--tenue);min-height:26px;min-width:26px;padding:0;
+  border-radius:6px;cursor:pointer;font-size:13px;flex-shrink:0;
+}
+.mCerrar:hover{background:color-mix(in srgb,var(--rojo) 22%,transparent);color:#FFCFCF}
+.reabrirFlotante{
+  position:absolute;z-index:9;width:40px;height:40px;border-radius:50%;
+  background:rgba(7,11,15,.86);border:1px solid var(--linea);color:var(--texto);
+  align-items:center;justify-content:center;font-size:16px;cursor:pointer;padding:0;
+  display:none;
+}
+body.completa .reabrirFlotante.ver,body.inmersivo .reabrirFlotante.ver{display:flex}
+#reabrirMandos{right:14px;bottom:14px}
+#reabrirHerramientas{left:10px;top:50%;transform:translateY(-50%)}
 .mFila{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .mandos button{
   border:1px solid var(--linea);background:var(--panel-alto);color:var(--texto);
@@ -243,6 +266,11 @@ body.completa .mandos,body.inmersivo .mandos{display:flex}
 .fila.util::-webkit-scrollbar{display:none}
 .fila.util .btn{min-height:38px;padding:8px 12px;font-size:13px}
 .grupo{display:flex;align-items:center;gap:5px;flex-shrink:0}
+#estelaCant{
+  width:46px;min-height:38px;background:var(--panel-alto);color:var(--texto);
+  border:1px solid var(--linea);border-radius:7px;padding:6px;
+  font-family:var(--mono);font-size:13px;text-align:center;
+}
 .grupo .et{
   font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:.12em;
   text-transform:uppercase;color:var(--tenue);margin-right:3px;
@@ -408,15 +436,9 @@ body.inmersivo .barra,body.inmersivo .transporte,body.inmersivo .ajustes{display
 body.inmersivo .escena{position:fixed;inset:0;z-index:100}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
-/* ---------- auto-ocultamiento en pantalla completa ---------- */
-body.completa .barra,body.completa .transporte,body.completa .herramientas,body.completa .mandos{
-  transition:opacity .3s ease,transform .3s ease;
-}
-body.completa .barra.oculta,body.completa .transporte.oculta,body.completa .herramientas.oculta,body.completa .mandos.oculta{
-  opacity:0;pointer-events:none;transform:translateY(-10px);
-}
-body.completa .barra.oculta{transform:translateY(-10px)}
-body.completa .transporte.oculta{transform:translateY(10px)}
+/* ---------- ocultamiento manual en pantalla completa ---------- */
+body.completa .herramientas.oculta{opacity:0;pointer-events:none}
+body.completa .mandos.oculta{opacity:0;pointer-events:none}
 </style>
 </head>
 <body>
@@ -449,6 +471,10 @@ body.completa .transporte.oculta{transform:translateY(10px)}
   <canvas class="pizarra" id="pizarra"></canvas>
   <button class="flotaPantalla" id="pantallaFlot" title="Pantalla completa">⛶</button>
   <div class="mandos" id="mandos">
+    <div class="mCabecera">
+      <span class="mAsa" id="mAsa" title="Arrastrar"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+      <button class="mCerrar" id="mCerrar" title="Ocultar mandos">✕</button>
+    </div>
     <div class="mFila">
       <div class="modos" id="mAtleta">
         <button id="mA" aria-pressed="true">A</button>
@@ -491,6 +517,7 @@ body.completa .transporte.oculta{transform:translateY(10px)}
     </div>
     </div>
   </div>
+  <button class="reabrirFlotante" id="reabrirMandos" title="Mostrar mandos">🎛</button>
   <div class="herramientas" id="herramientas">
     <button data-tool="mano" class="on" title="Navegar (Esc)">✋</button>
     <button data-tool="linea" title="Línea con ángulo">╱</button>
@@ -500,12 +527,15 @@ body.completa .transporte.oculta{transform:translateY(10px)}
     <button data-tool="circulo" title="Círculo">◯</button>
     <button data-tool="libre" title="Mano alzada">✎</button>
     <button data-tool="borrador" title="Borrador selectivo">🧹</button>
+    <button data-tool="estela" title="Estela de movimiento: marca al esquiador en varios cuadros del giro">🎬</button>
     <button id="colorAnot" title="Color del trazo">●</button>
     <button id="deshacer" title="Deshacer">↶</button>
     <button id="borrarTodo" title="Borrar todo">⌫</button>
     <button id="capturarCuadro" title="Guardar fotograma con dibujos">📷</button>
     <button id="renombrarSesion" title="Cambiar carpeta de capturas">📁</button>
+    <button id="herramientasCerrar" title="Ocultar herramientas">✕</button>
   </div>
+  <button class="reabrirFlotante" id="reabrirHerramientas" title="Mostrar herramientas">🖌</button>
 
   <div class="vacio" id="vacio">
     <h2 id="faltante">Compara dos bajadas</h2>
@@ -558,6 +588,11 @@ body.completa .transporte.oculta{transform:translateY(10px)}
       <span class="et">Análisis</span>
       <button class="btn" id="verGuias" title="Guías sobre la imagen">Guías</button>
       <button class="btn" id="verFormas" title="Formas y ángulos">Formas</button>
+    </div>
+    <div class="grupo" id="ctrEstela" style="display:none">
+      <span class="et">Estela</span>
+      <input type="number" id="estelaCant" value="6" min="2" max="14" title="Cantidad de fotogramas">
+      <button class="btn" id="estelaGenerar">Generar guía</button>
     </div>
     <div class="grupo">
       <span class="et">Ajustes</span>
@@ -1759,6 +1794,25 @@ function dimPizarra(){
 window.addEventListener("resize", dimPizarra);
 document.addEventListener("fullscreenchange", ()=> setTimeout(dimPizarra, 60));
 
+/* ---------- estela de movimiento ---------- */
+/* recorta un cuadrado de píxeles nativos del video alrededor del punto q (el mismo
+   punto u,v que usan las demás formas), deshaciendo el ajuste "contain" del <video>
+   además del espejo — el zoom/giro/paneo no hace falta deshacerlos porque q ya viene
+   sin ellos (aFotograma se los quita antes de llegar acá) */
+const RADIO_ESTELA = 90;
+function recorteNativo(k, q, radio){
+  const clip = clips[k], vid = clip.el, caja = cajaDe(k);
+  const rawU = clip.espejo ? -q.u : q.u;
+  const mx = caja.W/2 + rawU*caja.H, my = caja.H/2 + q.v*caja.H;
+  const esc = Math.min(caja.W/vid.videoWidth, caja.H/vid.videoHeight);
+  const offX = (caja.W - vid.videoWidth*esc)/2, offY = (caja.H - vid.videoHeight*esc)/2;
+  const nx = (mx-offX)/esc, ny = (my-offY)/esc;
+  const cv = document.createElement("canvas");
+  cv.width = radio*2; cv.height = radio*2;
+  cv.getContext("2d").drawImage(vid, nx-radio, ny-radio, radio*2, radio*2, 0, 0, radio*2, radio*2);
+  return cv;
+}
+
 /* de coordenadas de fotograma a píxeles del escenario */
 function aEscenario(k, q){
   const { m, W, H } = cajaDe(k);
@@ -1798,19 +1852,13 @@ function anguloEntre(v, p1, p2){
   return d;
 }
 
-function pintarForma(f, pts){
+function pintarForma(f, pts, k){
   const c = f.color;
   pz.beginPath();
   if(f.tipo === "linea" || f.tipo === "libre"){
     pz.moveTo(pts[0].x, pts[0].y);
     for(let i=1; i<pts.length; i++) pz.lineTo(pts[i].x, pts[i].y);
     trazo(pz, c, 2.5);
-    if(f.tipo === "linea" && pts.length > 1){
-      const dx = pts[1].x - pts[0].x, dy = pts[1].y - pts[0].y;
-      let g = Math.abs(Math.atan2(dy, dx)*180/Math.PI);
-      if(g > 90) g = 180 - g;
-      rotulo(pz, g.toFixed(1)+"° horiz", (pts[0].x+pts[1].x)/2 + 8, (pts[0].y+pts[1].y)/2, c);
-    }
   }else if(f.tipo === "rect"){
     pz.rect(pts[0].x, pts[0].y, pts[1].x - pts[0].x, pts[1].y - pts[0].y);
     trazo(pz, c, 2.5);
@@ -1843,6 +1891,20 @@ function pintarForma(f, pts){
       pz.fillStyle = c; pz.fill();
       pz.strokeStyle = "rgba(7,11,15,.8)"; pz.lineWidth = 1.5; pz.stroke();
     }
+  }else if(f.tipo === "estela" && f.imgs && k){
+    const clip = clips[k], vid = clip.el, caja = cajaDe(k);
+    const esc = Math.min(caja.W/vid.videoWidth, caja.H/vid.videoHeight) * (clip.zoom/100);
+    const dSize = RADIO_ESTELA*2*esc;
+    f.imgs.forEach((img, i)=>{
+      const p = pts[i]; if(!p) return;
+      pz.save();
+      pz.beginPath(); pz.arc(p.x, p.y, dSize/2, 0, Math.PI*2); pz.clip();
+      pz.drawImage(img, p.x-dSize/2, p.y-dSize/2, dSize, dSize);
+      pz.restore();
+      pz.beginPath(); pz.arc(p.x, p.y, dSize/2, 0, Math.PI*2);
+      pz.strokeStyle = c; pz.lineWidth = 2; pz.stroke();
+      rotulo(pz, (i+1)+"/"+f.imgs.length, p.x - 16, p.y + dSize/2 + 22, c);
+    });
   }
 }
 /* una forma solo se ve en el cuadro en que se dibujó: compara contra el currentTime
@@ -1859,23 +1921,45 @@ function pintarAnotaciones(){
   const vis = activos();
   for(const k of vis)
     for(const f of anot.formas[k])
-      if(mismoCuadro(f, k)) pintarForma(f, f.pts.map(q => aEscenario(k, q)));
+      if(mismoCuadro(f, k)) pintarForma(f, f.pts.map(q => aEscenario(k, q)), k);
   if(anot.temp && vis.includes(anot.temp.clip))
-    pintarForma(anot.temp, anot.temp.pts.map(q => aEscenario(anot.temp.clip, q)));
+    pintarForma(anot.temp, anot.temp.pts.map(q => aEscenario(anot.temp.clip, q)), anot.temp.clip);
   if(anot.clicks.length && anot.clipActual)
     pintarForma({ tipo:"angulo", color:COLORES[anot.color] },
-                anot.clicks.map(q => aEscenario(anot.clipActual, q)));
+                anot.clicks.map(q => aEscenario(anot.clipActual, q)), anot.clipActual);
 }
 
 /* ---- interacción ---- */
+let estelaGuia = null; // {tiempos, indice, marcas, clip} mientras se está armando una estela
+function cancelarEstelaGuia(){
+  if(!estelaGuia) return;
+  estelaGuia = null;
+  $("estelaGenerar").textContent = "Generar guía";
+  avisar("Guía de estela cancelada.");
+}
 function elegirTool(t){
+  if(anot.tool === "estela" && t !== "estela") cancelarEstelaGuia();
   anot.tool = t; anot.clicks = []; anot.temp = null;
   document.querySelectorAll("#herramientas [data-tool]").forEach(b=>
     b.classList.toggle("on", b.dataset.tool === t));
   piz.classList.toggle("activa", t !== "mano");
+  $("ctrEstela").style.display = t === "estela" ? "flex" : "none";
 }
 document.querySelectorAll("#herramientas [data-tool]").forEach(b=>
   b.addEventListener("click", ()=> elegirTool(b.dataset.tool)));
+al("estelaGenerar", "click", ()=>{
+  if(estelaGuia){ cancelarEstelaGuia(); return; }
+  if(estado.entrada === null || estado.salida === null || estado.salida <= estado.entrada){
+    avisar("Marca Entrada y Salida del tramo (grupo Bucle) antes de generar la guía.");
+    return;
+  }
+  const n = Math.max(2, Math.min(14, Math.round(+$("estelaCant").value || 6)));
+  const tiempos = Array.from({length:n}, (_,i)=> estado.entrada + (estado.salida-estado.entrada)*i/(n-1));
+  estelaGuia = { tiempos, indice:0, marcas:[], clip:null };
+  pausar(); irA(tiempos[0], true);
+  $("estelaGenerar").textContent = "✕ Cancelar guía";
+  avisar(`Estela: toca al esquiador — cuadro 1 de ${n}`);
+});
 al("colorAnot", "click", ()=>{
   anot.color = (anot.color + 1) % COLORES.length;
   $("colorAnot").style.color = COLORES[anot.color];
@@ -1990,6 +2074,28 @@ piz.addEventListener("pointerdown", (ev)=>{
     }
     return;
   }
+  if(anot.tool === "estela"){
+    if(!estelaGuia){ avisar('Toca "Generar guía" primero.'); return; }
+    if(!estelaGuia.clip) estelaGuia.clip = k;
+    const kk = estelaGuia.clip;
+    if(!clips[kk].listo) return;
+    const qq = aFotograma(kk, ev);
+    estelaGuia.marcas.push({ q:qq, img: recorteNativo(kk, qq, RADIO_ESTELA) });
+    estelaGuia.indice++;
+    if(estelaGuia.indice >= estelaGuia.tiempos.length){
+      anot.formas[kk].push({
+        tipo:"estela", color:COLORES[anot.color],
+        pts: estelaGuia.marcas.map(m=>m.q), imgs: estelaGuia.marcas.map(m=>m.img),
+        t: clips[kk].el.currentTime
+      });
+      avisar(`Estela lista: ${estelaGuia.marcas.length} fotogramas.`);
+      estelaGuia = null; $("estelaGenerar").textContent = "Generar guía";
+    }else{
+      irA(estelaGuia.tiempos[estelaGuia.indice], true);
+      avisar(`Estela: toca al esquiador — cuadro ${estelaGuia.indice+1} de ${estelaGuia.tiempos.length}`);
+    }
+    return;
+  }
   pintando = true;
   anot.temp = { tipo:anot.tool, color:COLORES[anot.color], clip:k, pts:[q, q], t:clips[k].el.currentTime };
 });
@@ -2053,8 +2159,11 @@ document.addEventListener("keydown", (ev)=>{
 al("verFormas", "click", ()=>{
   const oculta = $("herramientas").classList.toggle("oculta");
   $("verFormas").classList.toggle("on", !oculta);
+  $("reabrirHerramientas").classList.toggle("ver", oculta);
   if(oculta) elegirTool("mano");
 });
+al("herramientasCerrar", "click", ()=> $("verFormas").click());
+al("reabrirHerramientas", "click", ()=> $("verFormas").click());
 $("verFormas").classList.add("on");
 dimPizarra();
 
@@ -2356,13 +2465,14 @@ function refrescarMandos(){
   "nomA","nomB","cambiaAtleta","carrilA","carrilB","regla","agujaR",
   "play","atras","adelante","vel","fps","tc","marcaIn","marcaOut","bucle",
   "verGuias","guias","verFormas","herramientas","pantalla","pantallaFlot","escena","lienzo",
+  "ctrEstela","estelaCant","estelaGenerar",
   "mUno","mDiv","mSup","verA","verB","corte","encaje","ctrOpacidad","opac","opacV",
   "ctrFusion","fusion","ctrReparto","reparto","repartoV","ctrCorte","vacio","faltante",
   "selA","selB","zoom","zoomV","posX","posXV","posY","posYV","giro","giroV","espejo","reset",
   "ajustes","panel","cerrarPanel","autoEnc","calibrar","copiarEnc","notaEnc",
-  "colorAnot","deshacer","borrarTodo","capturarCuadro","renombrarSesion",
+  "colorAnot","deshacer","borrarTodo","capturarCuadro","renombrarSesion","herramientasCerrar","reabrirHerramientas",
   "refA","refB","finA","finB","resetSync","resetBarra","autoSync","igualarPartida","notaSync",
-  "mandos","mPlay","mTc","mAguja","mVel","mModo","mAtleta","mSolo","mA","mB",
+  "mandos","mAsa","mCerrar","reabrirMandos","mPlay","mTc","mAguja","mVel","mModo","mAtleta","mSolo","mA","mB",
   "mGuias","mFormas","mSalir","mBarra","mAmenos","mAmas","mBmenos","mBmas",
   "mJog","mJogPuno","mJogTxt","jog2","jogPuno2","jogTxt2"
 ].forEach(id => { if(!document.getElementById(id)) console.warn(`[comparador] falta #${id} en el HTML`); });
@@ -2371,56 +2481,68 @@ transformar("a"); transformar("b"); notaSync();
 seleccionar("a"); aplicarModo(); dibujar();
 </script>
 
-<!-- Auto-ocultamiento de UI en pantalla completa -->
+<!-- Cierre manual de mandos, y arrastre libre dentro del video -->
 <script>
 (function() {
-  const elementosUI = [
-    document.querySelector('.barra'),
-    document.querySelector('.transporte'),
-    document.querySelector('.herramientas'),
-    document.querySelector('.mandos')
-  ].filter(el => el !== null);
+  const mandos = document.querySelector('.mandos');
+  const reabrirMandos = document.getElementById('reabrirMandos');
+  const escena = document.getElementById('escena');
+  if(!mandos || !reabrirMandos || !escena) return;
 
-  const pizarra = document.querySelector('.pizarra');
+  document.getElementById('mCerrar').addEventListener('click', () => {
+    mandos.classList.add('oculta');
+    reabrirMandos.classList.add('ver');
+  });
+  reabrirMandos.addEventListener('click', () => {
+    mandos.classList.remove('oculta');
+    reabrirMandos.classList.remove('ver');
+  });
 
-  let timeoutOcultar;
-  const TIEMPO_INACTIVIDAD = 2000; // 2 segundos
+  /* posición libre: null = en su sitio por defecto (abajo, centrada) */
+  let pos = null;
 
-  function mostrar() {
-    elementosUI.forEach(el => el.classList.remove('oculta'));
-    // Asegurar que la pizarra siempre sea visible
-    if (pizarra) pizarra.style.opacity = '1';
-    clearTimeout(timeoutOcultar);
-  }
-
-  function ocultarUI() {
-    const body = document.body;
-    if (body.classList.contains('completa') || body.classList.contains('inmersivo')) {
-      elementosUI.forEach(el => el.classList.add('oculta'));
-      // Los dibujos siempre permanecen visibles
-      if (pizarra) pizarra.style.opacity = '1';
+  function aplicarPos() {
+    if (!pos) {
+      mandos.style.left = '50%'; mandos.style.bottom = '14px';
+      mandos.style.top = ''; mandos.style.transform = 'translateX(-50%)';
+      return;
     }
+    mandos.style.left = pos.left + 'px'; mandos.style.top = pos.top + 'px';
+    mandos.style.bottom = 'auto'; mandos.style.transform = 'none';
+  }
+  function acomodarEnPantalla() {
+    if (!pos) return;
+    const re = escena.getBoundingClientRect(), rm = mandos.getBoundingClientRect();
+    pos.left = Math.max(6, Math.min(pos.left, re.width - rm.width - 6));
+    pos.top = Math.max(6, Math.min(pos.top, re.height - rm.height - 6));
+    aplicarPos();
   }
 
-  function programarOcultamiento() {
-    clearTimeout(timeoutOcultar);
-    mostrar();
-    timeoutOcultar = setTimeout(ocultarUI, TIEMPO_INACTIVIDAD);
-  }
-
-  // Escuchar interacciones del usuario
-  const eventos = ['mousemove', 'touchstart', 'click', 'keydown'];
-  eventos.forEach(evento => {
-    document.addEventListener(evento, programarOcultamiento, { passive: true });
+  let arrastrando = false, offX = 0, offY = 0;
+  const asa = document.getElementById('mAsa');
+  asa.addEventListener('pointerdown', (ev) => {
+    ev.preventDefault();
+    arrastrando = true; mandos.classList.add('arrastrando');
+    asa.setPointerCapture(ev.pointerId);
+    const re = escena.getBoundingClientRect(), rm = mandos.getBoundingClientRect();
+    if (!pos) pos = { left: rm.left - re.left, top: rm.top - re.top };
+    offX = ev.clientX - (re.left + pos.left);
+    offY = ev.clientY - (re.top + pos.top);
   });
-
-  // Asegurarse de que se oculte cuando se entre a pantalla completa
-  const botones = document.querySelectorAll('[data-fullscreen], [id*="Salir"], [title*="completa"]');
-  botones.forEach(btn => {
-    btn.addEventListener('click', () => {
-      setTimeout(programarOcultamiento, 100);
-    });
+  asa.addEventListener('pointermove', (ev) => {
+    if (!arrastrando) return;
+    const re = escena.getBoundingClientRect();
+    pos = { left: ev.clientX - re.left - offX, top: ev.clientY - re.top - offY };
+    acomodarEnPantalla();
   });
+  ['pointerup', 'pointercancel'].forEach(ev => asa.addEventListener(ev, () => {
+    arrastrando = false; mandos.classList.remove('arrastrando');
+  }));
+
+  /* si cambia el tamaño (girar la tablet, salir/entrar de pantalla completa),
+     que los mandos no queden fuera de la vista */
+  window.addEventListener('resize', acomodarEnPantalla);
+  document.addEventListener('fullscreenchange', () => setTimeout(acomodarEnPantalla, 80));
 })();
 </script>
 </body>
