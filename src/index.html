@@ -276,6 +276,15 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
   .capa{position:fixed;inset:0;z-index:60;background:rgba(7,11,15,.86);display:flex;align-items:center;justify-content:center;padding:16px}.capa[hidden]{display:none}.ficha{background:var(--panel);border:1px solid var(--linea);border-radius:12px;width:min(940px,100%);max-height:92vh;display:flex;flex-direction:column;overflow:hidden}.ficha header{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--linea)}.ficha h3{margin:0;font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;flex:1}.ficha .opciones{padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 20px}.ficha .salida{flex:1;min-height:180px;background:#070B0F;display:flex;align-items:center;justify-content:center;position:relative;overflow:auto;padding:8px}.ficha canvas{max-width:100%;max-height:56vh;display:block}.progreso{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(7,11,15,.9);font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--ambar)}.progreso[hidden]{display:none}.ficha footer{display:flex;gap:10px;padding:12px 14px;border-top:1px solid var(--linea)}.nota{grid-column:1/-1;margin:0;color:var(--tenue);font-size:13px;line-height:1.5;max-width:70ch}.nota b{color:var(--ambar);font-weight:600;font-family:var(--mono);font-size:12px}.aviso{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(14px);background:var(--panel-alto);border:1px solid var(--linea);border-left:3px solid var(--ambar);padding:11px 16px;border-radius:7px;font-size:14px;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:88vw}.aviso.ver{opacity:1;transform:translateX(-50%) translateY(0)}
   input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0 0 0 0);pointer-events:none}.cargadores{display:flex;gap:6px}.cargadores .btn{min-height:36px;padding:7px 12px;font-size:13px}.cargadores .btn.cargado{background:currentColor}.cargadores .btn.cargado::before{content:"✓ "}.cargadores .btn.a.cargado{color:var(--azul);background:color-mix(in srgb,var(--azul) 22%,transparent)}.cargadores .btn.b.cargado{color:var(--rojo);background:color-mix(in srgb,var(--rojo) 22%,transparent)}
   .comparador.inmersivo .barra,.comparador.inmersivo .transporte,.comparador.inmersivo .ajustes{display:none}.comparador.inmersivo .escena{position:fixed;left:0;right:0;top:74px;bottom:0;z-index:100}
+  .resultadoIA{background:var(--panel);border-top:1px solid var(--linea);padding:14px 40px 16px 16px;position:relative;flex-shrink:0}
+  .resultadoIA .cerrarIA{position:absolute;top:9px;right:10px}
+  .iaCargando{display:flex;align-items:center;gap:10px;color:var(--tenue);font-size:13.5px;padding:6px 0}
+  .iaSpinner{width:16px;height:16px;border-radius:50%;border:2px solid var(--linea);border-top-color:var(--ambar);animation:iaGirar .8s linear infinite;flex-shrink:0}
+  @keyframes iaGirar{to{transform:rotate(360deg)}}
+  .iaVeredicto{padding:10px 12px;border-radius:8px;margin-bottom:10px;background:color-mix(in srgb,var(--azul) 12%,transparent);border:1px solid color-mix(in srgb,var(--azul) 30%,transparent);font-size:14px;color:var(--texto)}
+  .iaBloque{padding:10px 0;border-top:1px solid var(--linea);font-size:13.5px;color:var(--tenue);line-height:1.55}
+  .iaBloque:first-child{border-top:0}
+  .iaBloque .et{display:block;font-family:var(--display);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ambar);margin-bottom:5px}
   @media (max-width:720px){.marca span{display:none}.fila{gap:8px;padding:9px 10px}.fila.util{gap:12px;padding-top:8px}.grupo .et{display:none}.grupo{gap:4px}.fila.util .btn{padding:8px 10px;font-size:12px}.barra{padding:8px 10px;gap:8px}.cargadores .btn{padding:7px 9px;font-size:12px}.modos button{padding:7px 10px;font-size:13px}.crono{font-size:18px;min-width:92px}.campo.oculta-movil{display:none}.tiempo{padding:4px 10px 10px}}
   @media (prefers-reduced-motion:reduce){:scope *{transition:none!important}}
   .comparador.completa .herramientas.oculta{opacity:0;pointer-events:none}
@@ -377,10 +386,10 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
       <b style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--white);letter-spacing:0.5px;">&#127916; Inspector de fotogramas</b>
       <span id="fzt" style="font-family:ui-monospace,monospace;font-size:12px;color:var(--ice);">00:00.00</span>
     </div>
-    <div id="fnota" style="display:none;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12.5px;line-height:1.55;color:var(--text);position:relative;">
+    <div id="fnota" style="display:none;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;margin-bottom:10px;position:relative;">
       <button type="button" onclick="cerrarNotaFrame()" style="position:absolute;top:6px;right:8px;background:none;border:0;color:var(--muted2);font-size:14px;cursor:pointer;line-height:1;">&#10005;</button>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:#ef4444;margin-bottom:4px;">&#9888; Error en este instante</div>
-      <div id="fnotaTexto"></div>
+      <div id="fnotaTitulo" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:#ef4444;padding:10px 34px 0 12px;">&#9888; Este instante</div>
+      <div id="fnotaTexto" style="padding:6px 12px 12px;font-size:12.5px;line-height:1.6;max-height:118px;overflow-y:auto;"></div>
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
       <button class="hbtn" onclick="stepFrame(-10)" title="10 fotogramas atrás">&#171;&#171;</button>
@@ -573,6 +582,8 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
     <div class="fila util">
       <div class="grupo"><span class="et">Bucle</span><button class="btn" id="marcaIn" title="Marcar el inicio del tramo">Entrada</button><button class="btn" id="marcaOut" title="Marcar el fin del tramo">Salida</button><button class="btn" id="bucle" title="Repetir el tramo marcado">Repetir</button></div>
       <div class="grupo"><span class="et">Análisis</span><button class="btn" id="verGuias" title="Guías sobre la imagen">Guías</button><button class="btn" id="verFormas" title="Formas y ángulos">Formas</button></div>
+      <!-- En stand by a pedido de José (2026-08-30): ver memoria del proyecto -->
+      <div class="grupo" style="display:none"><span class="et">IA</span><button class="btn" id="compararIA" title="Comparar a los dos atletas en este instante con Gemini">🤖 Comparar</button></div>
       <div class="grupo" id="ctrEstela" style="display:none"><span class="et">Estela</span><input type="number" id="estelaCant" value="6" min="2" max="14" title="Cantidad de fotogramas"><button class="btn" id="estelaGenerar">Generar guía</button></div>
       <div class="grupo"><span class="et">Ajustes</span><button class="btn icono" id="resetBarra" title="Reiniciar sincronía">↺</button><button class="btn" id="verEncuadre" title="Igualar los encuadres">Encuadre</button><button class="btn" id="panel" title="Todos los ajustes">Ajuste</button></div>
     </div>
@@ -583,6 +594,11 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
       <div class="jogFila"><div class="objetivo"><button data-obj="ambos" aria-pressed="true">Ambos</button><button data-obj="a">A</button><button data-obj="b">B</button></div><div class="mJog" id="jog2" title="Lanzadera: arrastra sin soltar"><span class="mJogEje"></span><span class="mJogTxt" id="jogTxt2">Lanzadera</span><span class="mJogPuno" id="jogPuno2"></span></div></div>
     </div>
   </section>
+  <div class="resultadoIA" id="resultadoIA" style="display:none">
+    <button class="btn icono cerrarIA" id="cerrarIA" title="Cerrar">✕</button>
+    <div class="iaCargando" id="iaCargando" style="display:none"><span class="iaSpinner"></span> Comparando a los dos atletas en este instante…</div>
+    <div id="iaContenido" style="display:none"></div>
+  </div>
   <section class="ajustes" id="ajustes">
     <div class="pestanas" role="tablist"><button data-sec="encuadre" aria-pressed="true">Encuadre</button><button data-sec="sincronia" aria-pressed="false">Sincronía</button><button data-sec="composicion" aria-pressed="false">Composición</button><button class="btn icono" id="cerrarPanel" title="Cerrar el panel">✕</button></div>
     <div class="rejilla seccion" data-sec="encuadre"><div class="titulo">Ajustando <button class="btn a" id="selA">A</button><button class="btn b" id="selB">B</button></div><div class="control"><label>Igualar</label><button class="btn" id="autoEnc" style="flex:1">Encuadre automático</button></div><div class="control"><label>A mano</label><button class="btn" id="calibrar" style="flex:1">Igualar por 2 puntos</button><button class="btn" id="copiarEnc" style="flex:1">Copiar encuadre</button></div><p class="nota" id="notaEnc">Rueda del mouse: adelanta o retrocede. Ctrl + rueda: acerca donde apuntas. Arrastra sobre la imagen para reencuadrar. Doble clic: reinicia ese video.</p><div class="control"><label for="zoom">Zoom</label><input type="range" id="zoom" min="25" max="500" value="100"><output id="zoomV">100%</output></div><div class="control"><label for="posX">Horizontal</label><input type="range" id="posX" min="-50" max="50" value="0"><output id="posXV">0</output></div><div class="control"><label for="posY">Vertical</label><input type="range" id="posY" min="-50" max="50" value="0"><output id="posYV">0</output></div><div class="control"><label for="giro">Giro</label><input type="range" id="giro" min="-30" max="30" value="0" step="0.5"><output id="giroV">0°</output></div><div class="control"><label>Cambiar</label><button class="btn" id="espejo" style="flex:1">Espejo</button><button class="btn" id="reset" style="flex:1">Reiniciar</button></div></div>
@@ -1943,6 +1959,110 @@ function capturarCuadro(){
 al("capturarCuadro", "click", capturarCuadro);
 al("renombrarSesion", "click", renombrarSesion);
 
+/* ---------- comparar con IA: opcional, nunca automático ----------
+   Solo existe acá (index.html), nunca en el comparador.html suelto: esa es la
+   única pieza de la app que sigue la regla de cero red, y esta función necesita
+   la clave y las llamadas a Gemini que ya viven en la pantalla de Análisis. */
+function capturarFotogramaClip(k){
+  const c = clips[k];
+  if(!c || !c.listo) return null;
+  const marco = document.querySelector('.marco[data-clip="'+k+'"]');
+  const Wm = marco.clientWidth, Hm = marco.clientHeight;
+  if(!Wm || !Hm) return null;
+  const out = document.createElement("canvas");
+  out.width = Wm; out.height = Hm;
+  const ctx = out.getContext("2d");
+  ctx.fillStyle = "#070B0F"; ctx.fillRect(0, 0, Wm, Hm);
+  const m = new DOMMatrix(getComputedStyle(c.el).transform);
+  const vw = c.el.videoWidth || 16, vh = c.el.videoHeight || 9;
+  const s = Math.min(Wm / vw, Hm / vh);
+  const dw = vw * s, dh = vh * s, dx = (Wm - dw) / 2, dy = (Hm - dh) / 2;
+  ctx.save();
+  ctx.translate(Wm, Hm);
+  ctx.transform(m.a, m.b, m.c, m.d, m.e, m.f);
+  ctx.translate(-Wm / 2, -Hm / 2);
+  ctx.drawImage(c.el, dx, dy, dw, dh);
+  ctx.restore();
+  return out.toDataURL("image/jpeg", 0.88);
+}
+function seccionIA(texto, nombre){
+  const m = texto.match(new RegExp("##\\s*" + nombre + "[^\\n]*\\n([\\s\\S]*?)(?=##|$)", "i"));
+  return m ? m[1].trim() : "";
+}
+function negritaHtml(s){ return s.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"); }
+function mostrarResultadoIA(texto){
+  const veredicto = seccionIA(texto, "VEREDICTO");
+  const diferencias = seccionIA(texto, "DIFERENCIAS");
+  const sintesis = seccionIA(texto, "SÍNTESIS") || seccionIA(texto, "SINTESIS");
+  const sinFormato = !veredicto && !diferencias && !sintesis;
+  const difHtml = diferencias
+    ? diferencias.split(/\n(?=-\s)/).map(l => l.trim()).filter(Boolean)
+        .map(l => `<div style="margin-bottom:6px">• ${negritaHtml(l.replace(/^-\s*/, ""))}</div>`).join("")
+    : "";
+  $("iaContenido").innerHTML =
+    (veredicto ? `<div class="iaVeredicto">🤖&nbsp; ${negritaHtml(veredicto)}</div>` : "") +
+    (diferencias ? `<div class="iaBloque"><b class="et">Diferencias</b>${difHtml}</div>` : "") +
+    (sintesis ? `<div class="iaBloque"><b class="et">Por qué</b>${negritaHtml(sintesis)}</div>` : "") +
+    (sinFormato ? `<div class="iaBloque">${negritaHtml(texto)}</div>` : "");
+}
+async function compararConIA(){
+  const dos = activos().filter(k => clips[k].listo);
+  if(dos.length < 2){ avisar("Carga y sincroniza los dos videos antes de comparar."); return; }
+  if(!key){ avisar("Configura la clave de Gemini en la pantalla de Análisis primero."); return; }
+  pausar();
+  const imgA = capturarFotogramaClip("a"), imgB = capturarFotogramaClip("b");
+  if(!imgA || !imgB){ avisar("No se pudo capturar el fotograma de alguno de los dos videos."); return; }
+  $("resultadoIA").style.display = "block";
+  $("iaCargando").style.display = "flex";
+  $("iaContenido").style.display = "none";
+  $("compararIA").disabled = true;
+  try{
+    const model = await pickModel();
+    const SYS_CMP = `Eres ENTRENADOR ANDINO. Te muestro dos fotogramas de dos esquiadores (o el mismo esquiador en dos momentos) sincronizados en el mismo instante técnico de un giro. Compáralos usando los 6 FUNDAMENTALS de USST Skill Quest: Balance, Edge Control, Pressure Control, Rotary/Disociación, Timing, Line Management. No describas a cada uno por separado: compáralos directamente entre sí. Responde en español de Chile, con tuteo (nunca voseo).`;
+    const PROMPT_CMP = `Responde EXACTAMENTE con este formato, sin texto antes ni después:
+
+## VEREDICTO
+Una sola frase: cuál de los dos (Atleta A o Atleta B) es más eficiente en este instante, y la razón principal en pocas palabras.
+
+## DIFERENCIAS
+- **Fundamental** (el que corresponda de los 6): comparación concreta y observable entre A y B en este fotograma.
+- **Fundamental**: comparación concreta.
+- **Fundamental**: comparación concreta.
+(entre 3 y 5 puntos, cada uno con un fundamental distinto, solo los que de verdad se noten en la imagen)
+
+## SÍNTESIS
+Un párrafo breve explicando por qué esa diferencia principal se traduce en más o menos eficiencia/velocidad, no solo que "se ve distinto".`;
+    const body = JSON.stringify({
+      system_instruction:{parts:[{text:SYS_CMP}]},
+      contents:[{role:"user", parts:[
+        {text:"ATLETA A:"},
+        {inline_data:{mime_type:"image/jpeg", data: imgA.split(",")[1]}},
+        {text:"ATLETA B:"},
+        {inline_data:{mime_type:"image/jpeg", data: imgB.split(",")[1]}},
+        {text: PROMPT_CMP}
+      ]}],
+      generationConfig:{temperature:0.3, maxOutputTokens:1500}
+    });
+    const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + key;
+    const r = await fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body});
+    if(!r.ok){
+      const e = await r.json().catch(()=>({error:{message:r.statusText}}));
+      throw new Error(e?.error?.message || ("Error " + r.status));
+    }
+    const d = await r.json();
+    const texto = d?.candidates?.[0]?.content?.parts?.[0]?.text || "Sin respuesta.";
+    mostrarResultadoIA(texto);
+  }catch(e){
+    $("iaContenido").innerHTML = `<div class="iaBloque" style="color:var(--rojo)">No se pudo comparar: ${e.message}</div>`;
+  }finally{
+    $("iaCargando").style.display = "none";
+    $("iaContenido").style.display = "block";
+    $("compararIA").disabled = false;
+  }
+}
+al("compararIA", "click", compararConIA);
+al("cerrarIA", "click", ()=> $("resultadoIA").style.display = "none");
+
 let pintando = false;
 piz.addEventListener("pointerdown", (ev)=>{
   if(anot.tool === "mano") return;
@@ -2362,6 +2482,7 @@ function refrescarMandos(){
   "selA","selB","zoom","zoomV","posX","posXV","posY","posYV","giro","giroV","espejo","reset",
   "ajustes","panel","cerrarPanel","autoEnc","calibrar","copiarEnc","notaEnc",
   "colorAnot","deshacer","borrarTodo","capturarCuadro","renombrarSesion","herramientasCerrar","reabrirHerramientas",
+  "compararIA","resultadoIA","cerrarIA","iaCargando","iaContenido",
   "refA","refB","finA","finB","resetSync","resetBarra","autoSync","igualarPartida","notaSync",
   "mandos","mAsa","mCerrar","reabrirMandos","mPlay","mTc","mAguja","mVel","mModo","mAtleta","mSolo","mA","mB",
   "mGuias","mFormas","mSalir","mBarra","mAmenos","mAmas","mBmenos","mBmas",
@@ -3049,16 +3170,17 @@ function linkStamps(html){
   return html.replace(/\b(\d{1,2}:\d{2}(?:[.,]\d{1,2})?)\b/g,
     (m)=>`<a href="javascript:void(0)" onclick="gotoStamp('${m}')" style="color:var(--ice);border-bottom:1px dotted var(--ice);text-decoration:none;font-family:ui-monospace,monospace;">${m}</a>`);
 }
-// Igual que linkStamps, pero además deja el texto del error a la vista junto al fotograma
+// Igual que linkStamps, pero además deja el texto de la sección a la vista junto al fotograma
 let notaFrameTextos=[];
-function linkStampsConNota(html, texto){
-  const idx=notaFrameTextos.push(texto)-1;
+function linkStampsConNota(html, texto, titulo){
+  const idx=notaFrameTextos.push({texto, titulo: titulo || 'Este instante'})-1;
   return html.replace(/\b(\d{1,2}:\d{2}(?:[.,]\d{1,2})?)\b/g,
     (m)=>`<a href="javascript:void(0)" onclick="gotoStamp('${m}');mostrarNotaFrame(${idx})" style="color:var(--ice);border-bottom:1px dotted var(--ice);text-decoration:none;font-family:ui-monospace,monospace;">${m}</a>`);
 }
 function mostrarNotaFrame(idx){
-  const texto=notaFrameTextos[idx]; if(texto==null) return;
-  document.getElementById('fnotaTexto').textContent=texto;
+  const item=notaFrameTextos[idx]; if(item==null) return;
+  document.getElementById('fnotaTitulo').textContent=item.titulo;
+  document.getElementById('fnotaTexto').textContent=item.texto;
   document.getElementById('fnota').style.display='block';
 }
 function cerrarNotaFrame(){ document.getElementById('fnota').style.display='none'; }
@@ -3069,10 +3191,10 @@ function render(text,meta){
   document.getElementById('ss').innerHTML=SK.map(({k,r})=>{ const m=text.match(r),v=m?parseInt(m[1]||m[2]):null,c=scol(v); return`<div class="sc"><div class="scl">${k}</div><div class="scv" style="color:${c}">${v??'—'}</div><div class="scu">/10</div><div class="sb"><div class="sbf" style="width:${v?v*10:0}%;background:${c}"></div></div></div>`; }).join('');
   function sec(m){ const x=text.match(new RegExp('##\\s*'+m+'[^\\n]*\\n([\\s\\S]*?)(?=##|$)','i')); return x?x[1].trim():''; }
   const obs=sec('OBSERVACIÓN GENERAL'),foco=sec('FOCO PARA'),nota=sec('NOTA PARA'),palo=sec('DRILL CON PALOS'),linea=sec('ANÁLISIS DE LÍNEA Y APEX'),causas=sec('ANÁLISIS DE CAUSAS RAÍZ');
-  document.getElementById('tr').innerHTML=[obs?`<div class="rb"><b class="rbt">🔍 Observación General</b><div class="rbc">${linkStamps(obs)}</div></div>`:'',linea?`<div class="rb linea"><b class="rbt">📐 Línea y Apex</b><div class="rbc">${linkStamps(linea)}</div></div>`:'',causas?`<div class="rb causas"><b class="rbt">🧩 Causas Raíz</b><div class="rbc">${linkStamps(causas)}</div></div>`:'',foco?`<div class="rb foco"><b class="rbt">🎯 Foco para la Próxima Sesión</b><div class="rbc">${foco}</div></div>`:'',nota?`<div class="rb nota"><b class="rbt">💬 Nota para el Entrenador</b><div class="rbc">${nota}</div></div>`:'',palo?`<div class="rb palo"><b class="rbt">🎿 Drill con Palos</b><div class="rbc">${palo}</div></div>`:''].join('');
+  document.getElementById('tr').innerHTML=[obs?`<div class="rb"><b class="rbt">🔍 Observación General</b><div class="rbc">${linkStamps(obs)}</div></div>`:'',linea?`<div class="rb linea"><b class="rbt">📐 Línea y Apex</b><div class="rbc">${linkStampsConNota(linea,linea,'📐 Línea y Apex')}</div></div>`:'',causas?`<div class="rb causas"><b class="rbt">🧩 Causas Raíz</b><div class="rbc">${linkStampsConNota(causas,causas,'🧩 Causa raíz')}</div></div>`:'',foco?`<div class="rb foco"><b class="rbt">🎯 Foco para la Próxima Sesión</b><div class="rbc">${foco}</div></div>`:'',nota?`<div class="rb nota"><b class="rbt">💬 Nota para el Entrenador</b><div class="rbc">${nota}</div></div>`:'',palo?`<div class="rb palo"><b class="rbt">🎿 Drill con Palos</b><div class="rbc">${palo}</div></div>`:''].join('');
   const el=text.split('\n').filter(l=>/\[(CRÍTICO|MEDIO|MENOR)\]/i.test(l));
   notaFrameTextos=[]; cerrarNotaFrame();
-  document.getElementById('te').innerHTML=el.length?el.map(l=>{ const iC=/CRÍTICO/i.test(l),iM=/MEDIO/i.test(l),t=iC?'c':iM?'m':'n',lb=iC?'CRÍTICO':iM?'MEDIO':'MENOR',txt=l.replace(/\[(CRÍTICO|MEDIO|MENOR)\]\s*/i,'').replace(/\*+/g,'').trim(); return`<div class="ei e${t}_"><div class="ed d${t}"></div><div><span class="eb eb${t}">${lb}</span><div class="et">${linkStampsConNota(txt,txt)}</div></div></div>`; }).join(''):`<p style="color:var(--muted2);padding:12px 0">Ver análisis completo para los errores.</p>`;
+  document.getElementById('te').innerHTML=el.length?el.map(l=>{ const iC=/CRÍTICO/i.test(l),iM=/MEDIO/i.test(l),t=iC?'c':iM?'m':'n',lb=iC?'CRÍTICO':iM?'MEDIO':'MENOR',txt=l.replace(/\[(CRÍTICO|MEDIO|MENOR)\]\s*/i,'').replace(/\*+/g,'').trim(); return`<div class="ei e${t}_"><div class="ed d${t}"></div><div><span class="eb eb${t}">${lb}</span><div class="et">${linkStampsConNota(txt,txt,'⚠ Error en este instante')}</div></div></div>`; }).join(''):`<p style="color:var(--muted2);padding:12px 0">Ver análisis completo para los errores.</p>`;
   const xs=sec('EJERCICIOS CORRECTIVOS'),xb=xs.split(/\n\*\*\d+\.\s+/).filter(Boolean);
   document.getElementById('tx').innerHTML=xb.length?xb.map((b,i)=>{ const lines=b.split('\n').filter(Boolean),t=lines[0]?.replace(/\*+/g,'').trim()||'',sl=lines.find(l=>/📌/.test(l))||'',s=sl.replace(/.*Fuente:\s*/i,'').replace(/\*+/g,'').trim(),bd=lines.filter(l=>!/📌/.test(l)).slice(1).join(' ').replace(/\*+/g,'').trim(); return`<div class="xc"><div class="xh"><span class="xn">0${i+1}</span><span class="xt">${t}</span>${s?`<span class="xs">${s}</span>`:''}</div><div class="xb">${bd}</div></div>`; }).join(''):`<p style="color:var(--muted2);padding:12px 0">Ver análisis completo.</p>`;
   document.getElementById('tf').innerHTML=`<div class="ft">${linkStamps(text)}</div>`;
