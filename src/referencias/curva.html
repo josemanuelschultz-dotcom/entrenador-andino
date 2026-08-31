@@ -65,6 +65,9 @@
   h2.fase{font-family:var(--display);text-transform:uppercase;font-size:clamp(30px,6vw,46px);
     line-height:1;margin:12px 0 4px;font-weight:700}
   .rango{font-family:var(--mono);font-size:12px;color:#7E93A9;letter-spacing:.06em}
+  /* alto fijo, calculado por JS con la fase más larga, para que el resto del panel
+     (telemetría, controles, selector de fases) no se corra al cambiar de fase */
+  .panel-texto{min-height:0}
   .fase-texto{color:#C7D5E3;font-size:17px;margin:14px 0 0}
   .fase-texto strong{color:#fff;font-weight:600}
   .clave{
@@ -238,8 +241,10 @@
     <span class="fase-tag" id="tag">—</span>
     <h2 class="fase" id="faseNombre">—</h2>
     <p class="rango" id="faseRango">—</p>
-    <p class="fase-texto" id="faseTexto">—</p>
-    <div class="clave"><b id="claveTitulo">Clave</b><span id="claveTexto">—</span></div>
+    <div class="panel-texto" id="panelTexto">
+      <p class="fase-texto" id="faseTexto">—</p>
+      <div class="clave"><b id="claveTitulo">Clave</b><span id="claveTexto">—</span></div>
+    </div>
 
     <div class="telemetria">
       <div class="metrica">
@@ -668,6 +673,24 @@
   });
 
   let faseActual=-1;
+  /* reserva el alto de la fase más larga para que cambiar de fase no mueva
+     la telemetría, los controles ni el selector de abajo */
+  function fijarAltoPanelTexto(){
+    const wrap = $("panelTexto");
+    wrap.style.minHeight = "0px";
+    let maxAlto = 0;
+    FASES.forEach(f=>{
+      $("faseTexto").innerHTML = f.texto;
+      $("claveTexto").textContent = f.clave;
+      maxAlto = Math.max(maxAlto, wrap.offsetHeight);
+    });
+    wrap.style.minHeight = maxAlto + "px";
+    faseActual = -1; // fuerza a pintarFase a rellenar de nuevo la fase que corresponda
+  }
+  let resizeT;
+  window.addEventListener("resize", ()=>{ clearTimeout(resizeT); resizeT = setTimeout(fijarAltoPanelTexto, 200); });
+  fijarAltoPanelTexto();
+
   function pintarFase(i){
     if (i===faseActual) return;
     faseActual=i;

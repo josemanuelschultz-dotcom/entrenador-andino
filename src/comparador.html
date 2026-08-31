@@ -527,7 +527,10 @@ body.completa .mandos.oculta{opacity:0;pointer-events:none}
     <button data-tool="circulo" title="Círculo">◯</button>
     <button data-tool="libre" title="Mano alzada">✎</button>
     <button data-tool="borrador" title="Borrador selectivo">🧹</button>
-    <button data-tool="estela" title="Estela de movimiento: marca al esquiador en varios cuadros del giro">🎬</button>
+    <!-- Oculto a propósito: el modo guiado (entrada/salida/cantidad) no convenció en tablet.
+         Ya se diseñó y aprobó una versión simplificada (tocar para sumar, sin configuración
+         previa) pero se posterga hasta tener videos filmados con cámara fija para probarla. -->
+    <button data-tool="estela" title="Estela de movimiento: marca al esquiador en varios cuadros del giro" style="display:none">🎬</button>
     <button id="colorAnot" title="Color del trazo">●</button>
     <button id="deshacer" title="Deshacer">↶</button>
     <button id="borrarTodo" title="Borrar todo">⌫</button>
