@@ -3016,7 +3016,15 @@ async function analyze(){
     if(isKeyIssue(e)){
       handleKeyFailure(e);
     }else{
-      document.getElementById('em').textContent=e.message+'\n\nSi el error persiste: sube este archivo HTML a app.netlify.com/drop y abre el link que te da.';
+      const mensaje=e.message||'';
+      const detalle=mensaje.toLowerCase();
+      const esAltaDemanda=e.status===503||/high demand|temporarily unavailable|overloaded/.test(detalle);
+      const esCuota=!esAltaDemanda&&(e.status===429||/quota|exceeded|resource exhausted|rate.?limit/.test(detalle));
+      document.getElementById('em').textContent=esAltaDemanda
+        ? 'Gemini está con alta demanda. Tu clave sigue guardada. Espera unos minutos e inténtalo otra vez; no necesitas cambiar la clave.\n\n'+mensaje
+        : esCuota
+          ? 'Gemini alcanzó un límite de uso de la API. Tu clave sigue guardada. Espera a que se restablezca la cuota o revisa sus límites en Google AI Studio.\n\n'+mensaje
+          : mensaje+'\n\nSi el error persiste: sube este archivo HTML a app.netlify.com/drop y abre el link que te da.';
       document.getElementById('ec').classList.add('show');
     }
     document.getElementById('abtn').disabled=false;
@@ -3026,10 +3034,11 @@ async function analyze(){
 
 // ─── DETECCIÓN Y RECUPERACIÓN AUTOMÁTICA DE API KEY ───
 function isKeyIssue(e){
-  const codigosKey=[400,401,403,429];
-  if(e && codigosKey.includes(e.status)) return true;
   const msg=(e && e.message || '').toLowerCase();
-  return /api key|api_key|permission|unauthorized|quota|exceeded|invalid.*key|key.*invalid/.test(msg);
+  if((e&&(e.status===429||e.status===503))||/quota|exceeded|resource exhausted|rate.?limit|high demand|temporarily unavailable|overloaded/.test(msg)) return false;
+  const codigosKey=[401,403];
+  if(e && codigosKey.includes(e.status)) return true;
+  return /api key|api_key|permission|unauthorized|invalid.*key|key.*invalid/.test(msg);
 }
 function handleKeyFailure(e){
   // Limpia la key rota y fuerza a pedir una nueva
