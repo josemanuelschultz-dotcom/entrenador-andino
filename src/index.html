@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <title>Andean Coach</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#2563eb">
@@ -242,7 +242,7 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
   .dorsal{position:absolute;top:10px;left:10px;z-index:4;font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border-radius:4px;background:rgba(7,11,15,.72)}
   .marco[data-clip="a"] .dorsal{color:var(--azul);box-shadow:inset 0 0 0 1px var(--azul)}.marco[data-clip="b"] .dorsal{color:var(--rojo);box-shadow:inset 0 0 0 1px var(--rojo)}
   .lienzo.superpuesta{display:block}.lienzo.superpuesta .marco{position:absolute;inset:0;flex:none}.lienzo.superpuesta .marco[data-clip="b"]{mix-blend-mode:var(--mezcla,normal)}
-  .marco{cursor:grab}.marco.arrastrando{cursor:grabbing}.calibrando .marco{cursor:crosshair}
+  .marco{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none}.marco.arrastrando{cursor:grabbing}.calibrando .marco{cursor:crosshair}
   .punto{position:absolute;z-index:6;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid #0E141B;pointer-events:none;font-family:var(--mono);font-size:10px;color:#0E141B;font-weight:700;display:flex;align-items:center;justify-content:center}.punto.p1{background:var(--ambar)}.punto.p2{background:#7DE2A8}
   .pizarra{position:absolute;inset:0;z-index:6;pointer-events:none;touch-action:none}.pizarra.activa{pointer-events:auto;cursor:crosshair}
   .flotaPantalla{position:absolute;top:10px;right:10px;z-index:9;width:38px;height:38px;border:1px solid var(--linea);border-radius:8px;background:rgba(7,11,15,.82);color:var(--texto);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}.flotaPantalla:hover{background:var(--panel-alto)}.comparador.completa .flotaPantalla,.comparador.inmersivo .flotaPantalla{display:none}
@@ -263,7 +263,10 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
   .mandos select{background:var(--panel-alto);color:var(--texto);border:1px solid var(--linea);border-radius:7px;min-height:38px;padding:7px;flex-shrink:0;font-family:var(--cuerpo);font-size:14px}.mSolo{display:flex;align-items:center;gap:3px;padding:2px 5px;border-radius:8px;background:var(--sombra);flex-shrink:0}.mSolo.oculto{display:none}.mSolo button{min-height:30px;padding:5px 8px;font-size:11px;border:0;background:var(--panel-alto)}.mSolo .etq{font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.06em;padding:0 3px}.mSolo .etq.a{color:#7FB0FF}.mSolo .etq.b{color:#FF9A9A}.mTc{font-family:var(--mono);font-size:15px;color:var(--ambar);font-variant-numeric:tabular-nums;min-width:56px;text-align:center;flex-shrink:0}
   .jogFila{display:flex;align-items:center;gap:8px;margin-top:6px}.jogFila .mJog{flex:1}.objetivo{display:flex;gap:2px;background:var(--sombra);padding:2px;border-radius:7px;flex-shrink:0}.objetivo button{font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:none;border:0;color:var(--tenue);padding:7px 10px;border-radius:5px;cursor:pointer;min-height:30px}.objetivo button[aria-pressed="true"]{background:var(--panel-alto);color:var(--texto)}.objetivo button[data-obj="a"][aria-pressed="true"]{background:color-mix(in srgb,var(--azul) 30%,transparent);color:#BFD8FF}.objetivo button[data-obj="b"][aria-pressed="true"]{background:color-mix(in srgb,var(--rojo) 30%,transparent);color:#FFCFCF}
   .mJog{position:relative;height:34px;border-radius:8px;background:#0B1119;border:1px solid var(--linea);cursor:ew-resize;touch-action:none;overflow:hidden;display:flex;align-items:center;justify-content:center}.mJogEje{position:absolute;left:50%;top:5px;bottom:5px;width:1px;background:var(--linea)}.mJogTxt{font-family:var(--display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tenue);pointer-events:none;font-variant-numeric:tabular-nums}.mJogPuno{position:absolute;left:50%;top:3px;bottom:3px;width:44px;margin-left:-22px;border-radius:7px;background:color-mix(in srgb,var(--ambar) 30%,transparent);border:1px solid var(--ambar);pointer-events:none;transition:margin-left .18s ease}.mJog.activo .mJogPuno{transition:none}.mBarra{position:relative;height:10px;background:#0B1119;border-radius:5px;cursor:pointer;touch-action:none}.mAguja{position:absolute;top:0;bottom:0;width:3px;background:var(--ambar);border-radius:2px;left:0}
-  .herramientas{position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:8;display:flex;flex-direction:column;gap:3px;padding:5px;border-radius:10px;background:rgba(7,11,15,.82);border:1px solid var(--linea);max-height:calc(100% - 20px);overflow:auto;scrollbar-width:none}.herramientas::-webkit-scrollbar{display:none}.herramientas.oculta{display:none}.herramientas button{width:38px;height:38px;border:0;border-radius:7px;background:none;color:var(--tenue);font-size:16px;line-height:1;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center}.herramientas button:hover{color:var(--texto);background:var(--panel-alto)}.herramientas button.on{background:var(--ambar);color:#0E141B}.herramientas #colorAnot{font-size:20px}
+  .herramientas{position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:8;display:flex;flex-direction:column;gap:3px;padding:5px;border-radius:10px;background:rgba(7,11,15,.82);border:1px solid var(--linea);max-height:calc(100% - 20px);overflow:auto;scrollbar-width:none;touch-action:none}.herramientas::-webkit-scrollbar{display:none}.herramientas.oculta{display:none}.herramientas.arrastrando{transition:none}.herramientas button{width:38px;height:38px;border:0;border-radius:7px;background:none;color:var(--tenue);font-size:16px;line-height:1;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;flex-shrink:0}.herramientas button:hover{color:var(--texto);background:var(--panel-alto)}.herramientas button.on{background:var(--ambar);color:#0E141B}.herramientas #colorAnot{font-size:20px}
+  .hAsa{width:38px;min-height:16px;display:flex;align-items:center;justify-content:center;gap:3px;cursor:grab;color:var(--tenue);flex-shrink:0;border-bottom:1px solid var(--linea);margin-bottom:2px;padding-bottom:5px}
+  .hAsa:active{cursor:grabbing}
+  .hAsa i{width:3px;height:3px;border-radius:50%;background:currentColor}
   .guias{position:absolute;inset:0;z-index:3;pointer-events:none;display:none}.guias.on{display:block}.guias i{position:absolute;background:rgba(245,184,65,.4)}.guias i.v{top:0;bottom:0;width:1px;left:50%}.guias i.h{left:0;right:0;height:1px;top:50%}.guias i.t{left:0;right:0;height:1px;top:33.33%;background:rgba(245,184,65,.18)}.guias i.b{left:0;right:0;height:1px;top:66.66%;background:rgba(245,184,65,.18)}
   .vacio{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:24px}.vacio h2{font-family:var(--display);font-size:26px;font-weight:600;letter-spacing:.04em;margin:0;text-transform:uppercase}.vacio p{margin:0;color:var(--tenue);max-width:34ch;line-height:1.5}.cargas{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}.vacio.parcial{inset:auto 0 14px 0;flex-direction:row;gap:12px;padding:0;pointer-events:none}.vacio.parcial h2{font-size:14px;letter-spacing:.09em;background:rgba(7,11,15,.8);padding:9px 13px;border-radius:7px;color:var(--tenue);font-weight:600}.vacio.parcial p{display:none}.vacio.parcial .cargas{pointer-events:auto}.vacio.parcial .cargas .btn{background:rgba(7,11,15,.86)}.vacio.parcial .cargas .btn.hecho{display:none}
   .btn{font-family:var(--display);font-size:14px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:var(--panel-alto);color:var(--texto);border:1px solid var(--linea);padding:10px 14px;border-radius:7px;cursor:pointer;min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn:hover{border-color:#3A4C63}.btn:active{transform:translateY(1px)}.btn.a{border-color:var(--azul);color:var(--azul)}.btn.b{border-color:var(--rojo);color:var(--rojo)}.btn.on{background:var(--ambar);color:#0E141B;border-color:var(--ambar)}.btn.icono{padding:10px;min-width:44px;font-size:16px}.btn.play{min-width:62px;font-size:19px}
@@ -290,10 +293,10 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
   .comparador.completa .herramientas.oculta{opacity:0;pointer-events:none}
   .comparador.completa .mandos.oculta{opacity:0;pointer-events:none}
   @media (orientation:landscape) and (max-height:500px){
-    .barra{padding:6px 10px;gap:6px;font-size:14px}.marca{font-size:16px}.marca span{display:none}.modos button{padding:5px 10px;font-size:11px}.cargadores .btn{padding:5px 8px;font-size:11px;min-height:32px}.fila{gap:6px;padding:6px 10px}.fila.principal{padding-bottom:4px}.fila.util{gap:10px;padding-top:6px;margin-top:0;border-top:none}.grupo .et{display:none}.grupo{gap:3px}.fila.util .btn{padding:5px 8px;font-size:11px;min-height:32px}.campo{font-size:11px}.campo select{min-height:32px;padding:4px 8px}.crono{font-size:16px;min-width:80px}.sep{height:20px}.tiempo{padding:3px 10px 6px}.regla{height:16px;margin-bottom:2px}.carril{margin-bottom:2px}.pista{height:24px;border-radius:3px}.nudge button{width:28px;height:28px;font-size:12px}.reloj-carril{font-size:10px;width:48px}.candado{font-size:11px}.ajustes.abierto{max-height:min(40vh,250px)}.pestanas button{padding:6px 10px;font-size:12px}.mandos{padding:6px 8px;gap:4px}.mandos button{min-height:34px;padding:6px 9px;font-size:11px}.mandos button.grande{font-size:14px;min-width:48px}.mJog{height:28px}.objetivo button{padding:5px 8px;font-size:10px;min-height:28px}.herramientas button{width:32px;height:32px;font-size:14px}.flotaPantalla{width:32px;height:32px;font-size:14px}
+    .barra{padding:6px 10px;gap:6px;font-size:14px}.marca{font-size:16px}.marca span{display:none}.modos button{padding:5px 10px;font-size:11px}.cargadores .btn{padding:5px 8px;font-size:11px;min-height:32px}.fila{gap:6px;padding:6px 10px}.fila.principal{padding-bottom:4px}.fila.util{gap:10px;padding-top:6px;margin-top:0;border-top:none}.grupo .et{display:none}.grupo{gap:3px}.fila.util .btn{padding:5px 8px;font-size:11px;min-height:32px}.campo{font-size:11px}.campo select{min-height:32px;padding:4px 8px}.crono{font-size:16px;min-width:80px}.sep{height:20px}.tiempo{padding:3px 10px 6px}.regla{height:16px;margin-bottom:2px}.carril{margin-bottom:2px}.pista{height:24px;border-radius:3px}.nudge button{width:28px;height:28px;font-size:12px}.reloj-carril{font-size:10px;width:48px}.candado{font-size:11px}.ajustes.abierto{max-height:min(40vh,250px)}.pestanas button{padding:6px 10px;font-size:12px}.mandos{padding:6px 8px;gap:4px}.mandos button{min-height:34px;padding:6px 9px;font-size:11px}.mandos button.grande{font-size:14px;min-width:48px}.mJog{height:28px}.objetivo button{padding:5px 8px;font-size:10px;min-height:28px}.herramientas button{width:32px;height:32px;font-size:14px}.hAsa{width:32px}.flotaPantalla{width:32px;height:32px;font-size:14px}
   }
   @media (orientation:landscape) and (max-height:600px) and (min-height:501px){
-    .barra{padding:7px 11px;gap:7px;font-size:15px}.marca{font-size:17px}.marca span{display:none}.modos button{padding:6px 11px;font-size:12px}.cargadores .btn{padding:6px 9px;font-size:12px;min-height:34px}.fila{gap:7px;padding:7px 11px}.fila.principal{padding-bottom:5px}.fila.util{gap:11px;padding-top:7px;margin-top:0;border-top:none}.grupo .et{display:none}.grupo{gap:4px}.fila.util .btn{padding:6px 9px;font-size:12px;min-height:34px}.campo{font-size:12px}.campo select{min-height:34px;padding:5px 9px}.crono{font-size:18px;min-width:90px}.sep{height:22px}.tiempo{padding:4px 11px 7px}.regla{height:18px;margin-bottom:2px}.carril{margin-bottom:2px}.pista{height:26px;border-radius:4px}.nudge button{width:30px;height:30px;font-size:13px}.reloj-carril{font-size:11px;width:50px}.candado{font-size:12px}.ajustes.abierto{max-height:min(45vh,280px)}.pestanas button{padding:7px 11px;font-size:13px}.mandos{padding:7px 9px;gap:5px}.mandos button{min-height:36px;padding:7px 10px;font-size:12px}.mandos button.grande{font-size:15px;min-width:50px}.mJog{height:30px}.objetivo button{padding:6px 9px;font-size:11px;min-height:30px}.herramientas button{width:34px;height:34px;font-size:15px}.flotaPantalla{width:34px;height:34px;font-size:15px}
+    .barra{padding:7px 11px;gap:7px;font-size:15px}.marca{font-size:17px}.marca span{display:none}.modos button{padding:6px 11px;font-size:12px}.cargadores .btn{padding:6px 9px;font-size:12px;min-height:34px}.fila{gap:7px;padding:7px 11px}.fila.principal{padding-bottom:5px}.fila.util{gap:11px;padding-top:7px;margin-top:0;border-top:none}.grupo .et{display:none}.grupo{gap:4px}.fila.util .btn{padding:6px 9px;font-size:12px;min-height:34px}.campo{font-size:12px}.campo select{min-height:34px;padding:5px 9px}.crono{font-size:18px;min-width:90px}.sep{height:22px}.tiempo{padding:4px 11px 7px}.regla{height:18px;margin-bottom:2px}.carril{margin-bottom:2px}.pista{height:26px;border-radius:4px}.nudge button{width:30px;height:30px;font-size:13px}.reloj-carril{font-size:11px;width:50px}.candado{font-size:12px}.ajustes.abierto{max-height:min(45vh,280px)}.pestanas button{padding:7px 11px;font-size:13px}.mandos{padding:7px 9px;gap:5px}.mandos button{min-height:36px;padding:7px 10px;font-size:12px}.mandos button.grande{font-size:15px;min-width:50px}.mJog{height:30px}.objetivo button{padding:6px 9px;font-size:11px;min-height:30px}.herramientas button{width:34px;height:34px;font-size:15px}.hAsa{width:34px}.flotaPantalla{width:34px;height:34px;font-size:15px}
   }
 }
 </style>
@@ -309,6 +312,7 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
     </div>
   </div>
   <div class="hbtns">
+    <button class="hbtn" id="btnInstalar" style="display:none">&#11015; Instalar app</button>
     <nav class="pantallas" aria-label="Pantallas">
       <button class="hbtn pantalla-btn" id="nav-analisis" aria-pressed="true">Análisis</button>
       <button class="hbtn pantalla-btn" id="nav-comparador" aria-pressed="false">Comparador</button>
@@ -566,6 +570,7 @@ footer{text-align:center;padding:18px;font-size:9px;color:var(--muted2);letter-s
     </div>
     <button class="reabrirFlotante" id="reabrirMandos" title="Mostrar mandos">🎛</button>
     <div class="herramientas" id="herramientas">
+      <span class="hAsa" id="hAsa" title="Arrastrar"><i></i><i></i><i></i></span>
       <button data-tool="mano" class="on" title="Navegar (Esc)">✋</button><button data-tool="linea" title="Línea con ángulo">╱</button><button data-tool="angulo" title="Ángulo de 3 puntos">∠</button><button data-tool="plomada" title="Vertical de referencia">⊥</button><button data-tool="rect" title="Rectángulo">▭</button><button data-tool="circulo" title="Círculo">◯</button><button data-tool="libre" title="Mano alzada">✎</button><button data-tool="borrador" title="Borrador selectivo">🧹</button><button data-tool="estela" title="Estela de movimiento: toca al esquiador para sumarlo, cambia de herramienta para terminar">🎬</button><button id="colorAnot" title="Color del trazo">●</button><button id="deshacer" title="Deshacer">↶</button><button id="borrarTodo" title="Borrar todo">⌫</button><button id="capturarCuadro" title="Guardar fotograma con dibujos">📷</button><button id="renombrarSesion" title="Cambiar carpeta de capturas">📁</button><button id="herramientasCerrar" title="Ocultar herramientas">✕</button>
     </div>
     <button class="reabrirFlotante" id="reabrirHerramientas" title="Mostrar herramientas">🖌</button>
@@ -628,8 +633,39 @@ const VIEWERS={
   tabla:{src:'./referencias/tabla.html', title:'Tabla de Desarrollo · U6\u2013U16'},
   curva:{src:'./referencias/curva.html', title:'Anatom\u00eda de la curva · Competici\u00f3n'}
 };
+/* Si el usuario dejó la pantalla con zoom de pellizco (Análisis/Comparador),
+   ese zoom queda pegado al abrir un visor a pantalla completa: el recuadro
+   fijo no cubre bien la pantalla visual con zoom activo y deja ver, en la
+   mitad restante, el fondo claro de la página de referencia. Forzamos el
+   zoom de vuelta a 1 justo antes de abrir el visor. */
+function resetZoom(){
+  const vp=document.querySelector('meta[name="viewport"]');
+  if(!vp) return;
+  const original=vp.getAttribute('content');
+  vp.setAttribute('content', original.replace(/maximum-scale=[^,]+/,'maximum-scale=1.0'));
+  requestAnimationFrame(()=>{ vp.setAttribute('content', original); });
+}
+/* Segunda red de seguridad: si a pesar del resetZoom() el teléfono queda con
+   zoom aplicado, el recuadro fijo (position:fixed) no siempre cubre la parte
+   visible real de la pantalla. Lo medimos con visualViewport y lo ajustamos
+   a mano para que siempre tape todo, sin dejar ver nada detrás. */
+function ajustarVisor(){
+  const ov=document.getElementById('viewerOv');
+  if(ov.style.display!=='flex') return;
+  const vv=window.visualViewport;
+  if(!vv){ ov.style.left='0'; ov.style.top='0'; ov.style.width='100%'; ov.style.height='100%'; return; }
+  ov.style.left=vv.offsetLeft+'px';
+  ov.style.top=vv.offsetTop+'px';
+  ov.style.width=vv.width+'px';
+  ov.style.height=vv.height+'px';
+}
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', ajustarVisor);
+  window.visualViewport.addEventListener('scroll', ajustarVisor);
+}
 function openViewer(which){
   const v=VIEWERS[which]; if(!v) return;
+  resetZoom();
   const ov=document.getElementById('viewerOv');
   Object.keys(VIEWERS).forEach(k=>{ document.getElementById('fr-'+k).style.display='none'; });
   const fr=document.getElementById('fr-'+which);
@@ -638,11 +674,16 @@ function openViewer(which){
   document.getElementById('viewerTitle').textContent=v.title;
   ov.style.display='flex';
   document.body.style.overflow='hidden';
+  ajustarVisor();
+  requestAnimationFrame(ajustarVisor);
   history.pushState({viewer:which},'');   // el botón atrás del teléfono cierra el visor
 }
 function hideViewer(){
-  document.getElementById('viewerOv').style.display='none';
+  const ov=document.getElementById('viewerOv');
+  ov.style.display='none';
+  ov.style.left=''; ov.style.top=''; ov.style.width=''; ov.style.height='';
   document.body.style.overflow='';
+  resetZoom();
 }
 function closeViewer(){
   hideViewer();
@@ -1326,7 +1367,7 @@ function aPantalla(k, q){
 function zoomEnCursor(k, factor, ev){
   const c = clips[k], p = puntoLocal(k, ev);
   const s = c.zoom/100;
-  const s2 = Math.min(Math.max(s*factor, 0.25), 5);
+  const s2 = Math.min(Math.max(s*factor, 0.25), 10);
   if(Math.abs(s2 - s) < 0.0005) return;
   const tx = c.x/100*p.W, ty = c.y/100*p.H;
   const r = s2/s;
@@ -1451,14 +1492,17 @@ for(const k of ["a","b"]){
   }, { passive:false });
 
   let px = 0, py = 0, movido = 0, arrastrando = false, base = null;
+  const toques = (window.__toques = window.__toques || {})[k] = new Map();
   m.addEventListener("pointerdown", (ev)=>{
+    if(ev.pointerType === "touch") toques.set(ev.pointerId, ev);
+    if(toques.size >= 2){ arrastrando = false; m.classList.remove("arrastrando"); return; }
     if(cal.activo || !clips[k].listo) return;
     arrastrando = true; movido = 0; px = ev.clientX; py = ev.clientY;
     base = { x:clips[k].x, y:clips[k].y };
     m.setPointerCapture(ev.pointerId); m.classList.add("arrastrando");
   });
   m.addEventListener("pointermove", (ev)=>{
-    if(!arrastrando) return;
+    if(!arrastrando || toques.size >= 2) return;
     const { W, H } = cajaDe(k);
     const dx = ev.clientX - px, dy = ev.clientY - py;
     movido = Math.max(movido, Math.abs(dx) + Math.abs(dy));
@@ -1469,6 +1513,7 @@ for(const k of ["a","b"]){
     if(cal.puntos.a.length || cal.puntos.b.length) pintarPuntos();
   });
   const fin = (ev)=>{
+    toques.delete(ev.pointerId);
     if(!arrastrando) return;
     arrastrando = false; m.classList.remove("arrastrando");
     if(movido < 5){ clips[k].x = base.x; clips[k].y = base.y; transformar(k); seleccionar(k); }
@@ -1500,9 +1545,8 @@ for(const k of ["a","b"]){
 /* pellizco con dos dedos sobre un marco */
 for(const k of ["a","b"]){
   const m = marcoDe(k);
-  const dedos = new Map();
-  let distPrev = 0;
-  m.addEventListener("pointerdown", (ev)=>{ if(ev.pointerType === "touch") dedos.set(ev.pointerId, ev); });
+  const dedos = window.__toques[k];
+  let distPrev = 0, cPrev = null;
   m.addEventListener("pointermove", (ev)=>{
     if(ev.pointerType !== "touch" || !dedos.has(ev.pointerId)) return;
     dedos.set(ev.pointerId, ev);
@@ -1511,9 +1555,15 @@ for(const k of ["a","b"]){
     const d = Math.hypot(p2.clientX - p1.clientX, p2.clientY - p1.clientY);
     const centro = { clientX:(p1.clientX + p2.clientX)/2, clientY:(p1.clientY + p2.clientY)/2 };
     if(distPrev) zoomEnCursor(k, d/distPrev, centro);
-    distPrev = d;
+    if(cPrev){
+      const { W, H } = cajaDe(k);
+      clips[k].x += (centro.clientX - cPrev.clientX)/W*100;
+      clips[k].y += (centro.clientY - cPrev.clientY)/H*100;
+      transformar(k); if(estado.sel === k) refrescarEncuadre();
+    }
+    distPrev = d; cPrev = centro;
   });
-  const suelta = (ev)=>{ dedos.delete(ev.pointerId); if(dedos.size < 2) distPrev = 0; };
+  const suelta = (ev)=>{ dedos.delete(ev.pointerId); if(dedos.size < 2){ distPrev = 0; cPrev = null; } };
   m.addEventListener("pointerup", suelta);
   m.addEventListener("pointercancel", suelta);
 }
@@ -2060,7 +2110,7 @@ async function compararConIA(){
   $("iaContenido").style.display = "none";
   $("compararIA").disabled = true;
   try{
-    const model = await pickModel();
+    let model = await pickModel();
     const SYS_CMP = `Eres ENTRENADOR ANDINO. Te muestro dos fotogramas de dos esquiadores (o el mismo esquiador en dos momentos) sincronizados en el mismo instante técnico de un giro. Compáralos usando los 6 FUNDAMENTALS de USST Skill Quest: Balance, Edge Control, Pressure Control, Rotary/Disociación, Timing, Line Management. No describas a cada uno por separado: compáralos directamente entre sí. Responde en español de Chile, con tuteo (nunca voseo).`;
     const PROMPT_CMP = `Responde EXACTAMENTE con este formato, sin texto antes ni después:
 
@@ -2086,13 +2136,17 @@ Un párrafo breve explicando por qué esa diferencia principal se traduce en má
       ]}],
       generationConfig:{temperature:0.3, maxOutputTokens:1500}
     });
-    const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + key;
-    const r = await fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body});
-    if(!r.ok){
+    let d=null;
+    for(;;){
+      const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + key;
+      const r = await fetch(url, {method:"POST", headers:{"Content-Type":"application/json"}, body});
+      if(r.ok){ d = await r.json(); break; }
       const e = await r.json().catch(()=>({error:{message:r.statusText}}));
-      throw new Error(e?.error?.message || ("Error " + r.status));
+      const err = new Error(e?.error?.message || ("Error " + r.status)); err.status = r.status;
+      const sig = esErrorSaturacion(err) ? siguienteModelo(model) : null;
+      if(!sig) throw err;
+      model = sig; usarModelo(sig);
     }
-    const d = await r.json();
     const texto = d?.candidates?.[0]?.content?.parts?.[0]?.text || "Sin respuesta.";
     mostrarResultadoIA(texto);
   }catch(e){
@@ -2510,7 +2564,7 @@ function refrescarMandos(){
   "ctrFusion","fusion","ctrReparto","reparto","repartoV","ctrCorte","vacio","faltante",
   "selA","selB","zoom","zoomV","posX","posXV","posY","posYV","giro","giroV","espejo","reset",
   "ajustes","panel","cerrarPanel","autoEnc","calibrar","copiarEnc","notaEnc",
-  "colorAnot","deshacer","borrarTodo","capturarCuadro","renombrarSesion","herramientasCerrar","reabrirHerramientas",
+  "colorAnot","deshacer","borrarTodo","capturarCuadro","renombrarSesion","herramientasCerrar","reabrirHerramientas","hAsa",
   "compararIA","resultadoIA","cerrarIA","iaCargando","iaContenido",
   "refA","refB","finA","finB","resetSync","resetBarra","autoSync","igualarPartida","notaSync",
   "mandos","mAsa","mCerrar","reabrirMandos","mPlay","mTc","mAguja","mVel","mModo","mAtleta","mSolo","mA","mB",
@@ -2562,8 +2616,51 @@ function acomodarMandosEnPantalla(){
     arrastrando = false; mandos.classList.remove("arrastrando");
   }));
 })();
-window.addEventListener("resize", ()=> { if(comparadorVisible) acomodarMandosEnPantalla(); });
-document.addEventListener("fullscreenchange", ()=> setTimeout(acomodarMandosEnPantalla, 80));
+
+/* ---------- arrastre libre de la barra de herramientas ---------- */
+let posHerramientas = null; /* null = en su sitio por defecto (izquierda, centrada) */
+function aplicarPosHerramientas(){
+  const h = $("herramientas");
+  if(!posHerramientas){
+    h.style.left = "10px"; h.style.top = "50%"; h.style.bottom = ""; h.style.transform = "translateY(-50%)";
+    return;
+  }
+  h.style.left = posHerramientas.left+"px"; h.style.top = posHerramientas.top+"px";
+  h.style.bottom = "auto"; h.style.transform = "none";
+}
+function acomodarHerramientasEnPantalla(){
+  if(!posHerramientas) return;
+  const re = $("escena").getBoundingClientRect(), rh = $("herramientas").getBoundingClientRect();
+  posHerramientas.left = Math.max(6, Math.min(posHerramientas.left, re.width - rh.width - 6));
+  posHerramientas.top = Math.max(6, Math.min(posHerramientas.top, re.height - rh.height - 6));
+  aplicarPosHerramientas();
+}
+(function(){
+  let arrastrando = false, offX = 0, offY = 0;
+  const asa = $("hAsa"), herramientas = $("herramientas"), escena = $("escena");
+  if(!asa || !herramientas || !escena) return;
+  asa.addEventListener("pointerdown", (ev)=>{
+    ev.preventDefault();
+    arrastrando = true; herramientas.classList.add("arrastrando");
+    asa.setPointerCapture(ev.pointerId);
+    const re = escena.getBoundingClientRect(), rh = herramientas.getBoundingClientRect();
+    if(!posHerramientas) posHerramientas = { left: rh.left - re.left, top: rh.top - re.top };
+    offX = ev.clientX - (re.left + posHerramientas.left);
+    offY = ev.clientY - (re.top + posHerramientas.top);
+  });
+  asa.addEventListener("pointermove", (ev)=>{
+    if(!arrastrando) return;
+    const re = escena.getBoundingClientRect();
+    posHerramientas = { left: ev.clientX - re.left - offX, top: ev.clientY - re.top - offY };
+    acomodarHerramientasEnPantalla();
+  });
+  ["pointerup","pointercancel"].forEach(ev => asa.addEventListener(ev, ()=>{
+    arrastrando = false; herramientas.classList.remove("arrastrando");
+  }));
+})();
+
+window.addEventListener("resize", ()=> { if(comparadorVisible){ acomodarMandosEnPantalla(); acomodarHerramientasEnPantalla(); } });
+document.addEventListener("fullscreenchange", ()=> setTimeout(()=>{ acomodarMandosEnPantalla(); acomodarHerramientasEnPantalla(); }, 80));
 
 function iniciar() {
   comparadorVisible = true;
@@ -2629,7 +2726,7 @@ function prg(p,h,n){ document.getElementById('pf').style.width=p+'%'; document.g
 function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
 // ─── MODEL AUTO-DETECTION ───
-let cachedModel=null;
+let cachedModel=null, modelCandidates=null;
 async function pickModel(){
   if(cachedModel) return cachedModel;
   const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?key='+key+'&pageSize=200');
@@ -2649,14 +2746,35 @@ async function pickModel(){
     /^gemini-3\.1-pro/,/^gemini-2\.5-pro/,
     /flash(?!-lite)/,/pro/,/gemini/
   ];
+  const ordenados=[];
   for(const p of prefs){
-    const hit=models.find(m=>p.test(m));
-    if(hit){ cachedModel=hit; break; }
+    const hit=models.find(m=>p.test(m)&&!ordenados.includes(m));
+    if(hit) ordenados.push(hit);
   }
-  if(!cachedModel) cachedModel=models[0];
+  models.forEach(m=>{ if(!ordenados.includes(m)) ordenados.push(m); });
+  modelCandidates=ordenados;
+  cachedModel=ordenados[0]||models[0];
   document.getElementById('model-name').textContent='modelo: '+cachedModel;
   console.log('Modelo:',cachedModel,'| Disponibles:',models);
   return cachedModel;
+}
+/* Si un modelo devuelve saturación (alta demanda / sobrecarga), probamos con el siguiente
+   de la lista de preferencias en vez de cortar el análisis con un error. */
+function esErrorSaturacion(e){
+  const st=e&&e.status;
+  const msg=((e&&e.message)||'').toLowerCase();
+  return st===503||st===429||/overload|high demand|alta demanda|unavailable|resource_exhausted|resource exhausted/.test(msg);
+}
+function siguienteModelo(actual){
+  if(!modelCandidates) return null;
+  const i=modelCandidates.indexOf(actual);
+  if(i===-1||i+1>=modelCandidates.length) return null;
+  return modelCandidates[i+1];
+}
+function usarModelo(m){
+  cachedModel=m;
+  const et=document.getElementById('model-name');
+  if(et) et.textContent='modelo: '+m;
 }
 
 // ─── UPLOAD ───
@@ -2687,7 +2805,7 @@ async function uploadFile(f){
 
 // ─── GENERATE ───
 async function generate(uri,mime){
-  const model=await pickModel();
+  let model=await pickModel();
   const cat=document.getElementById('sc').value;
   const disc=document.getElementById('sd').value;
   const niv=document.getElementById('sn').value;
@@ -2966,7 +3084,6 @@ Descripción detallada ejecutable. Carga recomendada. Por qué corrige el error.
 [Fortaleza técnica destacable o consideración pedagógica]
 [Si — y SOLO si — el video o el contexto dan evidencia real de que se está incurriendo en una red flag de entrenamiento de ${cat}, nombrarla acá de forma directa y sin rodeos. Si no hay evidencia, omitir esta parte por completo: no inventar ni suponer errores del entrenador.]`;
 
-  prg(85,'Generando análisis técnico...','Modelo: '+model);
   // Gemini muestrea video a 1 fps por defecto: insuficiente para marcar un instante técnico.
   // Pedimos 5 fps y, si el modelo o la versión de API no lo aceptan, reintentamos sin el campo.
   const mkBody=(fps)=>JSON.stringify({
@@ -2977,12 +3094,21 @@ Descripción detallada ejecutable. Carga recomendada. Por qué corrige el error.
       {text:PROMPT}]}],
     generationConfig:{temperature:0.3,maxOutputTokens:/2\.0|1\.5/.test(model)?8000:20000}
   });
-  const url='https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+key;
   const hdr={ method:'POST',headers:{'Content-Type':'application/json'} };
-  let r=await fetch(url,{...hdr,body:mkBody(5)});
-  if(!r.ok&&r.status===400){ r=await fetch(url,{...hdr,body:mkBody(null)}); }
-  if(!r.ok){ const e=await r.json().catch(()=>({error:{message:r.statusText}})); const err=new Error('Análisis ('+model+'): '+(e?.error?.message||r.status)); err.status=r.status; throw err; }
-  const d=await r.json();
+  let d=null;
+  for(;;){
+    prg(85,'Generando análisis técnico...','Modelo: '+model);
+    const url='https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+key;
+    let r=await fetch(url,{...hdr,body:mkBody(5)});
+    if(!r.ok&&r.status===400){ r=await fetch(url,{...hdr,body:mkBody(null)}); }
+    if(r.ok){ d=await r.json(); break; }
+    const e=await r.json().catch(()=>({error:{message:r.statusText}}));
+    const err=new Error('Análisis ('+model+'): '+(e?.error?.message||r.status)); err.status=r.status;
+    const sig=esErrorSaturacion(err)?siguienteModelo(model):null;
+    if(!sig) throw err;
+    prg(86,'Modelo saturado, probando con otro...','Cambiando de '+model+' a '+sig);
+    model=sig; usarModelo(sig);
+  }
   prg(100,'¡Análisis listo!','');
   const cand=d?.candidates?.[0];
   let out=cand?.content?.parts?.[0]?.text||'Sin respuesta.';
@@ -3238,6 +3364,15 @@ if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(e=>console.log('SW registration failed:',e));
   });
 }
+</script>
+<script>
+try{ if(screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); }catch(e){}
+(function(){
+  let dp=null; const b=document.getElementById('btnInstalar'); if(!b) return;
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;b.style.display='';});
+  b.addEventListener('click',async()=>{ if(!dp) return; dp.prompt(); await dp.userChoice; dp=null; b.style.display='none'; });
+  window.addEventListener('appinstalled',()=>{ b.style.display='none'; });
+})();
 </script>
 </body>
 </html>
